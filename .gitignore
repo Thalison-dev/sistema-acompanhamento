@@ -1,0 +1,12 @@
+
+# Arquivos compilados pelo Maven
+target/
+
+# Arquivos compilados do Java
+*.class
+
+# Logs
+*.log
+
+# Configurações locais da IDE
+.metadata/
