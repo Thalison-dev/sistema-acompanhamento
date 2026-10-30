@@ -22,8 +22,6 @@ class mensagem extends Pessoa{
 		
 	}
 	
-	
-	
 	public long getgid() {
 		return id;
 	}
@@ -48,14 +46,5 @@ class mensagem extends Pessoa{
 	public void setlida(Boolean lida) {
 		this.lida = lida;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		
 }
