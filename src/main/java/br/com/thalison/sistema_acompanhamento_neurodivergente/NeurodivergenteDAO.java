@@ -14,7 +14,7 @@ public class NeurodivergenteDAO {
         n.setTipo(r.getString("tipoNeurodivergencia"));
         n.setDescricao(r.getString("descricaoNeuro"));
         n.setObservacoes(r.getString("observacoesNeuro"));
-        n.setDataRegistro(r.getDate("dataRegistroNeuro"));
+        n.setDataRegistro(r.getString("dataRegistroNeuro"));
         return n;
     }
 
@@ -25,7 +25,7 @@ public class NeurodivergenteDAO {
             p.setString(2, n.getTipo());
             p.setString(3, n.getDescricao());
             p.setString(4, n.getObservacoes());
-            p.setDate(5, n.getDataRegistro());
+            p.setString(5, n.getDataRegistro());
             return p.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -63,7 +63,7 @@ public class NeurodivergenteDAO {
             p.setString(2, n.getTipo());
             p.setString(3, n.getDescricao());
             p.setString(4, n.getObservacoes());
-            p.setDate(5, n.getDataRegistro());
+            p.setString(5, n.getDataRegistro());
             p.setInt(6, n.getId());
             return p.executeUpdate() > 0;
         } catch (SQLException e) {
