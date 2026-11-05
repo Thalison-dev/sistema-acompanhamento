@@ -1,10 +1,10 @@
 
 package br.com.thalison.sistema_acompanhamento;
-
+import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
+import java.sql.DriverManager;
 public class Conexao {
 
     private static final String URL =
@@ -22,6 +22,6 @@ public class Conexao {
             );
         }
 
-        return DriverManager.getConnection(URL, USUARIO, SENHA);
+       return DriverManager.getConnection(URL, USUARIO, SENHA);
     }
 }
