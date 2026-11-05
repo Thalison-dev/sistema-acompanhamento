@@ -1,9 +1,8 @@
 
 package br.com.thalison.sistema_acompanhamento_neurodivergente;
-
+import br.com.thalison.sistema_acompanhamento.*;
 import java.sql.*;
 import java.util.*;
-import br.com.thalison.sistema_acompanhamento.Conexao;
 
 public class NeurodivergenteDAO {
 
@@ -20,7 +19,8 @@ public class NeurodivergenteDAO {
 
     public boolean cadastrar(Neurodivergente n) {
         String sql = "INSERT INTO neurodivergencia (alunoId, tipoNeurodivergencia, descricaoNeuro, observacoesNeuro, dataRegistroNeuro) VALUES (?, ?, ?, ?, ?)";
-        try (Connection c = Conexao.conectar(); PreparedStatement p = c.prepareStatement(sql)) {
+        try (Connection c = Conexao.conectar();
+             PreparedStatement p = c.prepareStatement(sql)) {
             p.setInt(1, n.getAlunoId());
             p.setString(2, n.getTipo());
             p.setString(3, n.getDescricao());
@@ -35,10 +35,12 @@ public class NeurodivergenteDAO {
 
     public Neurodivergente consultar(int id) {
         String sql = "SELECT * FROM neurodivergencia WHERE neurodivergenciaId = ?";
-        try (Connection c = Conexao.conectar(); PreparedStatement p = c.prepareStatement(sql)) {
+        try (Connection c = Conexao.conectar();
+             PreparedStatement p = c.prepareStatement(sql)) {
             p.setInt(1, id);
-            ResultSet r = p.executeQuery();
-            if (r.next()) return mapear(r);
+            try (ResultSet r = p.executeQuery()) {
+                if (r.next()) return mapear(r);
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -48,7 +50,9 @@ public class NeurodivergenteDAO {
     public List<Neurodivergente> listarTodos() {
         List<Neurodivergente> lista = new ArrayList<>();
         String sql = "SELECT * FROM neurodivergencia";
-        try (Connection c = Conexao.conectar(); PreparedStatement p = c.prepareStatement(sql); ResultSet r = p.executeQuery()) {
+        try (Connection c = Conexao.conectar();
+             PreparedStatement p = c.prepareStatement(sql);
+             ResultSet r = p.executeQuery()) {
             while (r.next()) lista.add(mapear(r));
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -58,7 +62,8 @@ public class NeurodivergenteDAO {
 
     public boolean atualizar(Neurodivergente n) {
         String sql = "UPDATE neurodivergencia SET alunoId=?, tipoNeurodivergencia=?, descricaoNeuro=?, observacoesNeuro=?, dataRegistroNeuro=? WHERE neurodivergenciaId=?";
-        try (Connection c = Conexao.conectar(); PreparedStatement p = c.prepareStatement(sql)) {
+        try (Connection c = Conexao.conectar();
+             PreparedStatement p = c.prepareStatement(sql)) {
             p.setInt(1, n.getAlunoId());
             p.setString(2, n.getTipo());
             p.setString(3, n.getDescricao());
@@ -73,8 +78,9 @@ public class NeurodivergenteDAO {
     }
 
     public boolean excluir(int id) {
-        String sql = "DELETE FROM neurodivergencia WHERE neurodivergenciaId=?";
-        try (Connection c = Conexao.conectar(); PreparedStatement p = c.prepareStatement(sql)) {
+        String sql = "DELETE FROM neurodivergencia WHERE neurodivergenciaId = ?";
+        try (Connection c = Conexao.conectar();
+             PreparedStatement p = c.prepareStatement(sql)) {
             p.setInt(1, id);
             return p.executeUpdate() > 0;
         } catch (SQLException e) {
