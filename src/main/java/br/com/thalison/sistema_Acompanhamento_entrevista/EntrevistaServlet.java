@@ -15,7 +15,14 @@ import javax.servlet.http.HttpServletResponse;
 import br.com.thalison.sistema_acompanhamento_Psicologo.Psicologo;
 import br.com.thalison.sistema_acompanhamento_aluno.aluno;
 
-@WebServlet(urlPatterns = {"/nova-entrevista","/inserir-entrevista"})
+@WebServlet(urlPatterns = {
+    "/nova-entrevista", 
+    "/inserir-entrevista", 
+    "/deletar", 
+    "/editar", 
+    "/atualizar", 
+    "/listar"
+})
 public class EntrevistaServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -60,6 +67,7 @@ public class EntrevistaServlet extends HttpServlet {
                 atualizarEntrevista(request, response);
                 break;
 
+            case "/listar":
             default:
                 listarEntrevistas(request, response);
                 break;
@@ -85,7 +93,7 @@ public class EntrevistaServlet extends HttpServlet {
 
     private void mostrarFormularioEditarEntrevista(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
+        int id = parseInteger(request.getParameter("id"));
         
         Entrevista entrevistaExistente = dao.listar().stream()
                 .filter(e -> e.getId() == id)
@@ -98,21 +106,23 @@ public class EntrevistaServlet extends HttpServlet {
     }
 
     private void inserirEntrevista(HttpServletRequest request, HttpServletResponse response)
-       
-    		throws SQLException, IOException {
-        int alunoId = Integer.parseInt(request.getParameter("alunoId"));
-        int psicologoId = Integer.parseInt(request.getParameter("psicologoId"));
+            throws SQLException, IOException {
+        int alunoId = parseInteger(request.getParameter("alunoId"));
+        int psicologoId = parseInteger(request.getParameter("psicologoId"));
         String motivo = request.getParameter("motivo");
-        boolean agendada = Boolean.parseBoolean(request.getParameter("agendada"));
+        
+        String agendadaParam = request.getParameter("agendada");
+        boolean agendada = "true".equalsIgnoreCase(agendadaParam) || "on".equalsIgnoreCase(agendadaParam);
+
         String dataParam = request.getParameter("data");
-        Date data = (dataParam != null && !dataParam.isEmpty()) ? Date.valueOf(dataParam) : null;
+        Date data = (dataParam != null && !dataParam.trim().isEmpty()) ? Date.valueOf(dataParam) : null;
         String observacoes = request.getParameter("observacoes");
 
-        aluno a = new aluno();
-        a.setId(alunoId);
+        aluno a = alunoId > 0 ? new aluno() : null;
+        if (a != null) a.setId(alunoId);
 
-        Psicologo p = new Psicologo();
-        p.setId(psicologoId);
+        Psicologo p = psicologoId > 0 ? new Psicologo() : null;
+        if (p != null) p.setId(psicologoId);
 
         Entrevista novaEntrevista = new Entrevista(a, p, 0, motivo, agendada, data, observacoes);
         dao.cadastrar(novaEntrevista);
@@ -122,20 +132,23 @@ public class EntrevistaServlet extends HttpServlet {
 
     private void atualizarEntrevista(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        int alunoId = Integer.parseInt(request.getParameter("alunoId"));
-        int psicologoId = Integer.parseInt(request.getParameter("psicologoId"));
+        int id = parseInteger(request.getParameter("id"));
+        int alunoId = parseInteger(request.getParameter("alunoId"));
+        int psicologoId = parseInteger(request.getParameter("psicologoId"));
         String motivo = request.getParameter("motivo");
-        boolean agendada = Boolean.parseBoolean(request.getParameter("agendada"));
+        
+        String agendadaParam = request.getParameter("agendada");
+        boolean agendada = "true".equalsIgnoreCase(agendadaParam) || "on".equalsIgnoreCase(agendadaParam);
+
         String dataParam = request.getParameter("data");
-        Date data = (dataParam != null && !dataParam.isEmpty()) ? Date.valueOf(dataParam) : null;
+        Date data = (dataParam != null && !dataParam.trim().isEmpty()) ? Date.valueOf(dataParam) : null;
         String observacoes = request.getParameter("observacoes");
 
-        aluno a = new aluno();
-        a.setId(alunoId);
+        aluno a = alunoId > 0 ? new aluno() : null;
+        if (a != null) a.setId(alunoId);
 
-        Psicologo p = new Psicologo();
-        p.setId(psicologoId);
+        Psicologo p = psicologoId > 0 ? new Psicologo() : null;
+        if (p != null) p.setId(psicologoId);
 
         Entrevista entrevistaAtualizada = new Entrevista(a, p, id, motivo, agendada, data, observacoes);
         dao.atualizar(entrevistaAtualizada);
@@ -145,8 +158,19 @@ public class EntrevistaServlet extends HttpServlet {
 
     private void deletarEntrevista(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
+        int id = parseInteger(request.getParameter("id"));
         dao.excluir(id);
         response.sendRedirect("listar");
+    }
+
+    private int parseInteger(String valor) {
+        if (valor == null || valor.trim().isEmpty()) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(valor.trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 }

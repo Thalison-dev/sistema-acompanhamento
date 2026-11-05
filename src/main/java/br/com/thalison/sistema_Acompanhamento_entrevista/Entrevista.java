@@ -1,40 +1,44 @@
 package br.com.thalison.sistema_Acompanhamento_entrevista;
+
 import br.com.thalison.sistema_acompanhamento_Psicologo.Psicologo;
-import br.com.thalison.sistema_acompanhamento_aluno.aluno;
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 import java.util.Date;
 
-class Entrevista {
+public class Entrevista {
 
-	private aluno aluno;
-	private Psicologo psicologo;
-	private int id;
-	private String motivo;
-	private boolean agendada; //achar nome melhor
-	private Date data; //verificar se correto
-	private String observacoes;
-	
-	public Entrevista() {
-		
-	}
-	
-	public Entrevista(aluno aluno,Psicologo psicologo,int id,String motivo,boolean agendada,Date data,String observacoes) {
-		this.aluno = aluno;
-		this.psicologo = psicologo;
-		this.id= id;
-		this.motivo = motivo;
-		this.agendada = agendada;
-		this.data= data;
-		this.observacoes= observacoes;
-	}
-	
-	public aluno getAluno() {
+    private Aluno aluno;
+    private Psicologo psicologo;
+    private int id;
+    private String motivo;
+    private boolean agendada;
+    private Date data;
+    private String observacoes;
+
+    public Entrevista() {
+    }
+
+    public Entrevista(Aluno aluno, Psicologo psicologo, int id, String motivo, boolean agendada, Date data, String observacoes) {
+        this.aluno = aluno;
+        this.psicologo = psicologo;
+        this.id = id;
+        this.motivo = motivo;
+        this.agendada = agendada;
+        this.data = data;
+        this.observacoes = observacoes;
+    }
+
+    public Aluno getAluno() {
         return aluno;
     }
 
-    public void setAluno(aluno aluno) {
+    public void setAluno(Aluno aluno) {
         this.aluno = aluno;
     }
 
+    public int getAlunoId() {
+        return aluno.getId();
+    }
+    
     public Psicologo getPsicologo() {
         return psicologo;
     }
@@ -82,4 +86,6 @@ class Entrevista {
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
     }
+    
+   
 }
