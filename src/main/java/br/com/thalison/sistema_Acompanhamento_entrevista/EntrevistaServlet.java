@@ -15,15 +15,15 @@ import javax.servlet.http.HttpServletResponse;
 import br.com.thalison.sistema_acompanhamento_Psicologo.Psicologo;
 import br.com.thalison.sistema_acompanhamento_aluno.aluno;
 
-@WebServlet("/")
-public class entrevistaServlet extends HttpServlet {
+@WebServlet(urlPatterns = {"/nova-entrevista","/inserir-entrevista"})
+public class EntrevistaServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private entrevistaDAO dao;
+    private EntrevistaDAO dao;
 
     @Override
     public void init() {
-        dao = new entrevistaDAO();
+        dao = new EntrevistaDAO();
     }
 
     @Override
@@ -40,11 +40,11 @@ public class entrevistaServlet extends HttpServlet {
 
         try {
             switch (action) {
-            case "/novo":
+            case "/nova-entrevista":
                 mostrarFormularioNovaEntrevista(request, response);
                 break;
 
-            case "/inserir":
+            case "/inserir-entrevista":
                 inserirEntrevista(request, response);
                 break;
 
@@ -71,7 +71,7 @@ public class entrevistaServlet extends HttpServlet {
 
     private void listarEntrevistas(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        List<entrevista> entrevistas = dao.listar();
+        List<Entrevista> entrevistas = dao.listar();
         request.setAttribute("entrevistas", entrevistas);
         RequestDispatcher dispatcher = request.getRequestDispatcher("listar-entrevista.jsp");
         dispatcher.forward(request, response);
@@ -87,7 +87,7 @@ public class entrevistaServlet extends HttpServlet {
             throws SQLException, ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         
-        entrevista entrevistaExistente = dao.listar().stream()
+        Entrevista entrevistaExistente = dao.listar().stream()
                 .filter(e -> e.getId() == id)
                 .findFirst()
                 .orElse(null);
@@ -98,7 +98,8 @@ public class entrevistaServlet extends HttpServlet {
     }
 
     private void inserirEntrevista(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException {
+       
+    		throws SQLException, IOException {
         int alunoId = Integer.parseInt(request.getParameter("alunoId"));
         int psicologoId = Integer.parseInt(request.getParameter("psicologoId"));
         String motivo = request.getParameter("motivo");
@@ -113,7 +114,7 @@ public class entrevistaServlet extends HttpServlet {
         Psicologo p = new Psicologo();
         p.setId(psicologoId);
 
-        entrevista novaEntrevista = new entrevista(a, p, 0, motivo, agendada, data, observacoes);
+        Entrevista novaEntrevista = new Entrevista(a, p, 0, motivo, agendada, data, observacoes);
         dao.cadastrar(novaEntrevista);
 
         response.sendRedirect("listar");
@@ -136,7 +137,7 @@ public class entrevistaServlet extends HttpServlet {
         Psicologo p = new Psicologo();
         p.setId(psicologoId);
 
-        entrevista entrevistaAtualizada = new entrevista(a, p, id, motivo, agendada, data, observacoes);
+        Entrevista entrevistaAtualizada = new Entrevista(a, p, id, motivo, agendada, data, observacoes);
         dao.atualizar(entrevistaAtualizada);
 
         response.sendRedirect("listar");

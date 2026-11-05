@@ -1,16 +1,17 @@
 package br.com.thalison.sistema_acompanhamento_neurodivergente;
 
 
-public class neurodivergente {
+public class Neurodivergente {
+	
 	private int id;
 	private String tipo;
 	private String descricao;
 	private String observacoes;
 	private String dataRegistro;
 	
-	public neurodivergente() {
+	public Neurodivergente() {
 }
-	public neurodivergente( int id, String tipo, String descricao, String observacoes, String DataRegistro) {
+	public Neurodivergente( int id, String tipo, String descricao, String observacoes, String DataRegistro) {
 		this.id = id;
 		this.tipo = tipo;
 		this.descricao = descricao;
