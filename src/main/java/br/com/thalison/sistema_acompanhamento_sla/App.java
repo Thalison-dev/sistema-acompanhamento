@@ -1,4 +1,4 @@
-package br.com.thalison.sistema_acompanhamento;
+package br.com.thalison.sistema_acompanhamento_sla;
 
 /**
  * Hello world!
