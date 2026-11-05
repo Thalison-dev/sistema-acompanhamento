@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/")
+@WebServlet(urlPatterns = {"/novo-acompanhamento"})
 public class AcompanhamentoServelet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private AcompanhamentoDAO dao;
@@ -23,7 +23,7 @@ public class AcompanhamentoServelet extends HttpServlet {
         String action = request.getServletPath();
         try {
             switch (action) {
-                case "/novo":
+                case "/novo-acompanhamento":
                     mostrarFormularioNovo(request, response);
                     break;
                 case "/inserir":

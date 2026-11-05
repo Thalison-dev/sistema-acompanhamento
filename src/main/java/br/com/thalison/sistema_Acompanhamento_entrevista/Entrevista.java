@@ -3,7 +3,7 @@ import br.com.thalison.sistema_acompanhamento_Psicologo.Psicologo;
 import br.com.thalison.sistema_acompanhamento_aluno.aluno;
 import java.util.Date;
 
-class entrevista {
+class Entrevista {
 
 	private aluno aluno;
 	private Psicologo psicologo;
@@ -13,11 +13,11 @@ class entrevista {
 	private Date data; //verificar se correto
 	private String observacoes;
 	
-	public entrevista() {
+	public Entrevista() {
 		
 	}
 	
-	public entrevista(aluno aluno,Psicologo psicologo,int id,String motivo,boolean agendada,Date data,String observacoes) {
+	public Entrevista(aluno aluno,Psicologo psicologo,int id,String motivo,boolean agendada,Date data,String observacoes) {
 		this.aluno = aluno;
 		this.psicologo = psicologo;
 		this.id= id;

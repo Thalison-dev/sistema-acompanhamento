@@ -12,9 +12,9 @@ import br.com.thalison.sistema_acompanhamento.Conexao;
 import br.com.thalison.sistema_acompanhamento_Psicologo.Psicologo;
 import br.com.thalison.sistema_acompanhamento_aluno.aluno;
 
-public class entrevistaDAO {
+public class EntrevistaDAO {
 
-    public boolean cadastrar(entrevista entrevista) {
+    public boolean cadastrar(Entrevista entrevista) {
 
         String sql = "INSERT INTO entrevista "
                 + "(aluno_id, psicologo_id, motivo, agendada, data, observacoes) "
@@ -38,9 +38,9 @@ public class entrevistaDAO {
         }
     }
 
-    public List<entrevista> listar() {
+    public List<Entrevista> listar() {
 
-        List<entrevista> entrevistas = new ArrayList<>();
+        List<Entrevista> entrevistas = new ArrayList<>();
 
         String sql = "SELECT * FROM entrevista";
 
@@ -50,7 +50,7 @@ public class entrevistaDAO {
 
             while (rs.next()) {
 
-                entrevista entrevista = new entrevista();
+                Entrevista entrevista = new Entrevista();
 
                 entrevista.setId(rs.getInt("id"));
 
@@ -78,7 +78,7 @@ public class entrevistaDAO {
         return entrevistas;
     }
 
-    public boolean atualizar(entrevista entrevista) {
+    public boolean atualizar(Entrevista entrevista) {
 
         String sql = "UPDATE entrevista SET "
                 + "aluno_id = ?, psicologo_id = ?, motivo = ?, agendada = ?, data = ?, observacoes = ? "
