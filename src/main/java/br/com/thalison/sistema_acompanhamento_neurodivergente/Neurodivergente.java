@@ -9,7 +9,6 @@ public class Neurodivergente {
     private String observacoes;
     private String dataRegistro;
 
-<<<<<<< HEAD
     public Neurodivergente() {}
 
     public int getId() { return id; }
@@ -32,7 +31,7 @@ public class Neurodivergente {
         this.dataRegistro = dataRegistro;
     }
 }
-=======
+/*
 public class Neurodivergente {
 	
 	private int id;
@@ -83,9 +82,5 @@ public class Neurodivergente {
 	    public void setDataRegistro(String dataRegistro) {
 	        this.dataRegistro = dataRegistro;
 	    }
-	    	}
-	     
-	     
-    	
-	    
->>>>>>> 79e5fc96ab0a86fc5f03ab7aaf4acf544dd1cd5d
+	}
+*/
