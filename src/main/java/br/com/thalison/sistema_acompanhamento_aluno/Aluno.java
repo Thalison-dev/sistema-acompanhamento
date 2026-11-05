@@ -1,6 +1,6 @@
 package br.com.thalison.sistema_acompanhamento_aluno;
 
-public class aluno{
+public class Aluno{
 
     private int id;
     private String nome;
@@ -9,10 +9,10 @@ public class aluno{
     private String anoEscolar;
     private String status;
 
-    public aluno() {
+    public Aluno() {
     }
 
-    public aluno(int id, String nome, String dataNascimento,
+    public Aluno(int id, String nome, String dataNascimento,
                  String matricula, String anoEscolar, String status) {
         this.id = id;
         this.nome = nome;

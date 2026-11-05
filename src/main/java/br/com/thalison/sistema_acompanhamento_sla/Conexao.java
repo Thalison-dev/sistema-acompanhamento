@@ -1,5 +1,5 @@
 
-package br.com.thalison.sistema_acompanhamento.copy;
+package br.com.thalison.sistema_acompanhamento_sla;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
