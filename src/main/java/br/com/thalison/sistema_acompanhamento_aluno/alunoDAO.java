@@ -14,7 +14,7 @@ import br.com.thalison.sistema_acompanhamento.Conexao;
 public class alunoDAO {
 
     public boolean cadastrar(aluno aluno) {
-
+2
         String sql = "INSERT INTO aluno "
                 + "(nome, dataNascimento, matricula, anoEscolar, status) "
                 + "VALUES (?, ?, ?, ?, ?)";
