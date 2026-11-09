@@ -6,9 +6,10 @@ public class Pedagogo {
     private String pessoa;
     private String especialidade;
 
-    public Pedagogo(int idPedagogo, String pessoa,
-                    String especialidade) {
+    public Pedagogo() {
+    }
 
+    public Pedagogo(int idPedagogo, String pessoa, String especialidade) {
         this.idPedagogo = idPedagogo;
         this.pessoa = pessoa;
         this.especialidade = especialidade;
