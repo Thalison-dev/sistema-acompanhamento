@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import br.com.thalison.sistema_acompanhamento_Psicologo.Psicologo;
-import br.com.thalison.sistema_acompanhamento_aluno.aluno;
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 
 @WebServlet(urlPatterns = {
     "/nova-entrevista", 
@@ -118,7 +118,7 @@ public class EntrevistaServlet extends HttpServlet {
         Date data = (dataParam != null && !dataParam.trim().isEmpty()) ? Date.valueOf(dataParam) : null;
         String observacoes = request.getParameter("observacoes");
 
-        aluno a = alunoId > 0 ? new aluno() : null;
+        Aluno a = alunoId > 0 ? new Aluno() : null;
         if (a != null) a.setId(alunoId);
 
         Psicologo p = psicologoId > 0 ? new Psicologo() : null;
@@ -144,7 +144,7 @@ public class EntrevistaServlet extends HttpServlet {
         Date data = (dataParam != null && !dataParam.trim().isEmpty()) ? Date.valueOf(dataParam) : null;
         String observacoes = request.getParameter("observacoes");
 
-        aluno a = alunoId > 0 ? new aluno() : null;
+        Aluno a = alunoId > 0 ? new Aluno() : null;
         if (a != null) a.setId(alunoId);
 
         Psicologo p = psicologoId > 0 ? new Psicologo() : null;
