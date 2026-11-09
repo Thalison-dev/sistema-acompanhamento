@@ -4,10 +4,8 @@ package br.com.thalison.sistema_acompanhamento_aluno;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
+import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
 
 @WebServlet("/aluno")
 public class AlunoServlet extends HttpServlet {
@@ -29,19 +27,18 @@ public class AlunoServlet extends HttpServlet {
         String acao = req.getParameter("acao");
 
         if ("novo".equals(acao)) {
-            req.getRequestDispatcher("/aluno-form.jsp")
-                    .forward(req, resp);
+            req.getRequestDispatcher("/aluno-form.jsp").forward(req, resp);
 
         } else if ("editar".equals(acao)) {
             try {
-                String idTexto = req.getParameter("id");
+                String id = req.getParameter("id");
 
-                if (idTexto == null || idTexto.isBlank()) {
+                if (id == null || id.isBlank()) {
                     resp.sendError(400, "ID nao informado");
                     return;
                 }
 
-                aluno a = dao.buscarPorId(Integer.parseInt(idTexto));
+                Aluno a = dao.buscarPorId(Integer.parseInt(id));
 
                 if (a == null) {
                     resp.sendError(404, "Aluno nao encontrado");
@@ -49,8 +46,7 @@ public class AlunoServlet extends HttpServlet {
                 }
 
                 req.setAttribute("aluno", a);
-                req.getRequestDispatcher("/aluno-form.jsp")
-                        .forward(req, resp);
+                req.getRequestDispatcher("/aluno-form.jsp").forward(req, resp);
 
             } catch (NumberFormatException e) {
                 resp.sendError(400, "ID invalido");
@@ -58,9 +54,7 @@ public class AlunoServlet extends HttpServlet {
 
         } else {
             req.setAttribute("alunos", dao.listarTodos());
-
-            req.getRequestDispatcher("/aluno-lista.jsp")
-                    .forward(req, resp);
+            req.getRequestDispatcher("/aluno-lista.jsp").forward(req, resp);
         }
     }
 
@@ -77,30 +71,32 @@ public class AlunoServlet extends HttpServlet {
 
         req.setCharacterEncoding("UTF-8");
 
-        aluno a = new aluno();	
-
+        Aluno a = new Aluno();
         a.setNome(req.getParameter("nome"));
+        a.setEmail(req.getParameter("email"));
+        a.setCpf(req.getParameter("cpf"));
+        a.setTelefone(req.getParameter("telefone"));
         a.setDataNascimento(req.getParameter("dataNascimento"));
         a.setMatricula(req.getParameter("matricula"));
         a.setAnoEscolar(req.getParameter("anoEscolar"));
         a.setStatus(req.getParameter("status"));
 
         String acao = req.getParameter("acao");
-        boolean ok = false;
+        boolean ok;
 
         try {
             if ("cadastrar".equals(acao)) {
                 ok = dao.cadastrar(a);
 
             } else if ("atualizar".equals(acao)) {
-                String idTexto = req.getParameter("id");
+                String id = req.getParameter("id");
 
-                if (idTexto == null || idTexto.isBlank()) {
+                if (id == null || id.isBlank()) {
                     resp.sendError(400, "ID nao informado");
                     return;
                 }
 
-                a.setId(Integer.parseInt(idTexto));
+                a.setId(Integer.parseInt(id));
                 ok = dao.atualizar(a);
 
             } else {

@@ -1,41 +1,29 @@
+
 package br.com.thalison.sistema_acompanhamento_aluno;
 
-public class aluno{
+import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
 
-    private int id;
-    private String nome;
+public class Aluno extends Pessoa {
+
     private String dataNascimento;
     private String matricula;
     private String anoEscolar;
     private String status;
 
-    public aluno() {
+    public Aluno() {
+        super();
     }
 
-    public aluno(int id, String nome, String dataNascimento,
-                 String matricula, String anoEscolar, String status) {
-        this.id = id;
-        this.nome = nome;
+    public Aluno(int id, String nome, String cpf, String telefone,
+                 String email, String dataNascimento, String matricula,
+                 String anoEscolar, String status) {
+
+        super(id, nome, cpf, telefone, email);
+
         this.dataNascimento = dataNascimento;
         this.matricula = matricula;
         this.anoEscolar = anoEscolar;
         this.status = status;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public String getDataNascimento() {
