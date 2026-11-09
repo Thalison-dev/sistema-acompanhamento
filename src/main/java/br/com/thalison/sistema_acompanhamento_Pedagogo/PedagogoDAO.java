@@ -97,4 +97,28 @@ public class PedagogoDAO {
             return false;
         }
     }
+
+    public Pedagogo buscarPorId(int id) {
+        Pedagogo pedagogo = null;
+        String sql = "SELECT * FROM pedagogo WHERE idPedagogo = ?";
+
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    pedagogo = new Pedagogo(
+                        rs.getInt("idPedagogo"),
+                        rs.getString("pessoa"),
+                        rs.getString("especialidade")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao buscar pedagogo por ID: " + e.getMessage());
+        }
+
+        return pedagogo;
+    }
 }

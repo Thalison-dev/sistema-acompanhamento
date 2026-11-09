@@ -33,7 +33,7 @@ public class AlunoServlet extends HttpServlet {
             try {
                 String id = req.getParameter("id");
 
-                if (id == null || id.isBlank()) {
+                if (id == null || id.trim().isEmpty()) {
                     resp.sendError(400, "ID nao informado");
                     return;
                 }
@@ -91,7 +91,7 @@ public class AlunoServlet extends HttpServlet {
             } else if ("atualizar".equals(acao)) {
                 String id = req.getParameter("id");
 
-                if (id == null || id.isBlank()) {
+                if (id == null || id.trim().isEmpty()) {
                     resp.sendError(400, "ID nao informado");
                     return;
                 }
