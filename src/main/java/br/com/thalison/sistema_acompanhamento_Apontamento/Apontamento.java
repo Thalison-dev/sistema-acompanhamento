@@ -1,7 +1,9 @@
 package br.com.thalison.sistema_acompanhamento_Apontamento;
-
-public class Apontamento {
-	
+import br.com.thalison.sistema_acompanhamento_Professor.Professor;
+import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
+public class Apontamento extends Pessoa {
+	private String idProfessor;
+	private String idPessoa;
 	private String dataInicio;
 	private String Nomeprofessor;
 	private String Motivo;
