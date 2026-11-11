@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class alunoDAO {
+public class AlunoDAO {
 
     public boolean cadastrar(Aluno a) {
         String pessoa = "INSERT INTO pessoa (nome,email,senha,telefone,CPF) VALUES (?,?,?,?,?)";

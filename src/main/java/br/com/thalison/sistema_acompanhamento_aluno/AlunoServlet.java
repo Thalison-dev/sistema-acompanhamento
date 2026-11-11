@@ -11,7 +11,7 @@ import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
 public class AlunoServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private final alunoDAO dao = new alunoDAO();
+    private final AlunoDAO dao = new AlunoDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
