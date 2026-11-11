@@ -119,7 +119,7 @@ public class EntrevistaServlet extends HttpServlet {
         String observacoes = request.getParameter("observacoes");
 
         Aluno a = alunoId > 0 ? new Aluno() : null;
-        if (a != null) a.setId(alunoId);
+        if (a != null) a.setIdAluno(alunoId);
 
         Psicologo p = psicologoId > 0 ? new Psicologo() : null;
         if (p != null) p.setId(psicologoId);
@@ -128,6 +128,7 @@ public class EntrevistaServlet extends HttpServlet {
         dao.cadastrar(novaEntrevista);
 
         response.sendRedirect("listar");
+        
     }
 
     private void atualizarEntrevista(HttpServletRequest request, HttpServletResponse response)
@@ -145,7 +146,7 @@ public class EntrevistaServlet extends HttpServlet {
         String observacoes = request.getParameter("observacoes");
 
         Aluno a = alunoId > 0 ? new Aluno() : null;
-        if (a != null) a.setId(alunoId);
+        if (a != null) a.setIdAluno(alunoId);
 
         Psicologo p = psicologoId > 0 ? new Psicologo() : null;
         if (p != null) p.setId(psicologoId);
