@@ -23,8 +23,6 @@ public class Acompanhamento{
 	}
 	
 	
-	
-	
 	public String getid() {
 		return id;
 	}
