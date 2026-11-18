@@ -46,5 +46,8 @@ class mensagem extends Pessoa{
 	public void setlida(Boolean lida) {
 		this.lida = lida;
 	}
+	public String getTexto() {
+		return null;
+	}
 		
 }
