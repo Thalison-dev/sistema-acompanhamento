@@ -19,43 +19,43 @@ public class Pessoa {
         this.email = email;
     }
 
-    public int getId() {
+    public int getIdPessoa() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setIdAluno(int id) {
         this.id = id;
     }
 
-    public String getNome() {
+    public String getNomePessoa() {
         return nome;
     }
 
-    public void setNome(String nome) {
+    public void setNomePessoa(String nome) {
         this.nome = nome;
     }
 
-    public String getCpf() {
+    public String getCpfPessoa() {
         return cpf;
     }
 
-    public void setCpf(String cpf) {
+    public void setCpfPessoa(String cpf) {
         this.cpf = cpf;
     }
 
-    public String getTelefone() {
+    public String getTelefonePessoa() {
         return telefone;
     }
 
-    public void setTelefone(String telefone) {
+    public void setTelefonePessoa(String telefone) {
         this.telefone = telefone;
     }
 
-    public String getEmail() {
+    public String getEmailPessoa() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmailPessoa(String email) {
         this.email = email;
     }
 }

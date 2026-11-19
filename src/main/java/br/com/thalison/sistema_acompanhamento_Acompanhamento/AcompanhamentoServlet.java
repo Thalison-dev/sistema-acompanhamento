@@ -1,7 +1,9 @@
-package br.com.thalison.sistema_acompanhamento_Acompanhamento; 
+package br.com.thalison.sistema_acompanhamento_Acompanhamento;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -10,15 +12,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(urlPatterns = {"/novo-acompanhamento"})
-public class AcompanhamentoServelet extends HttpServlet {
+@WebServlet(urlPatterns = {"/novo-acompanhamento", "/inserir", "/deletar", "/editar", "/atualizar", "/listar"})
+public class AcompanhamentoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private AcompanhamentoDAO dao;
 
+    @Override
     public void init() {
-     //   dao = new AcompanhamentoDAOImpl();
+        dao = new AcompanhamentoDAO();
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getServletPath();
         try {
@@ -47,70 +51,68 @@ public class AcompanhamentoServelet extends HttpServlet {
         }
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
 
     private void listarAcompanhamentos(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
-    //    List<Acompanhamento> lista = dao.recuperarTodos();
-    //    request.setAttribute("acompanhamentos", lista);
+        List<Acompanhamento> lista = dao.listar();
+        request.setAttribute("acompanhamentos", lista);
         RequestDispatcher dispatcher = request.getRequestDispatcher("listar-acompanhamento.jsp");
         dispatcher.forward(request, response);
     }
 
     private void mostrarFormularioNovo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher("form-acompanhamento.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("acompanhamento.jsp");
         dispatcher.forward(request, response);
     }
 
     private void mostrarFormularioEditar(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
-        //long id = Long.parseLong(request.getParameter("id"));
-       // Acompanhamento acompanhamento = dao.recuperarPorId(id);
-       // request.setAttribute("acompanhamento", acompanhamento);
+        int id = Integer.parseInt(request.getParameter("id"));
+        Acompanhamento acompanhamento = dao.buscarPorId(id);
+        request.setAttribute("acompanhamento", acompanhamento);
         RequestDispatcher dispatcher = request.getRequestDispatcher("form-acompanhamento.jsp");
         dispatcher.forward(request, response);
     }
 
     private void inserirAcompanhamento(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
-        String dataInicio = request.getParameter("dataInicio");
-        String dataFim = request.getParameter("dataFim");
+        Date dataInicio = Date.valueOf(request.getParameter("dataInicio"));
+        Date dataFim = Date.valueOf(request.getParameter("dataFim"));
         String objetivo = request.getParameter("objetivo");
         String status = request.getParameter("status");
 
         Acompanhamento a = new Acompanhamento();
-        a.setdataIncio(dataInicio);
-        a.setdataFim(dataFim);
-        a.setobjetivo(objetivo);
-        a.setstatus(status);
+        a.setDataInicio(dataInicio);
+        a.setDataFim(dataFim);
+        a.setObjetivo(objetivo);
+        a.setStatus(status);
 
-    //    dao.inserir(a);
-        response.sendRedirect("./");
+        dao.cadastrar(a);
+        response.sendRedirect("listar");
     }
 
     private void atualizarAcompanhamento(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
-        String id = request.getParameter("id");
-        String dataInicio = request.getParameter("dataInicio");
-        String dataFim = request.getParameter("dataFim");
+        int id = Integer.parseInt(request.getParameter("id"));
+        Date dataInicio = Date.valueOf(request.getParameter("dataInicio"));
+        Date dataFim = Date.valueOf(request.getParameter("dataFim"));
         String objetivo = request.getParameter("objetivo");
         String status = request.getParameter("status");
 
         Acompanhamento a = new Acompanhamento();
-        a.setid(id);
-        a.setdataIncio(dataInicio);
-        a.setdataFim(dataFim);
-        a.setobjetivo(objetivo);
-        a.setstatus(status);
+        a.setId(id);
+        a.setDataInicio(dataInicio);
+        a.setDataFim(dataFim);
+        a.setObjetivo(objetivo);
+        a.setStatus(status);
 
         dao.atualizar(a);
-        response.sendRedirect("./");
+        response.sendRedirect("listar");
     }
 
     private void deletarAcompanhamento(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
-        long id = Long.parseLong(request.getParameter("id"));
-     //   Acompanhamento a = dao.recuperarPorId(id);
-      //  if (a != null) {
-        //    dao.deletar(a);
-//        }
-        response.sendRedirect("./");
+        int id = Integer.parseInt(request.getParameter("id"));
+        dao.excluir(id);
+        response.sendRedirect("listar");
     }
 }

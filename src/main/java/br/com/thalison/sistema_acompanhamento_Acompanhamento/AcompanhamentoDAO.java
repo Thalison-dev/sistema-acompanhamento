@@ -1,4 +1,3 @@
-
 package br.com.thalison.sistema_acompanhamento_Acompanhamento;
 
 import java.sql.Connection;
@@ -14,29 +13,15 @@ import br.com.thalison.sistema_acompanhamento.Conexao;
 public class AcompanhamentoDAO {
 
     public boolean cadastrar(Acompanhamento acompanhamento) {
-
-        String sql = "INSERT INTO acompanhamento "
-                + "(alunoId, dataInicioAcompanhamento, "
-                + "dataFimAcompanhamento, objetivoAcompanhamento, "
-                + "statusAcompanhamento) "
-                + "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO acompanhamento (dataInicio, dataFim, objetivo, status) VALUES (?, ?, ?, ?)";
 
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            stmt.setInt(1, acompanhamento.getAlunoId());
-
-            stmt.setDate(2, Date.valueOf(acompanhamento.getDataInicio()));
-
-            if (acompanhamento.getDataFim() == null
-                    || acompanhamento.getDataFim().isEmpty()) {
-                stmt.setNull(3, java.sql.Types.DATE);
-            } else {
-                stmt.setDate(3, Date.valueOf(acompanhamento.getDataFim()));
-            }
-
-            stmt.setString(4, acompanhamento.getObjetivo());
-            stmt.setString(5, acompanhamento.getStatus());
+            stmt.setDate(1, acompanhamento.getDataInicio());
+            stmt.setDate(2, acompanhamento.getDataFim());
+            stmt.setString(3, acompanhamento.getObjetivo());
+            stmt.setString(4, acompanhamento.getStatus());
 
             return stmt.executeUpdate() > 0;
 
@@ -48,9 +33,7 @@ public class AcompanhamentoDAO {
     }
 
     public List<Acompanhamento> listar() {
-
         List<Acompanhamento> acompanhamentos = new ArrayList<>();
-
         String sql = "SELECT * FROM acompanhamento";
 
         try (Connection conexao = Conexao.conectar();
@@ -58,29 +41,12 @@ public class AcompanhamentoDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-
                 Acompanhamento acompanhamento = new Acompanhamento();
-
-                acompanhamento.setAcompanhamentoId(
-                        rs.getInt("acompanhamentoId"));
-
-                acompanhamento.setAlunoId(
-                        rs.getInt("alunoId"));
-
-                Date inicio = rs.getDate("dataInicioAcompanhamento");
-                Date fim = rs.getDate("dataFimAcompanhamento");
-
-                acompanhamento.setDataInicio(
-                        inicio != null ? inicio.toString() : null);
-
-                acompanhamento.setDataFim(
-                        fim != null ? fim.toString() : null);
-
-                acompanhamento.setObjetivo(
-                        rs.getString("objetivoAcompanhamento"));
-
-                acompanhamento.setStatus(
-                        rs.getString("statusAcompanhamento"));
+                acompanhamento.setId(rs.getInt("id"));
+                acompanhamento.setDataInicio(rs.getDate("dataInicio"));
+                acompanhamento.setDataFim(rs.getDate("dataFim"));
+                acompanhamento.setObjetivo(rs.getString("objetivo"));
+                acompanhamento.setStatus(rs.getString("status"));
 
                 acompanhamentos.add(acompanhamento);
             }
@@ -93,33 +59,43 @@ public class AcompanhamentoDAO {
         return acompanhamentos;
     }
 
-    public boolean atualizar(Acompanhamento acompanhamento) {
-
-        String sql = "UPDATE acompanhamento SET "
-                + "alunoId = ?, "
-                + "dataInicioAcompanhamento = ?, "
-                + "dataFimAcompanhamento = ?, "
-                + "objetivoAcompanhamento = ?, "
-                + "statusAcompanhamento = ? "
-                + "WHERE acompanhamentoId = ?";
+    public Acompanhamento buscarPorId(int id) {
+        String sql = "SELECT * FROM acompanhamento WHERE id = ?";
+        Acompanhamento acompanhamento = null;
 
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            stmt.setInt(1, acompanhamento.getAlunoId());
-
-            stmt.setDate(2, Date.valueOf(acompanhamento.getDataInicio()));
-
-            if (acompanhamento.getDataFim() == null
-                    || acompanhamento.getDataFim().isEmpty()) {
-                stmt.setNull(3, java.sql.Types.DATE);
-            } else {
-                stmt.setDate(3, Date.valueOf(acompanhamento.getDataFim()));
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    acompanhamento = new Acompanhamento();
+                    acompanhamento.setId(rs.getInt("id"));
+                    acompanhamento.setDataInicio(rs.getDate("dataInicio"));
+                    acompanhamento.setDataFim(rs.getDate("dataFim"));
+                    acompanhamento.setObjetivo(rs.getString("objetivo"));
+                    acompanhamento.setStatus(rs.getString("status"));
+                }
             }
 
-            stmt.setString(4, acompanhamento.getObjetivo());
-            stmt.setString(5, acompanhamento.getStatus());
-            stmt.setInt(6, acompanhamento.getAcompanhamentoId());
+        } catch (SQLException e) {
+            System.out.println("Erro ao buscar acompanhamento: " + e.getMessage());
+        }
+
+        return acompanhamento;
+    }
+
+    public boolean atualizar(Acompanhamento acompanhamento) {
+        String sql = "UPDATE acompanhamento SET dataInicio = ?, dataFim = ?, objetivo = ?, status = ? WHERE id = ?";
+
+        try (Connection conexao = Conexao.conectar();
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+
+            stmt.setDate(1, acompanhamento.getDataInicio());
+            stmt.setDate(2, acompanhamento.getDataFim());
+            stmt.setString(3, acompanhamento.getObjetivo());
+            stmt.setString(4, acompanhamento.getStatus());
+            stmt.setInt(5, acompanhamento.getId());
 
             return stmt.executeUpdate() > 0;
 
@@ -131,9 +107,7 @@ public class AcompanhamentoDAO {
     }
 
     public boolean excluir(int id) {
-
-        String sql = "DELETE FROM acompanhamento "
-                + "WHERE acompanhamentoId = ?";
+        String sql = "DELETE FROM acompanhamento WHERE id = ?";
 
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
