@@ -1,56 +1,48 @@
 
 package br.com.thalison.sistema_acompanhamento_Acompanhamento;
 
-public class Acompanhamento {
+import java.sql.Date;
 
+public class Acompanhamento {
+    
     private int id;
-    private int alunoId;
-    private String dataInicio;
-    private String dataFim;
+    private Date dataInicio;
+    private Date dataFim;
     private String objetivo;
     private String status;
-
+    
     public Acompanhamento() {
     }
 
-    public Acompanhamento(int alunoId, String dataInicio, String dataFim,
-                          String objetivo, String status) {
-        this.alunoId = alunoId;
+    public Acompanhamento(int id, Date dataInicio, Date dataFim, String objetivo, String status) {
+        this.id = id;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
         this.objetivo = objetivo;
         this.status = status;
     }
 
-    public int getAcompanhamentoId() {
+    public int getId() {
         return id;
     }
 
-    public void setAcompanhamentoId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public int getAlunoId() {
-        return alunoId;
-    }
-
-    public void setAlunoId(int alunoId) {
-        this.alunoId = alunoId;
-    }
-
-    public String getDataInicio() {
+    public Date getDataInicio() {
         return dataInicio;
     }
 
-    public void setDataInicio(String dataInicio) {
+    public void setDataInicio(Date dataInicio) {
         this.dataInicio = dataInicio;
     }
 
-    public String getDataFim() {
+    public Date getDataFim() {
         return dataFim;
     }
 
-    public void setDataFim(String dataFim) {
+    public void setDataFim(Date dataFim) {
         this.dataFim = dataFim;
     }
 
@@ -67,48 +59,6 @@ public class Acompanhamento {
     }
 
     public void setStatus(String status) {
-        this.status = status;
-    }
-
-    
-
-    public String getid() {
-        return String.valueOf(id);
-    }
-
-    public void setid(String id) {
-        this.id = Integer.parseInt(id);
-    }
-
-    public String dataInicio() {
-        return dataInicio;
-    }
-
-    public void setdataIncio(String dataInicio) {
-        this.dataInicio = dataInicio;
-    }
-
-    public String getdataFim() {
-        return dataFim;
-    }
-
-    public void setdataFim(String dataFim) {
-        this.dataFim = dataFim;
-    }
-
-    public String getobjetivo() {
-        return objetivo;
-    }
-
-    public void setobjetivo(String objetivo) {
-        this.objetivo = objetivo;
-    }
-
-    public String getstatus() {
-        return status;
-    }
-
-    public void setstatus(String status) {
         this.status = status;
     }
 }

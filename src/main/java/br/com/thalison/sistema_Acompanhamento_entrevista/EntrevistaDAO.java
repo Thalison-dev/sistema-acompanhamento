@@ -9,8 +9,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.thalison.sistema_acompanhamento.Conexao;
 import br.com.thalison.sistema_acompanhamento_Psicologo.Psicologo;
-import br.com.thalison.sistema_acompanhamento_sla.Conexao;
 import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 
 public class EntrevistaDAO {
@@ -23,7 +23,7 @@ public class EntrevistaDAO {
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            setChaveEstrangeira(stmt, 1, entrevista.getAluno() != null ? entrevista.getAluno().getId() : 0);
+            setChaveEstrangeira(stmt, 1, entrevista.getAluno() != null ? entrevista.getAluno().getIdPessoa() : 0);
             setChaveEstrangeira(stmt, 2, entrevista.getPsicologo() != null ? entrevista.getPsicologo().getId() : 0);
             stmt.setString(3, entrevista.getMotivo());
             stmt.setBoolean(4, entrevista.isAgendada());
@@ -54,8 +54,8 @@ public class EntrevistaDAO {
 
                 int alunoId = rs.getInt("aluno_id");
                 if (!rs.wasNull() && alunoId > 0) {
-                    aluno a = new aluno();
-                    a.setId(alunoId);
+                    Aluno a = new Aluno();
+                    a.setIdAluno(alunoId);
                     entrevista.setAluno(a);
                 }
 
@@ -85,7 +85,7 @@ public class EntrevistaDAO {
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            setChaveEstrangeira(stmt, 1, entrevista.getAluno() != null ? entrevista.getAluno().getId() : 0);
+            setChaveEstrangeira(stmt, 1, entrevista.getAluno() != null ? entrevista.getAluno().getIdPessoa() : 0);
             setChaveEstrangeira(stmt, 2, entrevista.getPsicologo() != null ? entrevista.getPsicologo().getId() : 0);
             stmt.setString(3, entrevista.getMotivo());
             stmt.setBoolean(4, entrevista.isAgendada());
