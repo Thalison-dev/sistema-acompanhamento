@@ -7,12 +7,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.thalison.sistema_acompanhamento.Conexao;
+
 public class ApontamentoDAO {
 
     public void salvar(Apontamento apontamento) {
         String sql = "INSERT INTO apontamento (data_inicio, nome_professor, motivo, id_pessoa, id_professor) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection conn = Conexao.getConnection();
+        try (Connection conn = Conexao.getconexao();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, apontamento.getDataInicio());

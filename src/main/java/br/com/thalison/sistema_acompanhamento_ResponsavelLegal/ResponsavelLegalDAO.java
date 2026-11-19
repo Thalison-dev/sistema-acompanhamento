@@ -9,7 +9,7 @@ public class ResponsavelLegalDAO {
     public ResponsavelLegal consultarResponsavelLegal(int id) {
         String sql = "SELECT p.id, p.nome " +
                      "FROM pessoa p " +
-                     "INNER JOIN ResponsavelLegal rl ON p.id = rl.pessoaId " +
+                     "INNER JOIN ResponsavelLegal rl ON p.id = rl.pessoaId" +
                      "WHERE rl.pessoaId = ?";
 
         try (Connection c = Conexao.conectar();

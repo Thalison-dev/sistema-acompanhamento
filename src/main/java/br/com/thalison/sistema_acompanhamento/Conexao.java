@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class Conexao {
 
     private static final String URL =
-        "jdbc:mysql://localhost:3306/sistemaneurodivergente?useSSL=false&serverTimezone=UTC";
+        "jdbc:mysql://127.0.0.1:3306/sistema_acompanhamento_senac?useTimezone=true&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true";
 
     private static final String USUARIO = "root";
     private static final String SENHA = "root";
