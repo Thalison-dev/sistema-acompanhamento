@@ -11,12 +11,13 @@ public class TesteConexao {
 
             if (conexao != null && conexao.isValid(5)) {
                 System.out.println("Conexão com MySQL realizada com sucesso!");
-                System.out.println("Banco: " +
-                    conexao.getCatalog());
+                System.out.println("Servidor: 127.0.0.1:3306");
+                System.out.println("Usuário: " + conexao.getMetaData().getUserName());
+                System.out.println("Banco (Schema): " + conexao.getCatalog());
             }
 
         } catch (SQLException e) {
-            System.out.println("Erro ao conectar com MySQL:");
+            System.out.println("Erro ao conectar com MySQL: " + e.getMessage());
             e.printStackTrace();
         }
     }
