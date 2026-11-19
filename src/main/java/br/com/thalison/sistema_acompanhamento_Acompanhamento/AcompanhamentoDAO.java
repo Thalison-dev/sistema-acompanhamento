@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +25,9 @@ public class AcompanhamentoDAO {
 
             return stmt.executeUpdate() > 0;
 
-        } catch (SQLException e) {
-            System.out.println("Erro ao cadastrar acompanhamento: " + e.getMessage());
+        } catch (SQLException | IllegalArgumentException e) {
+            System.out.println("Erro ao cadastrar acompanhamento: "
+                    + e.getMessage());
             return false;
         }
     }
@@ -50,7 +52,8 @@ public class AcompanhamentoDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("Erro ao listar acompanhamentos: " + e.getMessage());
+            System.out.println("Erro ao listar acompanhamentos: "
+                    + e.getMessage());
         }
 
         return acompanhamentos;
@@ -96,8 +99,9 @@ public class AcompanhamentoDAO {
 
             return stmt.executeUpdate() > 0;
 
-        } catch (SQLException e) {
-            System.out.println("Erro ao atualizar acompanhamento: " + e.getMessage());
+        } catch (SQLException | IllegalArgumentException e) {
+            System.out.println("Erro ao atualizar acompanhamento: "
+                    + e.getMessage());
             return false;
         }
     }
@@ -113,7 +117,8 @@ public class AcompanhamentoDAO {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println("Erro ao excluir acompanhamento: " + e.getMessage());
+            System.out.println("Erro ao excluir acompanhamento: "
+                    + e.getMessage());
             return false;
         }
     }
