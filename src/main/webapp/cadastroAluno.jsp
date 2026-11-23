@@ -1,87 +1,74 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${aluno != null ? 'Editar' : 'Cadastro de'} Aluno</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <title>Cadastro de Aluno</title>
 </head>
 <body>
 
-<jsp:include page="/WEB-INF/includes/navbar.jsp"><jsp:param name="ativo" value="alunos" /></jsp:include>
+    <p>
+        <a href="${pageContext.request.contextPath}/pedagogo">Painel do Pedagogo</a> |
+        <a href="${pageContext.request.contextPath}/acompanhamento">Acompanhamentos</a>
+    </p>
+    <hr>
 
-<div class="container">
-    <jsp:include page="/WEB-INF/includes/mensagens.jsp" />
+    <h2>Cadastrar Novo Aluno</h2>
 
-    <h2>${aluno != null ? 'Editar Aluno' : 'Cadastrar Novo Aluno'}</h2>
-
-    <form action="${pageContext.request.contextPath}/aluno" method="post">
-        <input type="hidden" name="id" value="${aluno.id}">
-
-        <div class="form-grid">
-            <div class="form-group full">
-                <label for="nome">Nome completo <span class="obrigatorio">*</span></label>
-                <input type="text" id="nome" name="nome" maxlength="50" required value="<c:out value='${aluno.nome}'/>">
-            </div>
-            <div class="form-group">
-                <label for="email">E-mail <span class="obrigatorio">*</span></label>
-                <input type="email" id="email" name="email" maxlength="50" required value="<c:out value='${aluno.email}'/>">
-            </div>
-            <div class="form-group">
-                <label for="cpf">CPF</label>
-                <input type="text" id="cpf" name="cpf" maxlength="14" placeholder="000.000.000-00" value="<c:out value='${aluno.cpf}'/>">
-            </div>
-            <div class="form-group">
-                <label for="telefone">Telefone</label>
-                <input type="text" id="telefone" name="telefone" maxlength="20" value="<c:out value='${aluno.telefone}'/>">
-            </div>
-            <div class="form-group">
-                <label for="dataNascimento">Data de nascimento</label>
-                <input type="date" id="dataNascimento" name="dataNascimento" value="${aluno.dataNascimento}">
-            </div>
-            <div class="form-group">
-                <label for="matricula">Matrícula</label>
-                <input type="text" id="matricula" name="matricula" maxlength="50" value="<c:out value='${aluno.matricula}'/>">
-            </div>
-            <div class="form-group">
-                <label for="anoEscolar">Ano escolar</label>
-                <select id="anoEscolar" name="anoEscolar">
-                    <option value="">Selecione</option>
-                    <c:forEach var="ano" items="1º ano,2º ano,3º ano,4º ano,5º ano,6º ano,7º ano,8º ano,9º ano,1ª série EM,2ª série EM,3ª série EM">
-                        <option value="${ano}" ${aluno.anoEscolar == ano ? 'selected' : ''}>${ano}</option>
-                    </c:forEach>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="status">Status</label>
-                <select id="status" name="status">
-                    <c:forEach var="s" items="Ativo,Inativo,Transferido,Concluído">
-                        <option value="${s}" ${aluno.status == s ? 'selected' : ''}>${s}</option>
-                    </c:forEach>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="responsavelId">Responsável legal</label>
-                <select id="responsavelId" name="responsavelId">
-                    <option value="0">-- Nenhum --</option>
-                    <c:forEach var="r" items="${responsaveis}">
-                        <option value="${r.id}" ${aluno.responsavelId == r.id ? 'selected' : ''}>
-                            <c:out value="${r.nome}" /> (<c:out value="${r.parentesco}" />)
-                        </option>
-                    </c:forEach>
-                </select>
-                <small class="muted">Não está na lista? <a href="${pageContext.request.contextPath}/responsavel?acao=novo">Cadastre o responsável</a>.</small>
-            </div>
-        </div>
-
-        <div class="actions">
-            <button type="submit" class="btn btn-success">${aluno != null ? 'Salvar Alterações' : 'Cadastrar Aluno'}</button>
-            <a href="${pageContext.request.contextPath}/aluno" class="btn btn-secondary">Cancelar</a>
-        </div>
+    <form action="${pageContext.request.contextPath}/salvarAluno.jsp" method="post">
+        <p>
+            <label for="nome">Nome completo:</label><br>
+            <input type="text" id="nome" name="nome" maxlength="100" required>
+        </p>
+        <p>
+            <label for="email">E-mail:</label><br>
+            <input type="email" id="email" name="email" maxlength="100" required>
+        </p>
+        <p>
+            <label for="cpf">CPF:</label><br>
+            <input type="text" id="cpf" name="cpf" maxlength="14" placeholder="000.000.000-00">
+        </p>
+        <p>
+            <label for="telefone">Telefone:</label><br>
+            <input type="text" id="telefone" name="telefone" maxlength="20">
+        </p>
+        <p>
+            <label for="dataNascimento">Data de nascimento:</label><br>
+            <input type="date" id="dataNascimento" name="dataNascimento">
+        </p>
+        <p>
+            <label for="matricula">Matrícula:</label><br>
+            <input type="text" id="matricula" name="matricula" maxlength="50">
+        </p>
+        <p>
+            <label for="anoEscolar">Ano escolar:</label><br>
+            <select id="anoEscolar" name="anoEscolar">
+                <option value="">Selecione</option>
+                <option value="1º ano">1º ano</option>
+                <option value="2º ano">2º ano</option>
+                <option value="3º ano">3º ano</option>
+                <option value="4º ano">4º ano</option>
+                <option value="5º ano">5º ano</option>
+                <option value="6º ano">6º ano</option>
+                <option value="7º ano">7º ano</option>
+                <option value="8º ano">8º ano</option>
+                <option value="9º ano">9º ano</option>
+            </select>
+        </p>
+        <p>
+            <label for="status">Status:</label><br>
+            <select id="status" name="status">
+                <option value="Ativo">Ativo</option>
+                <option value="Inativo">Inativo</option>
+                <option value="Transferido">Transferido</option>
+                <option value="Concluído">Concluído</option>
+            </select>
+        </p>
+        <p>
+            <button type="submit">Cadastrar Aluno</button>
+            <a href="${pageContext.request.contextPath}/pedagogo">Cancelar</a>
+        </p>
     </form>
-</div>
 
 </body>
 </html>

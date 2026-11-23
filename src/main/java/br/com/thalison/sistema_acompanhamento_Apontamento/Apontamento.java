@@ -1,15 +1,9 @@
 package br.com.thalison.sistema_acompanhamento_Apontamento;
 
-/**
- * Apontamento: indicação, feita por um professor, de que um aluno
- * precisa ser acompanhado. Pode dar origem a um Acompanhamento.
- */
 public class Apontamento {
-
     private int id;
-    private int alunoId;       // coluna id_pessoa (o id do aluno é o id da pessoa)
-    private String nomeAluno;
-    private int professorId;   // coluna id_professor (opcional)
+    private int alunoId;
+    private int professorId;
     private String dataInicio;
     private String nomeProfessor;
     private String motivo;
@@ -17,8 +11,9 @@ public class Apontamento {
     public Apontamento() {
     }
 
-    public Apontamento(int alunoId, String dataInicio, String nomeProfessor, String motivo) {
+    public Apontamento(int alunoId, int professorId, String dataInicio, String nomeProfessor, String motivo) {
         this.alunoId = alunoId;
+        this.professorId = professorId;
         this.dataInicio = dataInicio;
         this.nomeProfessor = nomeProfessor;
         this.motivo = motivo;
@@ -38,14 +33,6 @@ public class Apontamento {
 
     public void setAlunoId(int alunoId) {
         this.alunoId = alunoId;
-    }
-
-    public String getNomeAluno() {
-        return nomeAluno;
-    }
-
-    public void setNomeAluno(String nomeAluno) {
-        this.nomeAluno = nomeAluno;
     }
 
     public int getProfessorId() {

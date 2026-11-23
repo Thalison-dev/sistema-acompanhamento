@@ -1,22 +1,22 @@
+
 package br.com.thalison.sistema_Acompanhamento_entrevista;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.SQLException;
+import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import br.com.thalison.sistema_acompanhamento.WebUtil;
 import br.com.thalison.sistema_acompanhamento_Psicologo.Psicologo;
-import br.com.thalison.sistema_acompanhamento_Psicologo.PsicologoDAO;
 import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
-import br.com.thalison.sistema_acompanhamento_aluno.AlunoDAO;
 
 @WebServlet(urlPatterns = {
-    "/entrevista",
     "/nova-entrevista",
     "/inserir-entrevista",
     "/deletar-entrevista",
@@ -37,7 +37,6 @@ public class EntrevistaServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
         doGet(request, response);
     }
 
@@ -45,93 +44,186 @@ public class EntrevistaServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        switch (request.getServletPath()) {
+        String action = request.getServletPath();
 
-            case "/nova-entrevista":
-                mostrarFormulario(request, response, null);
-                break;
+        try {
+            switch (action) {
 
-            case "/inserir-entrevista":
-            case "/atualizar-entrevista":
-                salvarEntrevista(request, response);
-                break;
+                case "/nova-entrevista":
+                    mostrarFormularioNovaEntrevista(request, response);
+                    break;
 
-            case "/deletar-entrevista":
-                if (dao.excluir(WebUtil.parseInt(request.getParameter("id")))) {
-                    WebUtil.redirecionar(request, response, "/listar-entrevistas", "sucesso", "Entrevista excluída.");
-                } else {
-                    WebUtil.redirecionar(request, response, "/listar-entrevistas", "erro", "Não foi possível excluir.");
-                }
-                break;
+                case "/inserir-entrevista":
+                    inserirEntrevista(request, response);
+                    break;
 
-            case "/editar-entrevista":
-                mostrarFormulario(request, response, dao.buscarPorId(WebUtil.parseInt(request.getParameter("id"))));
-                break;
+                case "/deletar-entrevista":
+                    deletarEntrevista(request, response);
+                    break;
 
-            case "/listar-entrevistas":
-            case "/entrevista":
-            default:
-                request.setAttribute("entrevistas", dao.listar());
-                request.getRequestDispatcher("/listar-entrevista.jsp").forward(request, response);
-                break;
+                case "/editar-entrevista":
+                    mostrarFormularioEditarEntrevista(request, response);
+                    break;
+
+                case "/atualizar-entrevista":
+                    atualizarEntrevista(request, response);
+                    break;
+
+                case "/listar-entrevistas":
+                default:
+                    listarEntrevistas(request, response);
+                    break;
+            }
+
+        } catch (SQLException ex) {
+            throw new ServletException(ex);
         }
     }
 
-    private void mostrarFormulario(HttpServletRequest request, HttpServletResponse response, Entrevista entrevista)
+    private void listarEntrevistas(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException, ServletException {
+
+        List<Entrevista> entrevistas = dao.listar();
+
+        request.setAttribute("entrevistas", entrevistas);
+
+        RequestDispatcher dispatcher =
+                request.getRequestDispatcher("listar-entrevista.jsp");
+
+        dispatcher.forward(request, response);
+    }
+
+    private void mostrarFormularioNovaEntrevista(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        request.setAttribute("entrevista", entrevista);
-        request.setAttribute("alunos", new AlunoDAO().listarTodos());
-        request.setAttribute("psicologos", new PsicologoDAO().listar());
-        request.setAttribute("alunoSelecionado",
-            entrevista != null ? entrevista.getAlunoId() : WebUtil.parseInt(request.getParameter("alunoId")));
-        request.setAttribute("psicologoSelecionado",
-            entrevista != null ? entrevista.getPsicologoId() : WebUtil.parseInt(request.getParameter("psicologoId")));
-        request.getRequestDispatcher("/form-entrevista.jsp").forward(request, response);
+        RequestDispatcher dispatcher =
+                request.getRequestDispatcher("form-entrevista.jsp");
+
+        dispatcher.forward(request, response);
     }
 
-    private void salvarEntrevista(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    private void mostrarFormularioEditarEntrevista(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, ServletException, IOException {
 
-        int id = WebUtil.parseInt(request.getParameter("id"));
-        int alunoId = WebUtil.parseInt(request.getParameter("alunoId"));
-        int psicologoId = WebUtil.parseInt(request.getParameter("psicologoId"));
-        String motivo = WebUtil.texto(request, "motivo");
+        int id = parseInteger(request.getParameter("id"));
+
+        Entrevista entrevistaExistente = dao.listar().stream()
+                .filter(e -> e.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        request.setAttribute("entrevista", entrevistaExistente);
+
+        RequestDispatcher dispatcher =
+                request.getRequestDispatcher("form-entrevista.jsp");
+
+        dispatcher.forward(request, response);
+    }
+
+    private void inserirEntrevista(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException {
+
+        int alunoId = parseInteger(request.getParameter("alunoId"));
+        int psicologoId = parseInteger(request.getParameter("psicologoId"));
+
+        String motivo = request.getParameter("motivo");
+
         String agendadaParam = request.getParameter("agendada");
-        boolean agendada = "true".equalsIgnoreCase(agendadaParam) || "on".equalsIgnoreCase(agendadaParam);
-        String dataParam = WebUtil.texto(request, "data");
-        String observacoes = WebUtil.texto(request, "observacoes");
 
-        if (alunoId <= 0 || motivo == null) {
-            WebUtil.redirecionar(request, response,
-                id > 0 ? "/editar-entrevista?id=" + id : "/nova-entrevista", "erro",
-                "Selecione o aluno e informe o motivo da entrevista.");
-            return;
+        boolean agendada = "true".equalsIgnoreCase(agendadaParam)
+                || "on".equalsIgnoreCase(agendadaParam);
+
+        String dataParam = request.getParameter("data");
+
+        Date data = (dataParam != null && !dataParam.trim().isEmpty())
+                ? Date.valueOf(dataParam)
+                : null;
+
+        String observacoes = request.getParameter("observacoes");
+
+        Aluno a = alunoId > 0 ? new Aluno() : null;
+
+        if (a != null) {
+            a.setId(alunoId);
         }
 
-        Date data;
-        try {
-            data = dataParam != null ? Date.valueOf(dataParam) : null;
-        } catch (IllegalArgumentException e) {
-            data = null;
-        }
+        Psicologo p = psicologoId > 0 ? new Psicologo() : null;
 
-        Aluno a = new Aluno();
-        a.setId(alunoId);
-
-        Psicologo p = null;
-        if (psicologoId > 0) {
-            p = new Psicologo();
+        if (p != null) {
             p.setId(psicologoId);
         }
 
-        Entrevista entrevista = new Entrevista(a, p, id, motivo, agendada, data, observacoes);
-        boolean ok = id > 0 ? dao.atualizar(entrevista) : dao.cadastrar(entrevista);
+        Entrevista novaEntrevista =
+                new Entrevista(a, p, 0, motivo, agendada, data, observacoes);
 
-        if (ok) {
-            WebUtil.redirecionar(request, response, "/listar-entrevistas", "sucesso", "Entrevista salva com sucesso!");
-        } else {
-            WebUtil.redirecionar(request, response, "/listar-entrevistas", "erro", "Não foi possível salvar a entrevista.");
+        dao.cadastrar(novaEntrevista);
+
+        response.sendRedirect("listar-entrevistas");
+    }
+
+    private void atualizarEntrevista(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException {
+
+        int id = parseInteger(request.getParameter("id"));
+        int alunoId = parseInteger(request.getParameter("alunoId"));
+        int psicologoId = parseInteger(request.getParameter("psicologoId"));
+
+        String motivo = request.getParameter("motivo");
+
+        String agendadaParam = request.getParameter("agendada");
+
+        boolean agendada = "true".equalsIgnoreCase(agendadaParam)
+                || "on".equalsIgnoreCase(agendadaParam);
+
+        String dataParam = request.getParameter("data");
+
+        Date data = (dataParam != null && !dataParam.trim().isEmpty())
+                ? Date.valueOf(dataParam)
+                : null;
+
+        String observacoes = request.getParameter("observacoes");
+
+        Aluno a = alunoId > 0 ? new Aluno() : null;
+
+        if (a != null) {
+            a.setId(alunoId);
+        }
+
+        Psicologo p = psicologoId > 0 ? new Psicologo() : null;
+
+        if (p != null) {
+            p.setId(psicologoId);
+        }
+
+        Entrevista entrevistaAtualizada =
+                new Entrevista(a, p, id, motivo, agendada, data, observacoes);
+
+        dao.atualizar(entrevistaAtualizada);
+
+        response.sendRedirect("listar-entrevistas");
+    }
+
+    private void deletarEntrevista(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException {
+
+        int id = parseInteger(request.getParameter("id"));
+
+        dao.excluir(id);
+
+        response.sendRedirect("listar-entrevistas");
+    }
+
+    private int parseInteger(String valor) {
+
+        if (valor == null || valor.trim().isEmpty()) {
+            return 0;
+        }
+
+        try {
+            return Integer.parseInt(valor.trim());
+
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 }
