@@ -1,3 +1,4 @@
+
 package br.com.thalison.sistema_acompanhamento_Apontamento;
 
 import java.sql.Connection;
@@ -12,18 +13,21 @@ import br.com.thalison.sistema_acompanhamento.Conexao;
 public class ApontamentoDAO {
 
     public void salvar(Apontamento apontamento) {
-        String sql = "INSERT INTO apontamento (data_inicio, nome_professor, motivo, id_pessoa) VALUES (?, ?, ?, ?)";
+
+        String sql = "INSERT INTO apontamento "
+                + "(data_inicio, nome_professor, motivo, id_pessoa) "
+                + "VALUES (?, ?, ?, ?)";
 
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, apontamento.getDataInicio());
-            stmt.setString(2, apontamento.getNomeprofessor());
+            stmt.setString(2, apontamento.getNomeProfessor());
             stmt.setString(3, apontamento.getMotivo());
             stmt.setInt(4, apontamento.getIdPessoa());
-            //havia um set id professor como os acima
 
-            stmt.execute();
+            stmt.executeUpdate();
+
             System.out.println("Apontamento registrado com sucesso!");
 
         } catch (SQLException e) {
@@ -32,7 +36,9 @@ public class ApontamentoDAO {
     }
 
     public List<Apontamento> listar() {
+
         String sql = "SELECT * FROM apontamento";
+
         List<Apontamento> lista = new ArrayList<>();
 
         try (Connection conn = Conexao.conectar();
@@ -40,12 +46,13 @@ public class ApontamentoDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
+
                 Apontamento apontamento = new Apontamento();
+
                 apontamento.setDataInicio(rs.getString("data_inicio"));
-                apontamento.setNomeprofessor(rs.getString("nome_professor"));
+                apontamento.setNomeProfessor(rs.getString("nome_professor"));
                 apontamento.setMotivo(rs.getString("motivo"));
-                apontamento.setIdAluno(rs.getInt("id_pessoa"));
-                //havia um set id professor como os acima
+                apontamento.setIdPessoa(rs.getInt("id_pessoa"));
 
                 lista.add(apontamento);
             }
@@ -58,19 +65,22 @@ public class ApontamentoDAO {
     }
 
     public void atualizar(Apontamento apontamento, int id) {
-        String sql = "UPDATE apontamento SET data_inicio = ?, nome_professor = ?, motivo = ?, id_pessoa = ? WHERE id = ?";
+
+        String sql = "UPDATE apontamento SET "
+                + "data_inicio = ?, nome_professor = ?, "
+                + "motivo = ?, id_pessoa = ? WHERE id = ?";
 
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, apontamento.getDataInicio());
-            stmt.setString(2, apontamento.getNomeprofessor());
+            stmt.setString(2, apontamento.getNomeProfessor());
             stmt.setString(3, apontamento.getMotivo());
             stmt.setInt(4, apontamento.getIdPessoa());
-           //havia um get id professor como os acima
-            stmt.setInt(6, id);
+            stmt.setInt(5, id);
 
             stmt.executeUpdate();
+
             System.out.println("Apontamento atualizado com sucesso!");
 
         } catch (SQLException e) {
@@ -79,13 +89,16 @@ public class ApontamentoDAO {
     }
 
     public void deletar(int id) {
+
         String sql = "DELETE FROM apontamento WHERE id = ?";
 
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
+
             stmt.executeUpdate();
+
             System.out.println("Apontamento excluído com sucesso!");
 
         } catch (SQLException e) {

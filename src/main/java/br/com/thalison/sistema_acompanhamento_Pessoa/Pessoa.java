@@ -1,3 +1,4 @@
+
 package br.com.thalison.sistema_acompanhamento_Pessoa;
 
 public class Pessoa {
@@ -9,14 +10,25 @@ public class Pessoa {
     private String email;
 
     public Pessoa() {
+
     }
 
-    public Pessoa(int id, String nome, String cpf, String telefone, String email) {
+    // Construtor completo
+    public Pessoa(int id, String nome, String cpf,
+                  String telefone, String email) {
+
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
         this.telefone = telefone;
         this.email = email;
+    }
+
+    // Construtor para nome e CPF
+    public Pessoa(String nome, String cpf) {
+
+        this.nome = nome;
+        this.cpf = cpf;
     }
 
     public int getId() {
@@ -56,9 +68,6 @@ public class Pessoa {
     }
 
     public void setEmail(String email) {
-        this.email = email;
-    }
-}oa(String email) {
         this.email = email;
     }
 }

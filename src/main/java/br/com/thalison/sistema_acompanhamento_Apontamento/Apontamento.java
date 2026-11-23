@@ -1,10 +1,12 @@
+
 package br.com.thalison.sistema_acompanhamento_Apontamento;
 
 import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
 
 public class Apontamento extends Pessoa {
+
     private String idProfessor;
-    private String idPessoa;
+    private int idPessoa;
     private String dataInicio;
     private String nomeProfessor;
     private String motivo;
@@ -13,8 +15,11 @@ public class Apontamento extends Pessoa {
         super();
     }
 
-    public Apontamento(String nome, String cpf, String dataInicio, String nomeProfessor, String motivo) {
-        super(nome, cpf); 
+    public Apontamento(String nome, String cpf, String dataInicio,
+                       String nomeProfessor, String motivo) {
+
+        super(nome, cpf);
+
         this.dataInicio = dataInicio;
         this.nomeProfessor = nomeProfessor;
         this.motivo = motivo;
@@ -28,11 +33,11 @@ public class Apontamento extends Pessoa {
         this.idProfessor = idProfessor;
     }
 
-    public String getIdPessoa() {
+    public int getIdPessoa() {
         return idPessoa;
     }
 
-    public void setIdPessoa(String idPessoa) {
+    public void setIdPessoa(int idPessoa) {
         this.idPessoa = idPessoa;
     }
 
