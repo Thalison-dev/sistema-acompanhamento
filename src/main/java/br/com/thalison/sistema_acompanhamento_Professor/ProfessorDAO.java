@@ -11,14 +11,15 @@ public class ProfessorDAO {
              Statement st = c.createStatement();
              ResultSet r = st.executeQuery(sql)) {
             while (r.next())
-                System.out.println(r.getString("nome"));
+                System.out.println(r.getString("nomeAluno"));
         }
     }
 
-    private void registrar(String tabela, int alunoId, String descricao)
+    // "coluna" é o campo de texto de cada tabela (no banco cada tabela tem nomes próprios)
+    private void registrar(String tabela, String coluna, int alunoId, String descricao)
             throws SQLException {
         String sql = "INSERT INTO " + tabela +
-                     " (aluno_id, descricao) VALUES (?, ?)";
+                     " (alunoId, " + coluna + ") VALUES (?, ?)";
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, alunoId);
@@ -29,31 +30,31 @@ public class ProfessorDAO {
 
     public void registrarObservacao(int id, String descricao)
             throws SQLException {
-        registrar("observacao", id, descricao);
+        registrar("observacao", "descricao", id, descricao);
     }
 
     public void registrarOcorrencia(int id, String descricao)
             throws SQLException {
-        registrar("ocorrencia", id, descricao);
+        registrar("ocorrencia_pedagogica", "descricaoOcorrencia", id, descricao);
     }
 
     public void registrarAvaliacao(int id, String descricao)
             throws SQLException {
-        registrar("avaliacao", id, descricao);
+        registrar("avaliacao", "observacaoAvaliacao", id, descricao);
     }
 
     public void registrarRendimento(int id, String descricao)
             throws SQLException {
-        registrar("rendimento", id, descricao);
+        registrar("rendimento", "descricao", id, descricao);
     }
 
     public void registrarAdaptacao(int id, String descricao)
             throws SQLException {
-        registrar("adaptacao", id, descricao);
+        registrar("adaptacao_metodologica", "descricaoAdaptacao", id, descricao);
     }
 
     public void consultarHistorico(int alunoId) throws SQLException {
-        String sql = "SELECT * FROM observacao WHERE aluno_id = ?";
+        String sql = "SELECT * FROM observacao WHERE alunoId = ?";
 
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql)) {

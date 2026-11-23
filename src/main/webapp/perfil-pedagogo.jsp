@@ -12,6 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Meu Perfil de Pedagogo</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 <body>
 

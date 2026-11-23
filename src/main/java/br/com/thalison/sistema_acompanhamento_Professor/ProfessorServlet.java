@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import br.com.thalison.sistema_acompanhamento_Professor.ProfessorDAO;
 
-@WebServlet("/")
+// Só os endereços do professor. Com "/" este servlet capturava também o CSS e o JS e as páginas ficavam sem estilo.
+@WebServlet(urlPatterns = { "/consultarAluno", "/registrarObservacao", "/registrarOcorrencia", "/registrarAvaliacao",
+		"/registrarRendimento", "/registrarAdaptacao", "/consultarHistorico" })
 public class ProfessorServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;

@@ -8,6 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Resultado do Acompanhamento</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <style>
         body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f6f9; color: #333; }
         .navbar { background-color: #2c3e50; padding: 14px 30px; display: flex; gap: 20px; align-items: center; }

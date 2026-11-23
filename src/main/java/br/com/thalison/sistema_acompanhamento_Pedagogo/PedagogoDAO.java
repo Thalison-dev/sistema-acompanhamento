@@ -12,16 +12,22 @@ import br.com.thalison.sistema_acompanhamento.Conexao;
 public class PedagogoDAO {
 
     public boolean cadastrar(Pedagogo pedagogo) {
-        String sql = "INSERT INTO pedagogo (idPedagogo, pessoa, especialidade) VALUES (?, ?, ?)";
+        // no banco, pedagogo.pessoa é o id da pessoa (tabela pessoa); o nome fica em pessoa.nome
+        String sql = "INSERT INTO pedagogo (pessoa, especialidade) VALUES (?, ?)";
 
         try (Connection conexao = Conexao.conectar();
-             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+             PreparedStatement stmt = conexao.prepareStatement(sql);
+             PreparedStatement nome = conexao.prepareStatement("UPDATE pessoa SET nome = ? WHERE id = ?")) {
 
             stmt.setInt(1, pedagogo.getIdPedagogo());
-            stmt.setString(2, pedagogo.getPessoa());
-            stmt.setString(3, pedagogo.getEspecialidade());
+            stmt.setString(2, pedagogo.getEspecialidade());
+            boolean ok = stmt.executeUpdate() > 0;
 
-            return stmt.executeUpdate() > 0;
+            nome.setString(1, pedagogo.getPessoa());
+            nome.setInt(2, pedagogo.getIdPedagogo());
+            nome.executeUpdate();
+
+            return ok;
 
         } catch (SQLException e) {
             System.out.println("Erro ao cadastrar pedagogo: " + e.getMessage());
@@ -31,7 +37,7 @@ public class PedagogoDAO {
 
     public List<Pedagogo> listar() {
         List<Pedagogo> pedagogos = new ArrayList<>();
-        String sql = "SELECT * FROM pedagogo";
+        String sql = "SELECT pe.pessoa, p.nome, pe.especialidade FROM pedagogo pe JOIN pessoa p ON p.id = pe.pessoa";
 
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -39,8 +45,8 @@ public class PedagogoDAO {
 
             while (rs.next()) {
                 pedagogos.add(new Pedagogo(
-                    rs.getInt("idPedagogo"),
-                    rs.getString("pessoa"),
+                    rs.getInt("pessoa"),
+                    rs.getString("nome"),
                     rs.getString("especialidade")
                 ));
             }
@@ -53,7 +59,7 @@ public class PedagogoDAO {
     }
 
     public Pedagogo buscarPorId(int id) {
-        String sql = "SELECT * FROM pedagogo WHERE idPedagogo = ?";
+        String sql = "SELECT pe.pessoa, p.nome, pe.especialidade FROM pedagogo pe JOIN pessoa p ON p.id = pe.pessoa WHERE pe.pessoa = ?";
 
         try (Connection conn = Conexao.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -62,8 +68,8 @@ public class PedagogoDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new Pedagogo(
-                        rs.getInt("idPedagogo"),
-                        rs.getString("pessoa"),
+                        rs.getInt("pessoa"),
+                        rs.getString("nome"),
                         rs.getString("especialidade")
                     );
                 }
@@ -76,16 +82,21 @@ public class PedagogoDAO {
     }
 
     public boolean atualizar(Pedagogo pedagogo) {
-        String sql = "UPDATE pedagogo SET pessoa = ?, especialidade = ? WHERE idPedagogo = ?";
+        String sql = "UPDATE pedagogo SET especialidade = ? WHERE pessoa = ?";
 
         try (Connection conexao = Conexao.conectar();
-             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+             PreparedStatement stmt = conexao.prepareStatement(sql);
+             PreparedStatement nome = conexao.prepareStatement("UPDATE pessoa SET nome = ? WHERE id = ?")) {
 
-            stmt.setString(1, pedagogo.getPessoa());
-            stmt.setString(2, pedagogo.getEspecialidade());
-            stmt.setInt(3, pedagogo.getIdPedagogo());
+            stmt.setString(1, pedagogo.getEspecialidade());
+            stmt.setInt(2, pedagogo.getIdPedagogo());
+            boolean ok = stmt.executeUpdate() > 0;
 
-            return stmt.executeUpdate() > 0;
+            nome.setString(1, pedagogo.getPessoa());
+            nome.setInt(2, pedagogo.getIdPedagogo());
+            nome.executeUpdate();
+
+            return ok;
 
         } catch (SQLException e) {
             System.out.println("Erro ao atualizar pedagogo: " + e.getMessage());
@@ -95,7 +106,7 @@ public class PedagogoDAO {
 
     // Registra reuniões com Psicólogo, Responsável Legal, Diretor ou Aluno
     public boolean registrarReuniao(int pedagogoId, String publicoAlvo, int alunoId, String dataReuniao, String motivo) {
-        String sql = "INSERT INTO mensagem (remetenteId, destinatarioId, conteudoMensagem, dataEnvioMensagem, lida) "
+        String sql = "INSERT INTO mensagem (remetenteId, destinatarioId, conteudoMensagem, dataEnvioMensagem, lidaMensagem) "
                    + "VALUES (?, ?, ?, NOW(), false)";
 
         String conteudo = "Reunião com " + publicoAlvo
@@ -107,7 +118,7 @@ public class PedagogoDAO {
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
             stmt.setInt(1, pedagogoId > 0 ? pedagogoId : 1);
-            stmt.setInt(2, alunoId > 0 ? alunoId : 0);
+            if (alunoId > 0) stmt.setInt(2, alunoId); else stmt.setNull(2, java.sql.Types.INTEGER);
             stmt.setString(3, conteudo);
 
             return stmt.executeUpdate() > 0;
@@ -121,8 +132,8 @@ public class PedagogoDAO {
     // Lista as reuniões agendadas pelo pedagogo
     public List<String[]> listarReunioes() {
         List<String[]> reunioes = new ArrayList<>();
-        String sql = "SELECT id, remetenteId, destinatarioId, conteudoMensagem, dataEnvioMensagem "
-                   + "FROM mensagem ORDER BY id DESC";
+        String sql = "SELECT mensagemId, remetenteId, destinatarioId, conteudoMensagem, dataEnvioMensagem "
+                   + "FROM mensagem ORDER BY mensagemId DESC";
 
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -130,7 +141,7 @@ public class PedagogoDAO {
 
             while (rs.next()) {
                 reunioes.add(new String[]{
-                    String.valueOf(rs.getInt("id")),
+                    String.valueOf(rs.getInt("mensagemId")),
                     String.valueOf(rs.getInt("remetenteId")),
                     String.valueOf(rs.getInt("destinatarioId")),
                     rs.getString("conteudoMensagem"),

@@ -144,7 +144,7 @@ public class EntrevistaServlet extends HttpServlet {
         Aluno a = alunoId > 0 ? new Aluno() : null;
 
         if (a != null) {
-            a.setIdAluno(alunoId);
+            a.setId(alunoId);
         }
 
         Psicologo p = psicologoId > 0 ? new Psicologo() : null;
@@ -186,7 +186,7 @@ public class EntrevistaServlet extends HttpServlet {
         Aluno a = alunoId > 0 ? new Aluno() : null;
 
         if (a != null) {
-            a.setIdAluno(alunoId);
+            a.setId(alunoId);
         }
 
         Psicologo p = psicologoId > 0 ? new Psicologo() : null;

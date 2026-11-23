@@ -15,6 +15,26 @@ public class ResponsavelLegal extends Pessoa {
         this.parentesco = parentesco;
     }
 
+    public void consultarAluno() {
+        System.out.println("Consultando aluno.");
+    }
+
+    public void consultarAcompanhamento() {
+        System.out.println("Consultando acompanhamento.");
+    }
+
+    public void consultarRendimento() {
+        System.out.println("Consultando rendimento.");
+    }
+
+    public void visualizarDocumento() {
+        System.out.println("Visualizando documento.");
+    }
+
+    public void enviarMensagem() {
+        System.out.println("Mensagem enviada.");
+    }
+
     public String getParentesco() {
         return parentesco;
     }

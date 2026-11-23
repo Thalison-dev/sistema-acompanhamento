@@ -124,8 +124,8 @@ public class AcompanhamentoServlet extends HttpServlet {
 
         Acompanhamento a = new Acompanhamento();
 
-        a.setDataInicio(dataInicio);
-        a.setDataFim(dataFim);
+        a.setDataInicio(dataInicio.toString());
+        a.setDataFim(dataFim.toString());
         a.setObjetivo(objetivo);
         a.setStatus(status);
 
@@ -148,8 +148,8 @@ public class AcompanhamentoServlet extends HttpServlet {
         Acompanhamento a = new Acompanhamento();
 
         a.setId(id);
-        a.setDataInicio(dataInicio);
-        a.setDataFim(dataFim);
+        a.setDataInicio(dataInicio.toString());
+        a.setDataFim(dataFim.toString());
         a.setObjetivo(objetivo);
         a.setStatus(status);
 

@@ -13,10 +13,14 @@ import br.com.thalison.sistema_acompanhamento.Conexao;
 public class ApontamentoDAO {
 
     public void salvar(Apontamento apontamento) {
+<<<<<<< HEAD
 
         String sql = "INSERT INTO apontamento "
                 + "(data_inicio, nome_professor, motivo, id_pessoa) "
                 + "VALUES (?, ?, ?, ?)";
+=======
+        String sql = "INSERT INTO apontamento (data_inicio, nome_professor, motivo, id_pessoa, id_professor) VALUES (?, ?, ?, ?, ?)";
+>>>>>>> 469c46827651996e1bde5e5a6948eec01f28e222
 
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -24,7 +28,12 @@ public class ApontamentoDAO {
             stmt.setString(1, apontamento.getDataInicio());
             stmt.setString(2, apontamento.getNomeProfessor());
             stmt.setString(3, apontamento.getMotivo());
+<<<<<<< HEAD
             stmt.setInt(4, apontamento.getIdPessoa());
+=======
+            stmt.setInt(4, apontamento.getAlunoId());
+            stmt.setInt(5, apontamento.getProfessorId());
+>>>>>>> 469c46827651996e1bde5e5a6948eec01f28e222
 
             stmt.executeUpdate();
 
@@ -52,7 +61,13 @@ public class ApontamentoDAO {
                 apontamento.setDataInicio(rs.getString("data_inicio"));
                 apontamento.setNomeProfessor(rs.getString("nome_professor"));
                 apontamento.setMotivo(rs.getString("motivo"));
+<<<<<<< HEAD
                 apontamento.setIdPessoa(rs.getInt("id_pessoa"));
+=======
+                apontamento.setId(rs.getInt("id"));
+                apontamento.setAlunoId(rs.getInt("id_pessoa"));
+                apontamento.setProfessorId(rs.getInt("id_professor"));
+>>>>>>> 469c46827651996e1bde5e5a6948eec01f28e222
 
                 lista.add(apontamento);
             }
@@ -65,10 +80,14 @@ public class ApontamentoDAO {
     }
 
     public void atualizar(Apontamento apontamento, int id) {
+<<<<<<< HEAD
 
         String sql = "UPDATE apontamento SET "
                 + "data_inicio = ?, nome_professor = ?, "
                 + "motivo = ?, id_pessoa = ? WHERE id = ?";
+=======
+        String sql = "UPDATE apontamento SET data_inicio = ?, nome_professor = ?, motivo = ?, id_pessoa = ?, id_professor = ? WHERE id = ?";
+>>>>>>> 469c46827651996e1bde5e5a6948eec01f28e222
 
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -76,8 +95,14 @@ public class ApontamentoDAO {
             stmt.setString(1, apontamento.getDataInicio());
             stmt.setString(2, apontamento.getNomeProfessor());
             stmt.setString(3, apontamento.getMotivo());
+<<<<<<< HEAD
             stmt.setInt(4, apontamento.getIdPessoa());
             stmt.setInt(5, id);
+=======
+            stmt.setInt(4, apontamento.getAlunoId());
+            stmt.setInt(5, apontamento.getProfessorId());
+            stmt.setInt(6, id);
+>>>>>>> 469c46827651996e1bde5e5a6948eec01f28e222
 
             stmt.executeUpdate();
 

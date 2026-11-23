@@ -151,6 +151,7 @@ public class AcompanhamentoDAO {
 
         acompanhamento.setObjetivo(rs.getString("objetivoAcompanhamento"));
         acompanhamento.setStatus(rs.getString("statusAcompanhamento"));
+        acompanhamento.setObservacao(rs.getString("observacaoAcompanhamento"));
 
         return acompanhamento;
     }

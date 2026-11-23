@@ -8,6 +8,8 @@ public class Pessoa {
     private String cpf;
     private String telefone;
     private String email;
+    private String senha;
+    private Boolean ativo = true;
 
     public Pessoa() {
 
@@ -24,11 +26,42 @@ public class Pessoa {
         this.email = email;
     }
 
+<<<<<<< HEAD
     // Construtor para nome e CPF
     public Pessoa(String nome, String cpf) {
 
         this.nome = nome;
         this.cpf = cpf;
+=======
+    public Boolean realizarLogin(String email, String senha) {
+        return Boolean.TRUE.equals(ativo)
+                && this.email != null && this.email.equals(email)
+                && this.senha != null && this.senha.equals(senha);
+    }
+
+    public void alterarSenha(String novaSenha) {
+        this.senha = novaSenha;
+    }
+
+    public void encerrarSessao() {
+        System.out.println("Sessão encerrada.");
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+>>>>>>> 469c46827651996e1bde5e5a6948eec01f28e222
     }
 
     public int getId() {

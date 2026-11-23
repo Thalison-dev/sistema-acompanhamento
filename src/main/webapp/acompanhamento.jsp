@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>${acompanhamento != null ? 'Editar' : 'Novo'} Acompanhamento</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 <body>
     <h1>${acompanhamento != null ? 'Editar' : 'Novo'} Acompanhamento</h1>

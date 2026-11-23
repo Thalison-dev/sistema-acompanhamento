@@ -20,6 +20,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Marcar Reunião - Pedagogo</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 <body>
 

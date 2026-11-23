@@ -9,8 +9,8 @@ public class ResponsavelLegalDAO {
     public ResponsavelLegal consultarResponsavelLegal(int id) {
         String sql = "SELECT p.id, p.nome " +
                      "FROM pessoa p " +
-                     "INNER JOIN ResponsavelLegal rl ON p.id = rl.pessoaId" +
-                     "WHERE rl.pessoaId = ?";
+                     "INNER JOIN responsavel_legal rl ON p.id = rl.responsavelLegal " +
+                     "WHERE rl.responsavelLegal = ?";
 
         try (Connection c = Conexao.conectar();
              PreparedStatement p = c.prepareStatement(sql)) {
@@ -34,15 +34,15 @@ public class ResponsavelLegalDAO {
     }
 
     public boolean marcarReuniaoComPedagogo(int responsavelLegalId, int pedagogoId, String reuniao) {
-        String sql = "UPDATE Pedagogo SET ResponsavelLegal = ?, reuniao = ? " +
-                     "WHERE pessoaId = ?";
+        String sql = "INSERT INTO mensagem (remetenteId, destinatarioId, conteudoMensagem, dataEnvioMensagem) " +
+                     "VALUES (?, ?, ?, NOW())";
 
         try (Connection c = Conexao.conectar();
              PreparedStatement p = c.prepareStatement(sql)) {
 
             p.setInt(1, responsavelLegalId);
-            p.setString(2, reuniao);
-            p.setInt(3, pedagogoId);
+            p.setInt(2, pedagogoId);
+            p.setString(3, "Reunião com Pedagogo | " + reuniao);
 
             int linhasAfetadas = p.executeUpdate();
             return linhasAfetadas > 0;

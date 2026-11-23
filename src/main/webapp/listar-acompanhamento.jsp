@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista de Acompanhamentos</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 <body>
     <h1>Acompanhamentos Cadastrados</h1>
