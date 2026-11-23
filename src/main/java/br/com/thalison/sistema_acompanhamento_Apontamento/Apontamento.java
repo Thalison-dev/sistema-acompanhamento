@@ -1,39 +1,59 @@
 package br.com.thalison.sistema_acompanhamento_Apontamento;
 
-import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
+/**
+ * Apontamento: indicação, feita por um professor, de que um aluno
+ * precisa ser acompanhado. Pode dar origem a um Acompanhamento.
+ */
+public class Apontamento {
 
-public class Apontamento extends Pessoa {
-    private String idProfessor;
-    private String idPessoa;
+    private int id;
+    private int alunoId;       // coluna id_pessoa (o id do aluno é o id da pessoa)
+    private String nomeAluno;
+    private int professorId;   // coluna id_professor (opcional)
     private String dataInicio;
     private String nomeProfessor;
     private String motivo;
 
     public Apontamento() {
-        super();
     }
 
-    public Apontamento(String nome, String cpf, String dataInicio, String nomeProfessor, String motivo) {
-        super(nome, cpf); 
+    public Apontamento(int alunoId, String dataInicio, String nomeProfessor, String motivo) {
+        this.alunoId = alunoId;
         this.dataInicio = dataInicio;
         this.nomeProfessor = nomeProfessor;
         this.motivo = motivo;
     }
 
-    public String getIdProfessor() {
-        return idProfessor;
+    public int getId() {
+        return id;
     }
 
-    public void setIdProfessor(String idProfessor) {
-        this.idProfessor = idProfessor;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getIdPessoa() {
-        return idPessoa;
+    public int getAlunoId() {
+        return alunoId;
     }
 
-    public void setIdPessoa(String idPessoa) {
-        this.idPessoa = idPessoa;
+    public void setAlunoId(int alunoId) {
+        this.alunoId = alunoId;
+    }
+
+    public String getNomeAluno() {
+        return nomeAluno;
+    }
+
+    public void setNomeAluno(String nomeAluno) {
+        this.nomeAluno = nomeAluno;
+    }
+
+    public int getProfessorId() {
+        return professorId;
+    }
+
+    public void setProfessorId(int professorId) {
+        this.professorId = professorId;
     }
 
     public String getDataInicio() {

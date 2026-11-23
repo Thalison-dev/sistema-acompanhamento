@@ -4,9 +4,11 @@ public class Acompanhamento {
 
     private int id;
     private int alunoId;
+    private String nomeAluno;
     private String dataInicio;
     private String dataFim;
     private String objetivo;
+    private String observacao;
     private String status;
 
     public Acompanhamento() {
@@ -21,59 +23,30 @@ public class Acompanhamento {
         this.status = status;
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public int getAcompanhamentoId() { return id; }
+    public void setAcompanhamentoId(int id) { this.id = id; }
 
-    public int getAcompanhamentoId() {
-        return id;
-    }
+    public int getAlunoId() { return alunoId; }
+    public void setAlunoId(int alunoId) { this.alunoId = alunoId; }
 
-    public void setAcompanhamentoId(int id) {
-        this.id = id;
-    }
+    public String getNomeAluno() { return nomeAluno; }
+    public void setNomeAluno(String nomeAluno) { this.nomeAluno = nomeAluno; }
 
-    public int getAlunoId() {
-        return alunoId;
-    }
+    public String getDataInicio() { return dataInicio; }
+    public void setDataInicio(String dataInicio) { this.dataInicio = dataInicio; }
 
-    public void setAlunoId(int alunoId) {
-        this.alunoId = alunoId;
-    }
+    public String getDataFim() { return dataFim; }
+    public void setDataFim(String dataFim) { this.dataFim = dataFim; }
 
-    public String getDataInicio() {
-        return dataInicio;
-    }
+    public String getObjetivo() { return objetivo; }
+    public void setObjetivo(String objetivo) { this.objetivo = objetivo; }
 
-    public void setDataInicio(String dataInicio) {
-        this.dataInicio = dataInicio;
-    }
+    public String getObservacao() { return observacao; }
+    public void setObservacao(String observacao) { this.observacao = observacao; }
 
-    public String getDataFim() {
-        return dataFim;
-    }
-
-    public void setDataFim(String dataFim) {
-        this.dataFim = dataFim;
-    }
-
-    public String getObjetivo() {
-        return objetivo;
-    }
-
-    public void setObjetivo(String objetivo) {
-        this.objetivo = objetivo;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

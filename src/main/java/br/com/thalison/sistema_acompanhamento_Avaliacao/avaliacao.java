@@ -1,20 +1,23 @@
 package br.com.thalison.sistema_acompanhamento_Avaliacao;
 
-import java.time.LocalDate;
-
+/** Avaliação de um aluno (tabela avaliacao), registrada pelo professor. */
 public class avaliacao {
 
     private int id;
+    private int alunoId;
+    private int disciplinaId;
+    private String nomeDisciplina;
+    private String tipo;
     private String descricao;
     private double nota;
-    private LocalDate data;
+    private String data;
     private String observacao;
 
     public avaliacao() {
     }
 
     public avaliacao(int id, String descricao, double nota,
-                     LocalDate data, String observacao) {
+                     String data, String observacao) {
         this.id = id;
         this.descricao = descricao;
         this.nota = nota;
@@ -28,6 +31,38 @@ public class avaliacao {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getAlunoId() {
+        return alunoId;
+    }
+
+    public void setAlunoId(int alunoId) {
+        this.alunoId = alunoId;
+    }
+
+    public int getDisciplinaId() {
+        return disciplinaId;
+    }
+
+    public void setDisciplinaId(int disciplinaId) {
+        this.disciplinaId = disciplinaId;
+    }
+
+    public String getNomeDisciplina() {
+        return nomeDisciplina;
+    }
+
+    public void setNomeDisciplina(String nomeDisciplina) {
+        this.nomeDisciplina = nomeDisciplina;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public String getDescricao() {
@@ -46,11 +81,11 @@ public class avaliacao {
         this.nota = nota;
     }
 
-    public LocalDate getData() {
+    public String getData() {
         return data;
     }
 
-    public void setData(LocalDate data) {
+    public void setData(String data) {
         this.data = data;
     }
 
