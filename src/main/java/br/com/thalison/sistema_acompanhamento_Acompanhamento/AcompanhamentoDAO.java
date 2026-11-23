@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,14 +18,15 @@ public class AcompanhamentoDAO {
     public boolean cadastrar(Acompanhamento acompanhamento) {
 
         String sql = "INSERT INTO acompanhamento "
-                + "(alunoId, dataInicioAcompanhamento, "
+                + "(alunoId, responsavelLegalId, dataInicioAcompanhamento, "
                 + "dataFimAcompanhamento, objetivoAcompanhamento, "
                 + "statusAcompanhamento) "
-                + "VALUES (?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
+<<<<<<< HEAD
         	stmt.setInt(1, acompanhamento.getAluno().getId());
         	stmt.setDate(2, java.sql.Date.valueOf(acompanhamento.getDataInicio()));
         	if (acompanhamento.getDataFim() == null) {
@@ -32,9 +34,27 @@ public class AcompanhamentoDAO {
         	} else {
         	    stmt.setDate(3, java.sql.Date.valueOf(acompanhamento.getDataFim()));
         	}
+=======
+            stmt.setInt(1, acompanhamento.getAlunoId());
 
-            stmt.setString(4, acompanhamento.getObjetivo());
-            stmt.setString(5, acompanhamento.getStatus());
+            if (acompanhamento.getResponsavelLegalId() > 0) {
+                stmt.setInt(2, acompanhamento.getResponsavelLegalId());
+            } else {
+                stmt.setNull(2, Types.INTEGER);
+            }
+
+            stmt.setDate(3, Date.valueOf(acompanhamento.getDataInicio()));
+
+            if (acompanhamento.getDataFim() == null
+                    || acompanhamento.getDataFim().trim().isEmpty()) {
+                stmt.setNull(4, Types.DATE);
+            } else {
+                stmt.setDate(4, Date.valueOf(acompanhamento.getDataFim()));
+            }
+>>>>>>> aea11f6ce5fbd1f58dabfdfc3ecc8b2629d7611a
+
+            stmt.setString(5, acompanhamento.getObjetivo());
+            stmt.setString(6, acompanhamento.getStatus());
 
             return stmt.executeUpdate() > 0;
 
@@ -47,7 +67,7 @@ public class AcompanhamentoDAO {
     public List<Acompanhamento> listar() {
 
         List<Acompanhamento> acompanhamentos = new ArrayList<>();
-        String sql = "SELECT * FROM acompanhamento";
+        String sql = "SELECT * FROM acompanhamento ORDER BY acompanhamentoId DESC";
 
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -90,6 +110,7 @@ public class AcompanhamentoDAO {
 
         String sql = "UPDATE acompanhamento SET "
                 + "alunoId = ?, "
+                + "responsavelLegalId = ?, "
                 + "dataInicioAcompanhamento = ?, "
                 + "dataFimAcompanhamento = ?, "
                 + "objetivoAcompanhamento = ?, "
@@ -99,6 +120,7 @@ public class AcompanhamentoDAO {
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
+<<<<<<< HEAD
         	stmt.setInt(1, acompanhamento.getAluno().getId());
         	stmt.setDate(2, java.sql.Date.valueOf(acompanhamento.getDataInicio()));
 
@@ -107,10 +129,28 @@ public class AcompanhamentoDAO {
         	} else {
         	    stmt.setDate(3, java.sql.Date.valueOf(acompanhamento.getDataFim()));
         	}
+=======
+            stmt.setInt(1, acompanhamento.getAlunoId());
 
-            stmt.setString(4, acompanhamento.getObjetivo());
-            stmt.setString(5, acompanhamento.getStatus());
-            stmt.setInt(6, acompanhamento.getAcompanhamentoId());
+            if (acompanhamento.getResponsavelLegalId() > 0) {
+                stmt.setInt(2, acompanhamento.getResponsavelLegalId());
+            } else {
+                stmt.setNull(2, Types.INTEGER);
+            }
+
+            stmt.setDate(3, Date.valueOf(acompanhamento.getDataInicio()));
+
+            if (acompanhamento.getDataFim() == null
+                    || acompanhamento.getDataFim().trim().isEmpty()) {
+                stmt.setNull(4, Types.DATE);
+            } else {
+                stmt.setDate(4, Date.valueOf(acompanhamento.getDataFim()));
+            }
+>>>>>>> aea11f6ce5fbd1f58dabfdfc3ecc8b2629d7611a
+
+            stmt.setString(5, acompanhamento.getObjetivo());
+            stmt.setString(6, acompanhamento.getStatus());
+            stmt.setInt(7, acompanhamento.getAcompanhamentoId());
 
             return stmt.executeUpdate() > 0;
 
@@ -140,10 +180,15 @@ public class AcompanhamentoDAO {
         Acompanhamento acompanhamento = new Acompanhamento();
 
         acompanhamento.setAcompanhamentoId(rs.getInt("acompanhamentoId"));
+<<<<<<< HEAD
 
         Aluno aluno = new Aluno();
         aluno.setId(rs.getInt("alunoId"));
         acompanhamento.setAluno(aluno);
+=======
+        acompanhamento.setAlunoId(rs.getInt("alunoId"));
+        acompanhamento.setResponsavelLegalId(rs.getInt("responsavelLegalId"));
+>>>>>>> aea11f6ce5fbd1f58dabfdfc3ecc8b2629d7611a
 
         Date inicio = rs.getDate("dataInicioAcompanhamento");
         Date fim = rs.getDate("dataFimAcompanhamento");

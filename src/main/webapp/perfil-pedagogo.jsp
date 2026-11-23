@@ -16,7 +16,7 @@
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/pedagogo">Voltar ao Painel do Pedagogo</a>
+        <a href="${pageContext.request.contextPath}/index.jsp">Voltar ao Início</a>
     </p>
     <hr>
 
@@ -47,7 +47,7 @@
 
         <p>
             <button type="submit">Salvar Perfil</button>
-            <a href="${pageContext.request.contextPath}/pedagogo">Cancelar</a>
+            <a href="${pageContext.request.contextPath}/index.jsp">Cancelar</a>
         </p>
     </form>
 

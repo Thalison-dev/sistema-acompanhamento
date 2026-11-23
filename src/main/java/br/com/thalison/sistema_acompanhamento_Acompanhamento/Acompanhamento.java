@@ -16,9 +16,11 @@ public class Acompanhamento {
     public Acompanhamento() {
     }
 
-    public Acompanhamento(Aluno aluno, LocalDate dataInicio, LocalDate dataFim,
-                          String objetivo, String status) {
-        this.aluno = aluno;
+
+    public Acompanhamento(int alunoId, int responsavelLegalId, String dataInicio,
+                          String dataFim, String objetivo, String status) {
+        this.alunoId = alunoId;
+        this.responsavelLegalId = responsavelLegalId;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
         this.objetivo = objetivo;
@@ -49,7 +51,15 @@ public class Acompanhamento {
         this.aluno = aluno;
     }
 
-    public LocalDate getDataInicio() {
+    public int getResponsavelLegalId() {
+        return responsavelLegalId;
+    }
+
+    public void setResponsavelLegalId(int responsavelLegalId) {
+        this.responsavelLegalId = responsavelLegalId;
+    }
+
+    public String getDataInicio() {
         return dataInicio;
     }
 

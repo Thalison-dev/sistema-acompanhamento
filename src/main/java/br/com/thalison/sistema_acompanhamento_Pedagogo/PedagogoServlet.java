@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import br.com.thalison.sistema_acompanhamento_Acompanhamento.Acompanhamento;
 import br.com.thalison.sistema_acompanhamento_Acompanhamento.AcompanhamentoDAO;
+import br.com.thalison.sistema_acompanhamento_ResponsavelLegal.ResponsavelLegalDAO;
 import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 import br.com.thalison.sistema_acompanhamento_aluno.AlunoDAO;
 
@@ -22,6 +23,7 @@ public class PedagogoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final PedagogoDAO pedagogoDao = new PedagogoDAO();
     private final AlunoDAO alunoDao = new AlunoDAO();
+    private final ResponsavelLegalDAO responsavelDao = new ResponsavelLegalDAO();
     private final AcompanhamentoDAO acompanhamentoDao = new AcompanhamentoDAO();
 
     @Override
@@ -75,9 +77,10 @@ public class PedagogoServlet extends HttpServlet {
             throws ServletException, IOException {
         req.setAttribute("pedagogos", pedagogoDao.listar());
         req.setAttribute("alunos", alunoDao.listarTodos());
+        req.setAttribute("responsaveis", responsavelDao.listarTodos());
         req.setAttribute("acompanhamentos", acompanhamentoDao.listar());
         req.setAttribute("reunioes", pedagogoDao.listarReunioes());
-        req.getRequestDispatcher("/pedagogo.jsp").forward(req, resp);
+        req.getRequestDispatcher("/index.jsp").forward(req, resp);
     }
 
     private void abrirHistoricoAluno(HttpServletRequest req, HttpServletResponse resp)
@@ -156,7 +159,7 @@ public class PedagogoServlet extends HttpServlet {
     private void redirecionar(HttpServletResponse resp, String contextPath, String tipo, String msg)
             throws IOException {
         String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8.name());
-        resp.sendRedirect(contextPath + "/pedagogo?" + tipo + "=" + encoded);
+        resp.sendRedirect(contextPath + "/index.jsp?" + tipo + "=" + encoded);
     }
 
     private int parseInt(String valor) {
