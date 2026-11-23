@@ -4,10 +4,10 @@ import br.com.thalison.sistema_acompanhamento.*;
 import java.sql.*;
 import java.util.*;
 
-public class NeurodivergenteDAO {
+public class NeurodivergenciaDAO {
 
-    private Neurodivergente mapear(ResultSet r) throws SQLException {
-        Neurodivergente n = new Neurodivergente();
+    private Neurodivergencia mapear(ResultSet r) throws SQLException {
+        Neurodivergencia n = new Neurodivergencia();
         n.setId(r.getInt("neurodivergenciaId"));
         n.setAlunoId(r.getInt("alunoId"));
         n.setTipo(r.getString("tipoNeurodivergencia"));
@@ -17,7 +17,7 @@ public class NeurodivergenteDAO {
         return n;
     }
 
-    public boolean cadastrar(Neurodivergente n) {
+    public boolean cadastrar(Neurodivergencia n) {
         String sql = "INSERT INTO neurodivergencia (alunoId, tipoNeurodivergencia, descricaoNeuro, observacoesNeuro, dataRegistroNeuro) VALUES (?, ?, ?, ?, ?)";
         try (Connection c = Conexao.conectar();
              PreparedStatement p = c.prepareStatement(sql)) {
@@ -33,7 +33,7 @@ public class NeurodivergenteDAO {
         }
     }
 
-    public Neurodivergente consultar(int id) {
+    public Neurodivergencia consultar(int id) {
         String sql = "SELECT * FROM neurodivergencia WHERE neurodivergenciaId = ?";
         try (Connection c = Conexao.conectar();
              PreparedStatement p = c.prepareStatement(sql)) {
@@ -47,8 +47,8 @@ public class NeurodivergenteDAO {
         return null;
     }
 
-    public List<Neurodivergente> listarTodos() {
-        List<Neurodivergente> lista = new ArrayList<>();
+    public List<Neurodivergencia> listarTodos() {
+        List<Neurodivergencia> lista = new ArrayList<>();
         String sql = "SELECT * FROM neurodivergencia";
         try (Connection c = Conexao.conectar();
              PreparedStatement p = c.prepareStatement(sql);
@@ -60,7 +60,7 @@ public class NeurodivergenteDAO {
         return lista;
     }
 
-    public boolean atualizar(Neurodivergente n) {
+    public boolean atualizar(Neurodivergencia n) {
         String sql = "UPDATE neurodivergencia SET alunoId=?, tipoNeurodivergencia=?, descricaoNeuro=?, observacoesNeuro=?, dataRegistroNeuro=? WHERE neurodivergenciaId=?";
         try (Connection c = Conexao.conectar();
              PreparedStatement p = c.prepareStatement(sql)) {

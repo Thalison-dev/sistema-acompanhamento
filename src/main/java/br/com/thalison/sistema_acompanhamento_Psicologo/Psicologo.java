@@ -1,44 +1,62 @@
 package br.com.thalison.sistema_acompanhamento_Psicologo;
- 
-import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
- 
-public class Psicologo extends Pessoa {
- 
-	private String nome;
-	private String especialidade;
-	public Psicologo() {
-    }
- 
+
+// Igual ao diagrama e ao Pedagogo: "pessoa" é o nome e id é o id da pessoa (tabela psicologo.pessoaId).
+public class Psicologo {
+
     private int id;
-	public Psicologo(int id, String nome, String cpf, String telefone, String email) {
-		super(id, nome, cpf, telefone, email);
-   
+    private String pessoa;
+    private String especialidade;
+
+    public Psicologo() {
     }
- 
+
+    public Psicologo(int id, String pessoa, String especialidade) {
+        this.id = id;
+        this.pessoa = pessoa;
+        this.especialidade = especialidade;
+    }
+
+    public void consultarAluno() {
+        System.out.println("Consultando aluno.");
+    }
+
+    public void marcarReuniaoComAluno() {
+        System.out.println("Reunião com aluno agendada.");
+    }
+
+    public void marcarReuniaoComPedagogo() {
+        System.out.println("Reunião com pedagogo agendada.");
+    }
+
+    public void atualizarRegistroDoAluno() {
+        System.out.println("Registro do aluno atualizado.");
+    }
+
+    public void verRegistroDoAluno() {
+        System.out.println("Consultando registro do aluno.");
+    }
+
     public int getId() {
         return id;
     }
- 
+
     public void setId(int id) {
         this.id = id;
     }
- 
-    public String getNome() {
-        return nome;
+
+    public String getPessoa() {
+        return pessoa;
     }
- 
-    public void setNome(String nome) {
-        this.nome = nome;
+
+    public void setPessoa(String pessoa) {
+        this.pessoa = pessoa;
     }
- 
- 
+
     public String getEspecialidade() {
         return especialidade;
     }
- 
+
     public void setEspecialidade(String especialidade) {
         this.especialidade = especialidade;
     }
 }
- 
- 

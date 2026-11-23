@@ -7,6 +7,7 @@ public class Acompanhamento {
     private String dataInicio;
     private String dataFim;
     private String objetivo;
+    private String observacao;
     private String status;
 
     public Acompanhamento() {
@@ -19,6 +20,30 @@ public class Acompanhamento {
         this.dataFim = dataFim;
         this.objetivo = objetivo;
         this.status = status;
+    }
+
+    public void criar() {
+        System.out.println("Acompanhamento criado.");
+    }
+
+    public void atualizar() {
+        System.out.println("Acompanhamento atualizado.");
+    }
+
+    public void finalizar() {
+        this.status = "Concluído";
+    }
+
+    public void consultarHistorico() {
+        System.out.println("Consultando histórico do acompanhamento.");
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 
     public int getId() {

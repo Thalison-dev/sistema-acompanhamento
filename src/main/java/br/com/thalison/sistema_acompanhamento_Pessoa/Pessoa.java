@@ -7,6 +7,8 @@ public class Pessoa {
     private String cpf;
     private String telefone;
     private String email;
+    private String senha;
+    private Boolean ativo = true;
 
     public Pessoa() {
     }
@@ -17,6 +19,36 @@ public class Pessoa {
         this.cpf = cpf;
         this.telefone = telefone;
         this.email = email;
+    }
+
+    public Boolean realizarLogin(String email, String senha) {
+        return Boolean.TRUE.equals(ativo)
+                && this.email != null && this.email.equals(email)
+                && this.senha != null && this.senha.equals(senha);
+    }
+
+    public void alterarSenha(String novaSenha) {
+        this.senha = novaSenha;
+    }
+
+    public void encerrarSessao() {
+        System.out.println("Sessão encerrada.");
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 
     public int getId() {

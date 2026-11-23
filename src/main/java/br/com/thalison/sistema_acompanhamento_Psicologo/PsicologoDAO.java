@@ -21,7 +21,7 @@ public class PsicologoDAO {
                 if (r.next()) {
                     Psicologo psicologo = new Psicologo();
                     psicologo.setId(r.getInt("id"));
-                    psicologo.setNome(r.getString("nome"));
+                    psicologo.setPessoa(r.getString("nome"));
                     psicologo.setEspecialidade(r.getString("especialidade"));
                     return psicologo;
                 }

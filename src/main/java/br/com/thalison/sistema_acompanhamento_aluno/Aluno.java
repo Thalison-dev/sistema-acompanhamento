@@ -23,6 +23,18 @@ public class Aluno extends Pessoa {
         this.status = status;
     }
 
+    public void atualizarDados() {
+        System.out.println("Dados do aluno atualizados.");
+    }
+
+    public void consultarHistorico() {
+        System.out.println("Consultando histórico do aluno.");
+    }
+
+    public void consultarAcompanhamento() {
+        System.out.println("Consultando acompanhamento do aluno.");
+    }
+
     public String getDataNascimento() {
         return dataNascimento;
     }
