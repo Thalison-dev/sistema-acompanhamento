@@ -4,6 +4,7 @@ public class Acompanhamento {
 
     private int id;
     private int alunoId;
+    private int responsavelLegalId;
     private String dataInicio;
     private String dataFim;
     private String objetivo;
@@ -12,9 +13,10 @@ public class Acompanhamento {
     public Acompanhamento() {
     }
 
-    public Acompanhamento(int alunoId, String dataInicio, String dataFim,
-                          String objetivo, String status) {
+    public Acompanhamento(int alunoId, int responsavelLegalId, String dataInicio,
+                          String dataFim, String objetivo, String status) {
         this.alunoId = alunoId;
+        this.responsavelLegalId = responsavelLegalId;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
         this.objetivo = objetivo;
@@ -43,6 +45,14 @@ public class Acompanhamento {
 
     public void setAlunoId(int alunoId) {
         this.alunoId = alunoId;
+    }
+
+    public int getResponsavelLegalId() {
+        return responsavelLegalId;
+    }
+
+    public void setResponsavelLegalId(int responsavelLegalId) {
+        this.responsavelLegalId = responsavelLegalId;
     }
 
     public String getDataInicio() {

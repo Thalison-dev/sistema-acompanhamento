@@ -19,12 +19,12 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Marcar Reunião - Pedagogo</title>
+    <title>Marcar Reunião</title>
 </head>
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/pedagogo">Voltar ao Painel do Pedagogo</a>
+        <a href="${pageContext.request.contextPath}/index.jsp">Início</a>
     </p>
     <hr>
 
@@ -68,7 +68,7 @@
 
         <p>
             <button type="submit">Confirmar Agendamento</button>
-            <a href="${pageContext.request.contextPath}/pedagogo">Cancelar</a>
+            <a href="${pageContext.request.contextPath}/index.jsp">Cancelar</a>
         </p>
     </form>
 

@@ -8,7 +8,9 @@
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/pedagogo">Painel do Pedagogo</a> |
+        <a href="${pageContext.request.contextPath}/index.jsp">Início</a> |
+        <a href="${pageContext.request.contextPath}/cadastroAluno.jsp">Cadastrar Aluno</a> |
+        <a href="${pageContext.request.contextPath}/responsavel">Responsáveis Legais</a> |
         <a href="${pageContext.request.contextPath}/acompanhamento">Acompanhamentos</a>
     </p>
     <hr>
@@ -66,7 +68,7 @@
         </p>
         <p>
             <button type="submit">Cadastrar Aluno</button>
-            <a href="${pageContext.request.contextPath}/pedagogo">Cancelar</a>
+            <a href="${pageContext.request.contextPath}/index.jsp">Cancelar</a>
         </p>
     </form>
 

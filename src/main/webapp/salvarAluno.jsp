@@ -10,7 +10,7 @@
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/pedagogo">Painel do Pedagogo</a> |
+        <a href="${pageContext.request.contextPath}/index.jsp">Início</a> |
         <a href="${pageContext.request.contextPath}/cadastroAluno.jsp">Cadastrar Outro Aluno</a> |
         <a href="${pageContext.request.contextPath}/acompanhamento">Acompanhamentos</a>
     </p>
@@ -52,7 +52,7 @@
             <p><strong>Nome:</strong> <%= aluno.getNome() %></p>
             <p>
                 <a href="${pageContext.request.contextPath}/acompanhamento?alunoId=<%= aluno.getId() %>">Iniciar Acompanhamento deste Aluno</a> |
-                <a href="${pageContext.request.contextPath}/pedagogo">Voltar ao Painel do Pedagogo</a>
+                <a href="${pageContext.request.contextPath}/index.jsp">Voltar ao Início</a>
             </p>
 <%
         } else {

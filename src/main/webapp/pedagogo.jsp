@@ -50,7 +50,7 @@
     </p>
 
     <p>
-        <a href="${pageContext.request.contextPath}/pedagogo">Painel do Pedagogo</a> |
+       
         <a href="${pageContext.request.contextPath}/cadastroAluno.jsp">Cadastrar Novo Aluno</a> |
         <a href="${pageContext.request.contextPath}/acompanhamento">Registrar Acompanhamento</a> |
         <a href="${pageContext.request.contextPath}/pedagogo?acao=reuniao">Marcar Reunião</a> |

@@ -5,7 +5,7 @@ import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
 public class ResponsavelLegal extends Pessoa {
 
     private String parentesco;
-
+    private String ResponsavelLegalId;
     public ResponsavelLegal() {
     }
 
