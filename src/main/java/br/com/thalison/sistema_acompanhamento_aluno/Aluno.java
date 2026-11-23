@@ -1,4 +1,3 @@
-
 package br.com.thalison.sistema_acompanhamento_aluno;
 
 import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
@@ -17,9 +16,7 @@ public class Aluno extends Pessoa {
     public Aluno(int id, String nome, String cpf, String telefone,
                  String email, String dataNascimento, String matricula,
                  String anoEscolar, String status) {
-
         super(id, nome, cpf, telefone, email);
-
         this.dataNascimento = dataNascimento;
         this.matricula = matricula;
         this.anoEscolar = anoEscolar;
@@ -56,17 +53,5 @@ public class Aluno extends Pessoa {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public void atualizarDados() {
-        System.out.println("Dados do aluno atualizados.");
-    }
-
-    public void consultarHistorico() {
-        System.out.println("Consulta ao histórico do aluno.");
-    }
-
-    public void consultarAcompanhamento() {
-        System.out.println("Consulta ao acompanhamento do aluno.");
     }
 }

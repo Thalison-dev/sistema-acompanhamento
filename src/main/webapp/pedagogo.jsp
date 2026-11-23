@@ -1,78 +1,182 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="br.com.thalison.sistema_acompanhamento_Pedagogo.Pedagogo" %>
+<%@ page import="br.com.thalison.sistema_acompanhamento_Pedagogo.PedagogoDAO" %>
+<%@ page import="br.com.thalison.sistema_acompanhamento_aluno.Aluno" %>
+<%@ page import="br.com.thalison.sistema_acompanhamento_aluno.AlunoDAO" %>
+<%@ page import="br.com.thalison.sistema_acompanhamento_Acompanhamento.Acompanhamento" %>
+<%@ page import="br.com.thalison.sistema_acompanhamento_Acompanhamento.AcompanhamentoDAO" %>
 <%
-    Object objPedagogo = request.getAttribute("pedagogo");
-    Pedagogo pedagogo = (objPedagogo instanceof Pedagogo) ? (Pedagogo) objPedagogo : null;
-    boolean isEdicao = (pedagogo != null);
+    PedagogoDAO pDao = new PedagogoDAO();
+    List<Pedagogo> pedagogos = (request.getAttribute("pedagogos") instanceof List<?>)
+            ? (List<Pedagogo>) request.getAttribute("pedagogos") : pDao.listar();
+
+    List<Aluno> alunos = (request.getAttribute("alunos") instanceof List<?>)
+            ? (List<Aluno>) request.getAttribute("alunos") : new AlunoDAO().listarTodos();
+
+    List<Acompanhamento> acompanhamentos = (request.getAttribute("acompanhamentos") instanceof List<?>)
+            ? (List<Acompanhamento>) request.getAttribute("acompanhamentos") : new AcompanhamentoDAO().listar();
+
+    List<String[]> reunioes = (request.getAttribute("reunioes") instanceof List<?>)
+            ? (List<String[]>) request.getAttribute("reunioes") : pDao.listarReunioes();
+
+    Map<Integer, String> nomesAlunos = new HashMap<>();
+    for (Aluno al : alunos) {
+        nomesAlunos.put(al.getId(), al.getNome());
+    }
+
+    Pedagogo pedagogoAtivo = !pedagogos.isEmpty() ? pedagogos.get(0) : null;
+    String msgSucesso = request.getParameter("sucesso");
+    String msgErro = request.getParameter("erro");
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title><%= isEdicao ? "Editar Pedagogo" : "Novo Pedagogo" %></title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f6f9; color: #333; }
-        .navbar { background-color: #2c3e50; padding: 14px 30px; display: flex; gap: 20px; align-items: center; }
-        .navbar a { color: #ecf0f1; text-decoration: none; font-weight: bold; font-size: 14px; padding: 6px 10px; border-radius: 4px; }
-        .navbar a:hover, .navbar a.active { background-color: #007bff; color: #fff; }
-        .container { max-width: 550px; margin: 40px auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-        h2 { margin-top: 0; color: #2c3e50; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        input[readonly] { background-color: #e9ecef; cursor: not-allowed; }
-        .actions { margin-top: 20px; display: flex; gap: 10px; }
-        .btn { padding: 10px 16px; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; }
-        .btn-success { background-color: #28a745; color: #fff; }
-        .btn-success:hover { background-color: #218838; }
-        .btn-secondary { background-color: #6c757d; color: #fff; }
-        .btn-secondary:hover { background-color: #5a6268; }
-    </style>
+    <title>Painel do Pedagogo</title>
 </head>
 <body>
 
-<div class="navbar">
-    <a href="${pageContext.request.contextPath}/index.jsp">Início</a>
-    <a href="${pageContext.request.contextPath}/pedagogo" class="active">Pedagogos</a>
-    <a href="${pageContext.request.contextPath}/cadastroAluno.jsp">Alunos</a>
-    <a href="${pageContext.request.contextPath}/acompanhamento.jsp">Acompanhamentos</a>
-</div>
+    <h1>Painel do Pedagogo</h1>
+    <p>
+        <strong>Pedagogo em exercício:</strong>
+        <% if (pedagogoAtivo != null) { %>
+            <%= pedagogoAtivo.getPessoa() %> (<%= pedagogoAtivo.getEspecialidade() %>)
+        <% } else { %>
+            Não identificado (<a href="${pageContext.request.contextPath}/pedagogo?acao=perfil">Definir meu perfil</a>)
+        <% } %>
+    </p>
 
-<div class="container">
-    <h2><%= isEdicao ? "Editar Pedagogo" : "Cadastrar Pedagogo" %></h2>
+    <p>
+        <a href="${pageContext.request.contextPath}/pedagogo">Painel do Pedagogo</a> |
+        <a href="${pageContext.request.contextPath}/cadastroAluno.jsp">Cadastrar Novo Aluno</a> |
+        <a href="${pageContext.request.contextPath}/acompanhamento">Registrar Acompanhamento</a> |
+        <a href="${pageContext.request.contextPath}/pedagogo?acao=reuniao">Marcar Reunião</a> |
+        <a href="${pageContext.request.contextPath}/pedagogo?acao=perfil">Meu Perfil</a>
+    </p>
+    <hr>
 
-    <form action="${pageContext.request.contextPath}/pedagogo" method="post">
-        <input type="hidden" name="acao" value="<%= isEdicao ? "atualizar" : "cadastrar" %>">
+    <% if (msgSucesso != null && !msgSucesso.isEmpty()) { %>
+        <p><strong>Sucesso:</strong> <%= msgSucesso %></p>
+    <% } %>
+    <% if (msgErro != null && !msgErro.isEmpty()) { %>
+        <p><strong>Erro:</strong> <%= msgErro %></p>
+    <% } %>
 
-        <div class="form-group">
-            <label for="idPedagogo">ID do Pedagogo:</label>
-            <% if (isEdicao) { %>
-                <input type="number" id="idPedagogo" value="<%= pedagogo.getIdPedagogo() %>" readonly>
-                <input type="hidden" name="id" value="<%= pedagogo.getIdPedagogo() %>">
-            <% } else { %>
-                <input type="number" id="idPedagogo" name="idPedagogo" required placeholder="Ex: 1">
+    <h2>1. Alunos Cadastrados</h2>
+    <p><a href="${pageContext.request.contextPath}/cadastroAluno.jsp">+ Cadastrar Novo Aluno</a></p>
+
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Matrícula</th>
+                <th>Ano Escolar</th>
+                <th>Status</th>
+                <th>Ações do Pedagogo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (!alunos.isEmpty()) {
+                for (Aluno a : alunos) { %>
+            <tr>
+                <td><%= a.getId() %></td>
+                <td><%= a.getNome() %></td>
+                <td><%= a.getMatricula() != null ? a.getMatricula() : "-" %></td>
+                <td><%= a.getAnoEscolar() != null ? a.getAnoEscolar() : "-" %></td>
+                <td><%= a.getStatus() != null ? a.getStatus() : "-" %></td>
+                <td>
+                    <a href="${pageContext.request.contextPath}/acompanhamento?alunoId=<%= a.getId() %>">Acompanhar Aluno</a> |
+                    <a href="${pageContext.request.contextPath}/pedagogo?acao=historicoAluno&alunoId=<%= a.getId() %>">Consultar Registros</a> |
+                    <a href="${pageContext.request.contextPath}/pedagogo?acao=reuniao&alunoId=<%= a.getId() %>">Marcar Reunião</a>
+                </td>
+            </tr>
+            <%  }
+               } else { %>
+            <tr>
+                <td colspan="6">Nenhum aluno cadastrado. <a href="${pageContext.request.contextPath}/cadastroAluno.jsp">Cadastre o primeiro aluno</a>.</td>
+            </tr>
             <% } %>
-        </div>
+        </tbody>
+    </table>
 
-        <div class="form-group">
-            <label for="pessoa">Nome / Pessoa:</label>
-            <input type="text" id="pessoa" name="pessoa" required
-                   value="<%= isEdicao && pedagogo.getPessoa() != null ? pedagogo.getPessoa() : "" %>"
-                   placeholder="Nome do pedagogo">
-        </div>
+    <hr>
 
-        <div class="form-group">
-            <label for="especialidade">Especialidade:</label>
-            <input type="text" id="especialidade" name="especialidade" required
-                   value="<%= isEdicao && pedagogo.getEspecialidade() != null ? pedagogo.getEspecialidade() : "" %>"
-                   placeholder="Ex: Psicopedagogia, Orientação Educacional">
-        </div>
+    <h2>2. Acompanhamentos Pedagógicos Registrados</h2>
+    <p><a href="${pageContext.request.contextPath}/acompanhamento">+ Novo Acompanhamento</a></p>
 
-        <div class="actions">
-            <button type="submit" class="btn btn-success"><%= isEdicao ? "Atualizar" : "Salvar" %></button>
-            <a href="${pageContext.request.contextPath}/pedagogo" class="btn btn-secondary">Cancelar</a>
-        </div>
-    </form>
-</div>
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Aluno</th>
+                <th>Início</th>
+                <th>Fim</th>
+                <th>Objetivo</th>
+                <th>Status</th>
+                <th>Gerenciar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (!acompanhamentos.isEmpty()) {
+                for (Acompanhamento ac : acompanhamentos) {
+                    String nomeAluno = nomesAlunos.containsKey(ac.getAlunoId())
+                            ? nomesAlunos.get(ac.getAlunoId())
+                            : "Aluno ID " + ac.getAlunoId(); %>
+            <tr>
+                <td><%= ac.getAcompanhamentoId() %></td>
+                <td><%= nomeAluno %> (ID <%= ac.getAlunoId() %>)</td>
+                <td><%= ac.getDataInicio() != null ? ac.getDataInicio() : "-" %></td>
+                <td><%= (ac.getDataFim() != null && !ac.getDataFim().trim().isEmpty()) ? ac.getDataFim() : "Em aberto" %></td>
+                <td><%= ac.getObjetivo() %></td>
+                <td><%= ac.getStatus() %></td>
+                <td>
+                    <a href="${pageContext.request.contextPath}/acompanhamento?acao=editar&id=<%= ac.getAcompanhamentoId() %>">Editar</a> |
+                    <a href="${pageContext.request.contextPath}/acompanhamento?acao=excluir&id=<%= ac.getAcompanhamentoId() %>"
+                       onclick="return confirm('Excluir este acompanhamento?');">Excluir</a>
+                </td>
+            </tr>
+            <%  }
+               } else { %>
+            <tr>
+                <td colspan="7">Nenhum acompanhamento registrado.</td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>3. Reuniões Agendadas</h2>
+    <p><a href="${pageContext.request.contextPath}/pedagogo?acao=reuniao">+ Agendar Reunião (Psicólogo / Responsável / Diretor / Aluno)</a></p>
+
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Detalhes da Reunião</th>
+                <th>Data de Registro</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (!reunioes.isEmpty()) {
+                for (String[] r : reunioes) { %>
+            <tr>
+                <td><%= r[0] %></td>
+                <td><%= r[3] %></td>
+                <td><%= r[4] %></td>
+            </tr>
+            <%  }
+               } else { %>
+            <tr>
+                <td colspan="3">Nenhuma reunião agendada até o momento.</td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+
 </body>
 </html>
