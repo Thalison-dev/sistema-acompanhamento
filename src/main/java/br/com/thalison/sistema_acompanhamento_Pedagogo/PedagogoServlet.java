@@ -1,19 +1,17 @@
 package br.com.thalison.sistema_acompanhamento_Pedagogo;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import br.com.thalison.sistema_acompanhamento_Acompanhamento.Acompanhamento;
+import br.com.thalison.sistema_acompanhamento.WebUtil;
 import br.com.thalison.sistema_acompanhamento_Acompanhamento.AcompanhamentoDAO;
-import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
+import br.com.thalison.sistema_acompanhamento_Apontamento.ApontamentoDAO;
 import br.com.thalison.sistema_acompanhamento_aluno.AlunoDAO;
 
 @WebServlet("/pedagogo")
@@ -41,12 +39,41 @@ public class PedagogoServlet extends HttpServlet {
                 break;
 
             case "historicoAluno":
-                abrirHistoricoAluno(req, resp);
+                resp.sendRedirect(req.getContextPath() + "/aluno?acao=historico&id="
+                    + WebUtil.parseInt(req.getParameter("alunoId")));
                 break;
 
             case "perfil":
                 req.setAttribute("pedagogos", pedagogoDao.listar());
                 req.getRequestDispatcher("/perfil-pedagogo.jsp").forward(req, resp);
+                break;
+
+            case "lista":
+                req.setAttribute("pedagogos", pedagogoDao.listar());
+                req.getRequestDispatcher("/pedagogo-lista.jsp").forward(req, resp);
+                break;
+
+            case "novo":
+                req.getRequestDispatcher("/RegistroPedagogo.jsp").forward(req, resp);
+                break;
+
+            case "editar": {
+                Pedagogo p = pedagogoDao.buscarPorId(WebUtil.parseInt(req.getParameter("id")));
+                if (p == null) {
+                    WebUtil.redirecionar(req, resp, "/pedagogo?acao=lista", "erro", "Pedagogo não encontrado.");
+                    return;
+                }
+                req.setAttribute("pedagogo", p);
+                req.getRequestDispatcher("/RegistroPedagogo.jsp").forward(req, resp);
+                break;
+            }
+
+            case "excluir":
+                if (pedagogoDao.excluir(WebUtil.parseInt(req.getParameter("id")))) {
+                    WebUtil.redirecionar(req, resp, "/pedagogo?acao=lista", "sucesso", "Pedagogo excluído.");
+                } else {
+                    WebUtil.redirecionar(req, resp, "/pedagogo?acao=lista", "erro", "Não foi possível excluir o pedagogo.");
+                }
                 break;
 
             default:
@@ -64,109 +91,68 @@ public class PedagogoServlet extends HttpServlet {
 
         if ("agendarReuniao".equals(acao)) {
             agendarReuniao(req, resp);
-        } else if ("salvarPerfil".equals(acao)) {
+        } else if ("salvarPerfil".equals(acao) || "salvar".equals(acao)) {
             salvarPerfil(req, resp);
         } else {
-            redirecionar(resp, req.getContextPath(), "erro", "Ação inválida.");
+            WebUtil.redirecionar(req, resp, "/pedagogo", "erro", "Ação inválida.");
         }
     }
 
     private void abrirPainelPedagogo(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        req.setAttribute("pedagogos", pedagogoDao.listar());
+        List<Pedagogo> pedagogos = pedagogoDao.listar();
+        req.setAttribute("pedagogos", pedagogos);
+        req.setAttribute("pedagogoAtivo", pedagogos.isEmpty() ? null : pedagogos.get(0));
         req.setAttribute("alunos", alunoDao.listarTodos());
         req.setAttribute("acompanhamentos", acompanhamentoDao.listar());
+        req.setAttribute("apontamentos", new ApontamentoDAO().listar());
         req.setAttribute("reunioes", pedagogoDao.listarReunioes());
         req.getRequestDispatcher("/pedagogo.jsp").forward(req, resp);
     }
 
-    private void abrirHistoricoAluno(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        int alunoId = parseInt(req.getParameter("alunoId"));
-        if (alunoId <= 0) {
-            redirecionar(resp, req.getContextPath(), "erro", "Selecione um aluno válido.");
-            return;
-        }
-
-        Aluno aluno = alunoDao.buscarPorId(alunoId);
-        if (aluno == null) {
-            redirecionar(resp, req.getContextPath(), "erro", "Aluno não encontrado.");
-            return;
-        }
-
-        List<Acompanhamento> todos = acompanhamentoDao.listar();
-        List<Acompanhamento> doAluno = new ArrayList<>();
-        for (Acompanhamento a : todos) {
-            if (a.getAlunoId() == alunoId) {
-                doAluno.add(a);
-            }
-        }
-
-        req.setAttribute("aluno", aluno);
-        req.setAttribute("acompanhamentosAluno", doAluno);
-        req.getRequestDispatcher("/historico-aluno.jsp").forward(req, resp);
-    }
-
     private void agendarReuniao(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
-        int pedagogoId = parseInt(req.getParameter("pedagogoId"));
-        String publicoAlvo = req.getParameter("publicoAlvo");
-        int alunoId = parseInt(req.getParameter("alunoId"));
-        String dataReuniao = req.getParameter("dataReuniao");
-        String motivo = req.getParameter("motivo");
+        int pedagogoId = WebUtil.parseInt(req.getParameter("pedagogoId"));
+        String publicoAlvo = WebUtil.texto(req, "publicoAlvo");
+        int alunoId = WebUtil.parseInt(req.getParameter("alunoId"));
+        String dataReuniao = WebUtil.texto(req, "dataReuniao");
+        String motivo = WebUtil.texto(req, "motivo");
 
-        if (publicoAlvo == null || publicoAlvo.trim().isEmpty()
-                || dataReuniao == null || dataReuniao.trim().isEmpty()
-                || motivo == null || motivo.trim().isEmpty()) {
-            redirecionar(resp, req.getContextPath(), "erro", "Preencha todos os campos da reunião.");
+        if (publicoAlvo == null || dataReuniao == null || motivo == null) {
+            WebUtil.redirecionar(req, resp, "/pedagogo?acao=reuniao", "erro", "Preencha todos os campos da reunião.");
             return;
         }
 
-        if (pedagogoDao.registrarReuniao(pedagogoId, publicoAlvo.trim(), alunoId, dataReuniao.trim(), motivo.trim())) {
-            redirecionar(resp, req.getContextPath(), "sucesso", "Reunião com " + publicoAlvo + " agendada com sucesso!");
+        if (pedagogoDao.registrarReuniao(pedagogoId, publicoAlvo, alunoId, dataReuniao, motivo)) {
+            WebUtil.redirecionar(req, resp, "/pedagogo", "sucesso", "Reunião com " + publicoAlvo + " agendada com sucesso!");
         } else {
-            redirecionar(resp, req.getContextPath(), "erro", "Erro ao agendar reunião no banco.");
+            WebUtil.redirecionar(req, resp, "/pedagogo", "erro", "Erro ao agendar reunião no banco.");
         }
     }
 
     private void salvarPerfil(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
-        int id = parseInt(req.getParameter("idPedagogo"));
-        String pessoa = req.getParameter("pessoa");
-        String especialidade = req.getParameter("especialidade");
+        int id = WebUtil.parseInt(req.getParameter("idPedagogo"));
+        String voltar = "salvar".equals(req.getParameter("acao")) ? "/pedagogo?acao=lista" : "/pedagogo";
 
-        if (id <= 0 || pessoa == null || pessoa.trim().isEmpty()
-                || especialidade == null || especialidade.trim().isEmpty()) {
-            redirecionar(resp, req.getContextPath(), "erro", "Preencha ID, nome e especialidade.");
+        Pedagogo p = new Pedagogo(id, WebUtil.texto(req, "pessoa"), WebUtil.texto(req, "especialidade"));
+        p.setEmail(WebUtil.texto(req, "email"));
+        p.setTelefone(WebUtil.texto(req, "telefone"));
+        p.setCpf(WebUtil.texto(req, "cpf"));
+
+        if (p.getPessoa() == null || p.getEspecialidade() == null || p.getEmail() == null) {
+            WebUtil.redirecionar(req, resp, voltar, "erro", "Preencha nome, e-mail e especialidade.");
             return;
         }
 
-        Pedagogo p = new Pedagogo(id, pessoa.trim(), especialidade.trim());
-        boolean ok = (pedagogoDao.buscarPorId(id) != null)
+        boolean ok = (id > 0 && pedagogoDao.buscarPorId(id) != null)
                 ? pedagogoDao.atualizar(p)
                 : pedagogoDao.cadastrar(p);
 
         if (ok) {
-            redirecionar(resp, req.getContextPath(), "sucesso", "Perfil do pedagogo salvo com sucesso!");
+            WebUtil.redirecionar(req, resp, voltar, "sucesso", "Pedagogo salvo com sucesso!");
         } else {
-            redirecionar(resp, req.getContextPath(), "erro", "Não foi possível salvar o perfil.");
-        }
-    }
-
-    private void redirecionar(HttpServletResponse resp, String contextPath, String tipo, String msg)
-            throws IOException {
-        String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8.name());
-        resp.sendRedirect(contextPath + "/pedagogo?" + tipo + "=" + encoded);
-    }
-
-    private int parseInt(String valor) {
-        if (valor == null || valor.trim().isEmpty()) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(valor.trim());
-        } catch (NumberFormatException e) {
-            return 0;
+            WebUtil.redirecionar(req, resp, voltar, "erro", "Não foi possível salvar o pedagogo (o CPF já existe?).");
         }
     }
 }

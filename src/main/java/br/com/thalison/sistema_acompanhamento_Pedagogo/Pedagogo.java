@@ -1,10 +1,17 @@
 package br.com.thalison.sistema_acompanhamento_Pedagogo;
 
+/**
+ * Pedagogo. O id é o mesmo da tabela pessoa (pedagogo.pessoa -> pessoa.id)
+ * e o campo "pessoa" guarda o nome para exibição.
+ */
 public class Pedagogo {
 
     private int idPedagogo;
     private String pessoa;
     private String especialidade;
+    private String email;
+    private String telefone;
+    private String cpf;
 
     public Pedagogo() {
     }
@@ -57,5 +64,29 @@ public class Pedagogo {
 
     public void setEspecialidade(String especialidade) {
         this.especialidade = especialidade;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 }
