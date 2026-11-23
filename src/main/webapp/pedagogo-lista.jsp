@@ -1,55 +1,92 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="br.com.thalison.sistema_acompanhamento_Pedagogo.Pedagogo" %>
+<%@ page import="br.com.thalison.sistema_acompanhamento_Pedagogo.PedagogoDAO" %>
+<%
+    Object obj = request.getAttribute("pedagogos");
+    List<Pedagogo> pedagogos = new ArrayList<>();
+
+    if (obj instanceof List<?>) {
+        for (Object item : (List<?>) obj) {
+            if (item instanceof Pedagogo) {
+                pedagogos.add((Pedagogo) item);
+            }
+        }
+    } else {
+        pedagogos = new PedagogoDAO().listar();
+    }
+
+    String msgSucesso = request.getParameter("sucesso");
+    String msgErro = request.getParameter("erro");
+%>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lista de Pedagogos</title>
-    <link rel="stylesheet" href="${ctx}/css/style.css">
 </head>
 <body>
 
-<jsp:include page="/WEB-INF/includes/navbar.jsp"><jsp:param name="ativo" value="pedagogos" /></jsp:include>
+    <p>
+        <a href="${pageContext.request.contextPath}/index.jsp">Início</a> |
+        <a href="${pageContext.request.contextPath}/pedagogo">Pedagogos</a> |
+        <a href="${pageContext.request.contextPath}/cadastroAluno.jsp">Cadastrar Aluno</a> |
+        <a href="${pageContext.request.contextPath}/acompanhamento.jsp">Acompanhamentos</a>
+    </p>
+    <hr>
 
-<div class="container">
-    <jsp:include page="/WEB-INF/includes/mensagens.jsp" />
+    <h2>Pedagogos Cadastrados</h2>
 
-    <div class="section-title">
-        <h2>Pedagogos Cadastrados</h2>
-        <div class="acoes-linha">
-            <a href="${ctx}/pedagogo?acao=novo" class="btn btn-success">+ Novo Pedagogo</a>
-            <a href="${ctx}/pedagogo" class="btn btn-secondary">Painel do Pedagogo</a>
-        </div>
-    </div>
+    <% if (msgSucesso != null && !msgSucesso.isEmpty()) { %>
+        <p><strong>Sucesso:</strong> <%= msgSucesso %></p>
+    <% } %>
 
-    <div class="table-wrap">
-    <table class="tabela">
+    <% if (msgErro != null && !msgErro.isEmpty()) { %>
+        <p><strong>Erro:</strong> <%= msgErro %></p>
+    <% } %>
+
+    <p>
+        <a href="${pageContext.request.contextPath}/pedagogo?acao=novo">+ Novo Pedagogo</a> |
+        <a href="${pageContext.request.contextPath}/acompanhamento.jsp">Ver Alunos e Acompanhamentos</a>
+    </p>
+
+    <table border="1" cellpadding="6" cellspacing="0">
         <thead>
-            <tr><th>ID</th><th>Nome</th><th>E-mail</th><th>Especialidade</th><th>Ações</th></tr>
+            <tr>
+                <th>ID</th>
+                <th>Nome / Pessoa</th>
+                <th>Especialidade</th>
+                <th>Ações</th>
+            </tr>
         </thead>
         <tbody>
-            <c:forEach var="p" items="${pedagogos}">
+            <%
+                if (!pedagogos.isEmpty()) {
+                    for (Pedagogo p : pedagogos) {
+            %>
             <tr>
-                <td>${p.idPedagogo}</td>
-                <td><c:out value="${p.pessoa}" /></td>
-                <td><c:out value="${p.email}" /></td>
-                <td><c:out value="${p.especialidade}" /></td>
-                <td class="acoes-linha">
-                    <a href="${ctx}/pedagogo?acao=editar&id=${p.idPedagogo}">Editar</a> |
-                    <a href="${ctx}/pedagogo?acao=excluir&id=${p.idPedagogo}" class="link-excluir"
-                       data-confirmar="Deseja realmente excluir este pedagogo?">Excluir</a>
+                <td><%= p.getIdPedagogo() %></td>
+                <td><%= p.getPessoa() %></td>
+                <td><%= p.getEspecialidade() %></td>
+                <td>
+                    <a href="${pageContext.request.contextPath}/pedagogo?acao=editar&id=<%= p.getIdPedagogo() %>">Editar</a> |
+                    <a href="${pageContext.request.contextPath}/pedagogo?acao=excluir&id=<%= p.getIdPedagogo() %>"
+                       onclick="return confirm('Deseja realmente excluir este pedagogo?');">Excluir</a>
                 </td>
             </tr>
-            </c:forEach>
-            <c:if test="${empty pedagogos}">
-            <tr><td colspan="5" class="vazio">Nenhum pedagogo cadastrado até o momento.</td></tr>
-            </c:if>
+            <%
+                    }
+                } else {
+            %>
+            <tr>
+                <td colspan="4">Nenhum pedagogo cadastrado até o momento.</td>
+            </tr>
+            <%
+                }
+            %>
         </tbody>
     </table>
-    </div>
-</div>
 
 </body>
 </html>

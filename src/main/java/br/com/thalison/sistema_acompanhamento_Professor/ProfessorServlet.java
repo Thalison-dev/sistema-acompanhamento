@@ -1,195 +1,139 @@
 package br.com.thalison.sistema_acompanhamento_Professor;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import br.com.thalison.sistema_acompanhamento.WebUtil;
-import br.com.thalison.sistema_acompanhamento_Avaliacao.avaliacao;
-import br.com.thalison.sistema_acompanhamento_Disciplina.DisciplinaDAO;
-import br.com.thalison.sistema_acompanhamento_Disciplina.disciplina;
-import br.com.thalison.sistema_acompanhamento_adaptacao.adaptacao_metodologica;
-import br.com.thalison.sistema_acompanhamento_aluno.AlunoDAO;
+import br.com.thalison.sistema_acompanhamento_Professor.ProfessorDAO;
 
-/**
- * Professor: cadastro e registros sobre o aluno (ocorrências/observações,
- * avaliações e adaptações), que aparecem no histórico do acompanhamento.
- * (Antes estava mapeado em "/", o que capturava até o CSS do site.)
- */
-@WebServlet("/professor")
+// Só os endereços do professor. Com "/" este servlet capturava também o CSS e o JS e as páginas ficavam sem estilo.
+@WebServlet(urlPatterns = { "/consultarAluno", "/registrarObservacao", "/registrarOcorrencia", "/registrarAvaliacao",
+		"/registrarRendimento", "/registrarAdaptacao", "/consultarHistorico" })
 public class ProfessorServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
-    private ProfessorDAO dao;
-    private final DisciplinaDAO disciplinaDao = new DisciplinaDAO();
+	private static final long serialVersionUID = 1L;
+	private ProfessorDAO dao;
 
-    @Override
-    public void init() {
-        dao = new ProfessorDAO();
-    }
+	public void init() {
+		dao = new ProfessorDAO();
+	}
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		doGet(request, response);
+	}
 
-        String acao = req.getParameter("acao");
-        if (acao == null) {
-            acao = "lista";
-        }
-        int id = WebUtil.parseInt(req.getParameter("id"));
-        int alunoId = WebUtil.parseInt(req.getParameter("alunoId"));
-        String voltarHistorico = "/aluno?acao=historico&id=" + alunoId;
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-        switch (acao) {
-            case "novo":
-                req.getRequestDispatcher("/cadastro-professor.jsp").forward(req, resp);
-                break;
+		String action = request.getServletPath();
 
-            case "editar":
-                req.setAttribute("professor", dao.buscarPorId(id));
-                req.getRequestDispatcher("/cadastro-professor.jsp").forward(req, resp);
-                break;
+		try {
+			switch (action) {
 
-            case "excluir":
-                resultado(req, resp, "/professor", dao.excluir(id), "Professor excluído.",
-                    "Não foi possível excluir: o professor já possui registros vinculados.");
-                break;
+			case "/consultarAluno":
+				consultarAluno(request, response);
+				break;
 
-            case "registrar":
-                req.setAttribute("tipoRegistro", req.getParameter("tipo") != null ? req.getParameter("tipo") : "ocorrencia");
-                req.setAttribute("alunoSelecionado", alunoId);
-                req.setAttribute("professorSelecionado", WebUtil.parseInt(req.getParameter("professorId")));
-                req.setAttribute("alunos", new AlunoDAO().listarTodos());
-                req.setAttribute("professores", dao.listar());
-                req.setAttribute("disciplinas", disciplinaDao.listar());
-                req.getRequestDispatcher("/registro-professor.jsp").forward(req, resp);
-                break;
+			case "/registrarObservacao":
+				registrarObservacao(request, response);
+				break;
 
-            case "excluirOcorrencia":
-                resultado(req, resp, voltarHistorico, dao.excluirOcorrencia(id), "Registro excluído.", "Não foi possível excluir.");
-                break;
+			case "/registrarOcorrencia":
+				registrarOcorrencia(request, response);
+				break;
 
-            case "excluirAvaliacao":
-                resultado(req, resp, voltarHistorico, dao.excluirAvaliacao(id), "Avaliação excluída.", "Não foi possível excluir.");
-                break;
+			case "/registrarAvaliacao":
+				registrarAvaliacao(request, response);
+				break;
 
-            case "excluirAdaptacao":
-                resultado(req, resp, voltarHistorico, dao.excluirAdaptacao(id), "Adaptação excluída.", "Não foi possível excluir.");
-                break;
+			case "/registrarRendimento":
+				registrarRendimento(request, response);
+				break;
 
-            case "excluirDisciplina":
-                resultado(req, resp, "/professor", disciplinaDao.excluir(id), "Disciplina excluída.",
-                    "Não foi possível excluir: há avaliações usando essa disciplina.");
-                break;
+			case "/registrarAdaptacao":
+				registrarAdaptacao(request, response);
+				break;
 
-            default:
-                req.setAttribute("professores", dao.listar());
-                req.setAttribute("disciplinas", disciplinaDao.listar());
-                req.setAttribute("ocorrencias", dao.listarOcorrencias());
-                req.getRequestDispatcher("/professor.jsp").forward(req, resp);
-                break;
-        }
-    }
+			case "/consultarHistorico":
+				consultarHistorico(request, response);
+				break;
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+			default:
+				consultarAluno(request, response);
+				break;
+			}
 
-        req.setCharacterEncoding("UTF-8");
-        String acao = req.getParameter("acao");
-        int alunoId = WebUtil.parseInt(req.getParameter("alunoId"));
-        int professorId = WebUtil.parseInt(req.getParameter("professorId"));
-        String voltarHistorico = "/aluno?acao=historico&id=" + alunoId;
+		} catch (SQLException ex) {
+			throw new ServletException(ex);
+		}
+	}
 
-        if ("registrarOcorrencia".equals(acao)) {
-            OcorrenciaPedagogica o = new OcorrenciaPedagogica();
-            o.setAlunoId(alunoId);
-            o.setProfessorId(professorId);
-            o.setData(WebUtil.texto(req, "data"));
-            o.setTipo(WebUtil.texto(req, "tipo"));
-            o.setDescricao(WebUtil.texto(req, "descricao"));
-            o.setProvidencia(WebUtil.texto(req, "providencia"));
-            o.setStatus(WebUtil.texto(req, "status"));
-            if (alunoId <= 0 || o.getTipo() == null || o.getDescricao() == null) {
-                WebUtil.redirecionar(req, resp, "/professor?acao=registrar&tipo=ocorrencia", "erro",
-                    "Selecione o aluno e informe tipo e descrição.");
-                return;
-            }
-            resultado(req, resp, voltarHistorico, dao.registrarOcorrencia(o),
-                o.getTipo() + " registrada no histórico do aluno.", "Não foi possível registrar.");
+	private void consultarAluno(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, ServletException, IOException {
 
-        } else if ("registrarAvaliacao".equals(acao)) {
-            avaliacao a = new avaliacao();
-            a.setAlunoId(alunoId);
-            a.setDisciplinaId(WebUtil.parseInt(req.getParameter("disciplinaId")));
-            a.setNota(WebUtil.parseDouble(req.getParameter("nota")));
-            a.setData(WebUtil.texto(req, "data"));
-            a.setTipo(WebUtil.texto(req, "tipo"));
-            a.setObservacao(WebUtil.texto(req, "observacao"));
-            if (alunoId <= 0) {
-                WebUtil.redirecionar(req, resp, "/professor?acao=registrar&tipo=avaliacao", "erro", "Selecione o aluno.");
-                return;
-            }
-            resultado(req, resp, voltarHistorico, dao.registrarAvaliacao(a),
-                "Avaliação registrada.", "Não foi possível registrar a avaliação.");
+		dao.consultarAluno();
+		RequestDispatcher dispatcher = request.getRequestDispatcher("listar-alunos.jsp");
+		dispatcher.forward(request, response);
+	}
 
-        } else if ("registrarAdaptacao".equals(acao)) {
-            adaptacao_metodologica a = new adaptacao_metodologica();
-            a.setAlunoId(alunoId);
-            a.setProfessorId(professorId);
-            a.setTipo(WebUtil.texto(req, "tipo"));
-            a.setDescricao(WebUtil.texto(req, "descricao"));
-            a.setEstrategia(WebUtil.texto(req, "estrategia"));
-            a.setDataRegistro(WebUtil.texto(req, "dataRegistro"));
-            a.setResultado(WebUtil.texto(req, "resultado"));
-            a.setStatus(WebUtil.texto(req, "status"));
-            if (alunoId <= 0 || a.getDescricao() == null) {
-                WebUtil.redirecionar(req, resp, "/professor?acao=registrar&tipo=adaptacao", "erro",
-                    "Selecione o aluno e descreva a adaptação.");
-                return;
-            }
-            resultado(req, resp, voltarHistorico, dao.registrarAdaptacao(a),
-                "Adaptação metodológica registrada.", "Não foi possível registrar a adaptação.");
+	private void registrarObservacao(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, IOException {
 
-        } else if ("salvarDisciplina".equals(acao)) {
-            disciplina d = new disciplina(0, WebUtil.texto(req, "nome"), WebUtil.texto(req, "descricao"));
-            if (d.getNome() == null) {
-                WebUtil.redirecionar(req, resp, "/professor", "erro", "Informe o nome da disciplina.");
-                return;
-            }
-            resultado(req, resp, "/professor", disciplinaDao.cadastrar(d), "Disciplina cadastrada.",
-                "Não foi possível cadastrar a disciplina.");
+		int id = Integer.parseInt(request.getParameter("id"));
+		String descricao = request.getParameter("descricao");
+		dao.registrarObservacao(id, descricao);
+		response.sendRedirect("consultarHistorico?id=" + id);
+	}
 
-        } else {
-            salvarProfessor(req, resp);
-        }
-    }
+	private void registrarOcorrencia(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, IOException {
 
-    private void salvarProfessor(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Professor p = new Professor();
-        p.setId(WebUtil.parseInt(req.getParameter("id")));
-        p.setNome(WebUtil.texto(req, "nome"));
-        p.setEmail(WebUtil.texto(req, "email"));
-        p.setCpf(WebUtil.texto(req, "cpf"));
-        p.setTelefone(WebUtil.texto(req, "telefone"));
-        p.setMatricula(WebUtil.texto(req, "matricula"));
-        p.setEspecialidade(WebUtil.texto(req, "especialidade"));
+		int id = Integer.parseInt(request.getParameter("id"));
+		String descricao = request.getParameter("descricao");
+		dao.registrarOcorrencia(id, descricao);
+		response.sendRedirect("consultarHistorico?id=" + id);
+	}
 
-        if (p.getNome() == null || p.getEmail() == null) {
-            WebUtil.redirecionar(req, resp, "/professor", "erro", "Nome e e-mail são obrigatórios.");
-            return;
-        }
-        boolean ok = p.getId() > 0 ? dao.atualizar(p) : dao.cadastrar(p);
-        resultado(req, resp, "/professor", ok, "Professor salvo com sucesso!",
-            "Não foi possível salvar o professor (o CPF já existe?).");
-    }
+	private void registrarAvaliacao(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, IOException {
 
-    private void resultado(HttpServletRequest req, HttpServletResponse resp, String destino,
-                           boolean ok, String msgOk, String msgErro) throws IOException {
-        WebUtil.redirecionar(req, resp, destino, ok ? "sucesso" : "erro", ok ? msgOk : msgErro);
-    }
+		int id = Integer.parseInt(request.getParameter("id"));
+		String descricao = request.getParameter("descricao");
+		dao.registrarAvaliacao(id, descricao);
+		response.sendRedirect("consultarHistorico?id=" + id);
+	}
+
+	private void registrarRendimento(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, IOException {
+
+		int id = Integer.parseInt(request.getParameter("id"));
+		String descricao = request.getParameter("descricao");
+		dao.registrarRendimento(id, descricao);
+		response.sendRedirect("consultarHistorico?id=" + id);
+	}
+
+	private void registrarAdaptacao(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, IOException {
+
+		int id = Integer.parseInt(request.getParameter("id"));
+		String descricao = request.getParameter("descricao");
+		dao.registrarAdaptacao(id, descricao);
+		response.sendRedirect("consultarHistorico?id=" + id);
+	}
+
+	private void consultarHistorico(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, ServletException, IOException {
+
+		int alunoId = Integer.parseInt(request.getParameter("id"));
+		dao.consultarHistorico(alunoId);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("historico-aluno.jsp");
+		dispatcher.forward(request, response);
+	}
 }

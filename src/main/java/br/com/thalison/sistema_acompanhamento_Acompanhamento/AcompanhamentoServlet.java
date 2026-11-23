@@ -1,120 +1,170 @@
+
 package br.com.thalison.sistema_acompanhamento_Acompanhamento;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import br.com.thalison.sistema_acompanhamento.WebUtil;
-import br.com.thalison.sistema_acompanhamento_aluno.AlunoDAO;
-
-/**
- * Centro do sistema: cadastro, edição, listagem e exclusão de acompanhamentos.
- *   GET  /acompanhamento                 -> lista
- *   GET  /acompanhamento?alunoId=X       -> novo acompanhamento já com o aluno selecionado
- *   GET  /acompanhamento?acao=novo|editar|excluir
- *   POST /acompanhamento                 -> salva (insere ou atualiza)
- */
-@WebServlet(urlPatterns = {"/acompanhamento", "/novo-acompanhamento", "/listar-acompanhamentos"})
+@WebServlet(urlPatterns = {
+    "/novo-acompanhamento",
+    "/inserir",
+    "/deletar",
+    "/editar",
+    "/atualizar",
+    "/listar"
+})
 public class AcompanhamentoServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private final AcompanhamentoDAO dao = new AcompanhamentoDAO();
-    private final AlunoDAO alunoDao = new AlunoDAO();
+    private AcompanhamentoDAO dao;
+
+    @Override
+    public void init() {
+        dao = new AcompanhamentoDAO();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String acao = request.getParameter("acao");
-        if (acao == null) {
-            if ("/novo-acompanhamento".equals(request.getServletPath())
-                    || request.getParameter("alunoId") != null) {
-                acao = "novo";
-            } else {
-                acao = "lista";
+        String action = request.getServletPath();
+
+        try {
+            switch (action) {
+                case "/novo-acompanhamento":
+                    mostrarFormularioNovo(request, response);
+                    break;
+
+                case "/inserir":
+                    inserirAcompanhamento(request, response);
+                    break;
+
+                case "/deletar":
+                    deletarAcompanhamento(request, response);
+                    break;
+
+                case "/editar":
+                    mostrarFormularioEditar(request, response);
+                    break;
+
+                case "/atualizar":
+                    atualizarAcompanhamento(request, response);
+                    break;
+
+                case "/listar":
+                default:
+                    listarAcompanhamentos(request, response);
+                    break;
             }
-        }
 
-        switch (acao) {
-            case "novo":
-                mostrarFormulario(request, response, null);
-                break;
-
-            case "editar": {
-                Acompanhamento a = dao.buscarPorId(WebUtil.parseInt(request.getParameter("id")));
-                if (a == null) {
-                    WebUtil.redirecionar(request, response, "/acompanhamento", "erro", "Acompanhamento não encontrado.");
-                    return;
-                }
-                mostrarFormulario(request, response, a);
-                break;
-            }
-
-            case "excluir":
-                if (dao.excluir(WebUtil.parseInt(request.getParameter("id")))) {
-                    WebUtil.redirecionar(request, response, "/acompanhamento", "sucesso", "Acompanhamento excluído.");
-                } else {
-                    WebUtil.redirecionar(request, response, "/acompanhamento", "erro",
-                        "Não foi possível excluir o acompanhamento.");
-                }
-                break;
-
-            default:
-                request.setAttribute("acompanhamentos", dao.listar());
-                request.getRequestDispatcher("/listar-acompanhamento.jsp").forward(request, response);
-                break;
+        } catch (SQLException ex) {
+            throw new ServletException(ex);
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        request.setCharacterEncoding("UTF-8");
-
-        Acompanhamento a = new Acompanhamento();
-        a.setId(WebUtil.parseInt(request.getParameter("id")));
-        a.setAlunoId(WebUtil.parseInt(request.getParameter("alunoId")));
-        a.setDataInicio(WebUtil.texto(request, "dataInicio"));
-        a.setDataFim(WebUtil.texto(request, "dataFim"));
-        a.setObjetivo(WebUtil.texto(request, "objetivo"));
-        a.setObservacao(WebUtil.texto(request, "observacao"));
-        a.setStatus(WebUtil.texto(request, "status"));
-
-        String voltar = a.getId() > 0 ? "/acompanhamento?acao=editar&id=" + a.getId()
-                                      : "/acompanhamento?acao=novo&alunoId=" + a.getAlunoId();
-
-        if (a.getAlunoId() <= 0 || a.getDataInicio() == null || a.getObjetivo() == null || a.getStatus() == null) {
-            WebUtil.redirecionar(request, response, voltar, "erro",
-                "Selecione o aluno e preencha data de início, objetivo e status.");
-            return;
-        }
-        if (a.getDataFim() != null && a.getDataFim().compareTo(a.getDataInicio()) < 0) {
-            WebUtil.redirecionar(request, response, voltar, "erro",
-                "A data de fim não pode ser anterior à data de início.");
-            return;
-        }
-
-        boolean ok = a.getId() > 0 ? dao.atualizar(a) : dao.cadastrar(a);
-
-        if (ok) {
-            WebUtil.redirecionar(request, response, "/acompanhamento", "sucesso", "Acompanhamento salvo com sucesso!");
-        } else {
-            WebUtil.redirecionar(request, response, voltar, "erro",
-                "Não foi possível salvar. Verifique se o aluno existe e se as datas são válidas.");
-        }
+        doGet(request, response);
     }
 
-    private void mostrarFormulario(HttpServletRequest request, HttpServletResponse response, Acompanhamento a)
+    private void listarAcompanhamentos(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException, ServletException {
+
+        List<Acompanhamento> lista = dao.listar();
+
+        request.setAttribute("acompanhamentos", lista);
+
+        RequestDispatcher dispatcher =
+                request.getRequestDispatcher("listar-acompanhamento.jsp");
+
+        dispatcher.forward(request, response);
+    }
+
+    private void mostrarFormularioNovo(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("acompanhamento", a);
-        request.setAttribute("alunos", alunoDao.listarTodos());
-        request.setAttribute("alunoSelecionado",
-            a != null ? a.getAlunoId() : WebUtil.parseInt(request.getParameter("alunoId")));
-        request.getRequestDispatcher("/acompanhamento.jsp").forward(request, response);
+
+        RequestDispatcher dispatcher =
+                request.getRequestDispatcher("acompanhamento.jsp");
+
+        dispatcher.forward(request, response);
+    }
+
+    private void mostrarFormularioEditar(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, ServletException, IOException {
+
+        int id = Integer.parseInt(request.getParameter("id"));
+
+        Acompanhamento acompanhamento = dao.buscarPorId(id);
+
+        request.setAttribute("acompanhamento", acompanhamento);
+
+        RequestDispatcher dispatcher =
+                request.getRequestDispatcher("form-acompanhamento.jsp");
+
+        dispatcher.forward(request, response);
+    }
+
+    private void inserirAcompanhamento(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException {
+
+        Date dataInicio = Date.valueOf(request.getParameter("dataInicio"));
+        Date dataFim = Date.valueOf(request.getParameter("dataFim"));
+
+        String objetivo = request.getParameter("objetivo");
+        String status = request.getParameter("status");
+
+        Acompanhamento a = new Acompanhamento();
+
+        a.setDataInicio(dataInicio.toString());
+        a.setDataFim(dataFim.toString());
+        a.setObjetivo(objetivo);
+        a.setStatus(status);
+
+        dao.cadastrar(a);
+
+        response.sendRedirect("listar");
+    }
+
+    private void atualizarAcompanhamento(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException {
+
+        int id = Integer.parseInt(request.getParameter("id"));
+
+        Date dataInicio = Date.valueOf(request.getParameter("dataInicio"));
+        Date dataFim = Date.valueOf(request.getParameter("dataFim"));
+
+        String objetivo = request.getParameter("objetivo");
+        String status = request.getParameter("status");
+
+        Acompanhamento a = new Acompanhamento();
+
+        a.setId(id);
+        a.setDataInicio(dataInicio.toString());
+        a.setDataFim(dataFim.toString());
+        a.setObjetivo(objetivo);
+        a.setStatus(status);
+
+        dao.atualizar(a);
+
+        response.sendRedirect("listar");
+    }
+
+    private void deletarAcompanhamento(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException {
+
+        int id = Integer.parseInt(request.getParameter("id"));
+
+        dao.excluir(id);
+
+        response.sendRedirect("listar");
     }
 }

@@ -8,8 +8,6 @@ public class Aluno extends Pessoa {
     private String matricula;
     private String anoEscolar;
     private String status;
-    private int responsavelId;
-    private String nomeResponsavel;
 
     public Aluno() {
         super();
@@ -55,21 +53,5 @@ public class Aluno extends Pessoa {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public int getResponsavelId() {
-        return responsavelId;
-    }
-
-    public void setResponsavelId(int responsavelId) {
-        this.responsavelId = responsavelId;
-    }
-
-    public String getNomeResponsavel() {
-        return nomeResponsavel;
-    }
-
-    public void setNomeResponsavel(String nomeResponsavel) {
-        this.nomeResponsavel = nomeResponsavel;
     }
 }

@@ -36,13 +36,9 @@ public class Entrevista {
     }
 
     public int getAlunoId() {
-        return aluno != null ? aluno.getId() : 0;
+        return aluno.getId();
     }
-
-    public int getPsicologoId() {
-        return psicologo != null ? psicologo.getId() : 0;
-    }
-
+    
     public Psicologo getPsicologo() {
         return psicologo;
     }
@@ -90,4 +86,6 @@ public class Entrevista {
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
     }
+    
+   
 }
