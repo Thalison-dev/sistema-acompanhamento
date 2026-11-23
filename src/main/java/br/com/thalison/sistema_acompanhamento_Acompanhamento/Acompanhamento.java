@@ -1,20 +1,24 @@
 package br.com.thalison.sistema_acompanhamento_Acompanhamento;
 
+import java.time.LocalDate;
+
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
+
 public class Acompanhamento {
 
     private int id;
-    private int alunoId;
-    private String dataInicio;
-    private String dataFim;
+    private Aluno aluno;
+    private LocalDate dataInicio;
+    private LocalDate dataFim;
     private String objetivo;
     private String status;
 
     public Acompanhamento() {
     }
 
-    public Acompanhamento(int alunoId, String dataInicio, String dataFim,
+    public Acompanhamento(Aluno aluno, LocalDate dataInicio, LocalDate dataFim,
                           String objetivo, String status) {
-        this.alunoId = alunoId;
+        this.aluno = aluno;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
         this.objetivo = objetivo;
@@ -37,27 +41,27 @@ public class Acompanhamento {
         this.id = id;
     }
 
-    public int getAlunoId() {
-        return alunoId;
+    public Aluno getAluno() {
+        return aluno;
     }
 
-    public void setAlunoId(int alunoId) {
-        this.alunoId = alunoId;
+    public void setAluno(Aluno aluno) {
+        this.aluno = aluno;
     }
 
-    public String getDataInicio() {
+    public LocalDate getDataInicio() {
         return dataInicio;
     }
 
-    public void setDataInicio(String dataInicio) {
+    public void setDataInicio(LocalDate dataInicio) {
         this.dataInicio = dataInicio;
     }
 
-    public String getDataFim() {
+    public LocalDate getDataFim() {
         return dataFim;
     }
 
-    public void setDataFim(String dataFim) {
+    public void setDataFim(LocalDate dataFim) {
         this.dataFim = dataFim;
     }
 

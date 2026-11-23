@@ -1,9 +1,8 @@
-
 package br.com.thalison.sistema_acompanhamento_Acompanhamento;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -12,6 +11,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 
 @WebServlet(urlPatterns = {
     "/novo-acompanhamento",
@@ -35,6 +36,7 @@ public class AcompanhamentoServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        request.setCharacterEncoding("UTF-8");
         String action = request.getServletPath();
 
         try {
@@ -80,12 +82,10 @@ public class AcompanhamentoServlet extends HttpServlet {
             throws SQLException, IOException, ServletException {
 
         List<Acompanhamento> lista = dao.listar();
-
         request.setAttribute("acompanhamentos", lista);
 
         RequestDispatcher dispatcher =
                 request.getRequestDispatcher("listar-acompanhamento.jsp");
-
         dispatcher.forward(request, response);
     }
 
@@ -94,7 +94,6 @@ public class AcompanhamentoServlet extends HttpServlet {
 
         RequestDispatcher dispatcher =
                 request.getRequestDispatcher("acompanhamento.jsp");
-
         dispatcher.forward(request, response);
     }
 
@@ -102,28 +101,35 @@ public class AcompanhamentoServlet extends HttpServlet {
             throws SQLException, ServletException, IOException {
 
         int id = Integer.parseInt(request.getParameter("id"));
-
         Acompanhamento acompanhamento = dao.buscarPorId(id);
 
         request.setAttribute("acompanhamento", acompanhamento);
 
         RequestDispatcher dispatcher =
                 request.getRequestDispatcher("form-acompanhamento.jsp");
-
         dispatcher.forward(request, response);
     }
 
     private void inserirAcompanhamento(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
 
-        Date dataInicio = Date.valueOf(request.getParameter("dataInicio"));
-        Date dataFim = Date.valueOf(request.getParameter("dataFim"));
+        int alunoId = Integer.parseInt(request.getParameter("alunoId"));
+        String dataInicioParam = request.getParameter("dataInicio");
+        String dataFimParam = request.getParameter("dataFim");
+
+        LocalDate dataInicio = LocalDate.parse(dataInicioParam);
+        LocalDate dataFim = (dataFimParam != null && !dataFimParam.trim().isEmpty())
+                ? LocalDate.parse(dataFimParam)
+                : null;
 
         String objetivo = request.getParameter("objetivo");
         String status = request.getParameter("status");
 
-        Acompanhamento a = new Acompanhamento();
+        Aluno aluno = new Aluno();
+        aluno.setId(alunoId); 
 
+        Acompanhamento a = new Acompanhamento();
+        a.setAluno(aluno);
         a.setDataInicio(dataInicio);
         a.setDataFim(dataFim);
         a.setObjetivo(objetivo);
@@ -138,16 +144,24 @@ public class AcompanhamentoServlet extends HttpServlet {
             throws SQLException, IOException {
 
         int id = Integer.parseInt(request.getParameter("id"));
+        int alunoId = Integer.parseInt(request.getParameter("alunoId"));
+        String dataInicioParam = request.getParameter("dataInicio");
+        String dataFimParam = request.getParameter("dataFim");
 
-        Date dataInicio = Date.valueOf(request.getParameter("dataInicio"));
-        Date dataFim = Date.valueOf(request.getParameter("dataFim"));
+        LocalDate dataInicio = LocalDate.parse(dataInicioParam);
+        LocalDate dataFim = (dataFimParam != null && !dataFimParam.trim().isEmpty())
+                ? LocalDate.parse(dataFimParam)
+                : null;
 
         String objetivo = request.getParameter("objetivo");
         String status = request.getParameter("status");
 
-        Acompanhamento a = new Acompanhamento();
+        Aluno aluno = new Aluno();
+        aluno.setId(alunoId); 
 
-        a.setId(id);
+        Acompanhamento a = new Acompanhamento();
+        a.setAcompanhamentoId(id);
+        a.setAluno(aluno);
         a.setDataInicio(dataInicio);
         a.setDataFim(dataFim);
         a.setObjetivo(objetivo);
@@ -162,7 +176,6 @@ public class AcompanhamentoServlet extends HttpServlet {
             throws SQLException, IOException {
 
         int id = Integer.parseInt(request.getParameter("id"));
-
         dao.excluir(id);
 
         response.sendRedirect("listar");

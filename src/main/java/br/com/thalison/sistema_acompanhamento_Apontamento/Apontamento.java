@@ -1,55 +1,57 @@
 package br.com.thalison.sistema_acompanhamento_Apontamento;
 
-import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
+import java.time.LocalDate;
 
-public class Apontamento extends Pessoa {
-    private String idProfessor;
-    private String idPessoa;
-    private String dataInicio;
-    private String nomeProfessor;
+import br.com.thalison.sistema_acompanhamento_Professor.Professor;
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
+
+public class Apontamento {
+    private int id;
+    private Professor professor;
+    private Aluno aluno;
+    private LocalDate data;
     private String motivo;
 
     public Apontamento() {
-        super();
     }
 
-    public Apontamento(String nome, String cpf, String dataInicio, String nomeProfessor, String motivo) {
-        super(nome, cpf); 
-        this.dataInicio = dataInicio;
-        this.nomeProfessor = nomeProfessor;
+    public Apontamento(Professor professor, Aluno aluno, LocalDate data, String motivo) {
+        this.professor = professor;
+        this.aluno = aluno;
+        this.data = data;
         this.motivo = motivo;
     }
 
-    public String getIdProfessor() {
-        return idProfessor;
+    public int getId() {
+        return id;
     }
 
-    public void setIdProfessor(String idProfessor) {
-        this.idProfessor = idProfessor;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getIdPessoa() {
-        return idPessoa;
+    public Professor getProfessor() {
+        return professor;
     }
 
-    public void setIdPessoa(String idPessoa) {
-        this.idPessoa = idPessoa;
+    public void setProfessor(Professor professor) {
+        this.professor = professor;
     }
 
-    public String getDataInicio() {
-        return dataInicio;
+    public Aluno getAluno() {
+        return aluno;
     }
 
-    public void setDataInicio(String dataInicio) {
-        this.dataInicio = dataInicio;
+    public void setAluno(Aluno aluno) {
+        this.aluno = aluno;
     }
 
-    public String getNomeProfessor() {
-        return nomeProfessor;
+    public LocalDate getData() {
+        return data;
     }
 
-    public void setNomeProfessor(String nomeProfessor) {
-        this.nomeProfessor = nomeProfessor;
+    public void setData(LocalDate data) {
+        this.data = data;
     }
 
     public String getMotivo() {

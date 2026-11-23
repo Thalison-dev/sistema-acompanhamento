@@ -23,7 +23,7 @@ public class EntrevistaDAO {
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            setChaveEstrangeira(stmt, 1, entrevista.getAluno() != null ? entrevista.getAluno().getIdPessoa() : 0);
+            setChaveEstrangeira(stmt, 1, entrevista.getAluno() != null ? entrevista.getAluno().getId() : 0);
             setChaveEstrangeira(stmt, 2, entrevista.getPsicologo() != null ? entrevista.getPsicologo().getId() : 0);
             stmt.setString(3, entrevista.getMotivo());
             stmt.setBoolean(4, entrevista.isAgendada());
@@ -55,7 +55,7 @@ public class EntrevistaDAO {
                 int alunoId = rs.getInt("aluno_id");
                 if (!rs.wasNull() && alunoId > 0) {
                     Aluno a = new Aluno();
-                    a.setIdAluno(alunoId);
+                    a.setId(alunoId);
                     entrevista.setAluno(a);
                 }
 
@@ -85,7 +85,7 @@ public class EntrevistaDAO {
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            setChaveEstrangeira(stmt, 1, entrevista.getAluno() != null ? entrevista.getAluno().getIdPessoa() : 0);
+            setChaveEstrangeira(stmt, 1, entrevista.getAluno() != null ? entrevista.getAluno().getId() : 0);
             setChaveEstrangeira(stmt, 2, entrevista.getPsicologo() != null ? entrevista.getPsicologo().getId() : 0);
             stmt.setString(3, entrevista.getMotivo());
             stmt.setBoolean(4, entrevista.isAgendada());

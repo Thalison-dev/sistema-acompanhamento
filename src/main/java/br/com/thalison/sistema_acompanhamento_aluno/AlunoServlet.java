@@ -2,10 +2,13 @@
 package br.com.thalison.sistema_acompanhamento_aluno;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
-import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @WebServlet("/aluno")
 public class AlunoServlet extends HttpServlet {

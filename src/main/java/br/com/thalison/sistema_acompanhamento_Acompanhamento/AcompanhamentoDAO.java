@@ -8,7 +8,9 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import br.com.thalison.sistema_acompanhamento.Conexao;
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 
 public class AcompanhamentoDAO {
 
@@ -23,15 +25,13 @@ public class AcompanhamentoDAO {
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            stmt.setInt(1, acompanhamento.getAlunoId());
-            stmt.setDate(2, Date.valueOf(acompanhamento.getDataInicio()));
-
-            if (acompanhamento.getDataFim() == null
-                    || acompanhamento.getDataFim().trim().isEmpty()) {
-                stmt.setNull(3, java.sql.Types.DATE);
-            } else {
-                stmt.setDate(3, Date.valueOf(acompanhamento.getDataFim()));
-            }
+        	stmt.setInt(1, acompanhamento.getAluno().getId());
+        	stmt.setDate(2, java.sql.Date.valueOf(acompanhamento.getDataInicio()));
+        	if (acompanhamento.getDataFim() == null) {
+        	    stmt.setNull(3, java.sql.Types.DATE);
+        	} else {
+        	    stmt.setDate(3, java.sql.Date.valueOf(acompanhamento.getDataFim()));
+        	}
 
             stmt.setString(4, acompanhamento.getObjetivo());
             stmt.setString(5, acompanhamento.getStatus());
@@ -99,15 +99,14 @@ public class AcompanhamentoDAO {
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            stmt.setInt(1, acompanhamento.getAlunoId());
-            stmt.setDate(2, Date.valueOf(acompanhamento.getDataInicio()));
+        	stmt.setInt(1, acompanhamento.getAluno().getId());
+        	stmt.setDate(2, java.sql.Date.valueOf(acompanhamento.getDataInicio()));
 
-            if (acompanhamento.getDataFim() == null
-                    || acompanhamento.getDataFim().trim().isEmpty()) {
-                stmt.setNull(3, java.sql.Types.DATE);
-            } else {
-                stmt.setDate(3, Date.valueOf(acompanhamento.getDataFim()));
-            }
+        	if (acompanhamento.getDataFim() == null) {
+        	    stmt.setNull(3, java.sql.Types.DATE);
+        	} else {
+        	    stmt.setDate(3, java.sql.Date.valueOf(acompanhamento.getDataFim()));
+        	}
 
             stmt.setString(4, acompanhamento.getObjetivo());
             stmt.setString(5, acompanhamento.getStatus());
@@ -141,17 +140,21 @@ public class AcompanhamentoDAO {
         Acompanhamento acompanhamento = new Acompanhamento();
 
         acompanhamento.setAcompanhamentoId(rs.getInt("acompanhamentoId"));
-        acompanhamento.setAlunoId(rs.getInt("alunoId"));
+
+        Aluno aluno = new Aluno();
+        aluno.setId(rs.getInt("alunoId"));
+        acompanhamento.setAluno(aluno);
 
         Date inicio = rs.getDate("dataInicioAcompanhamento");
         Date fim = rs.getDate("dataFimAcompanhamento");
 
-        acompanhamento.setDataInicio(inicio != null ? inicio.toString() : null);
-        acompanhamento.setDataFim(fim != null ? fim.toString() : null);
+        
+        acompanhamento.setDataInicio(inicio != null ? inicio.toLocalDate() : null);
+        acompanhamento.setDataFim(fim != null ? fim.toLocalDate() : null);
 
         acompanhamento.setObjetivo(rs.getString("objetivoAcompanhamento"));
         acompanhamento.setStatus(rs.getString("statusAcompanhamento"));
 
         return acompanhamento;
     }
-}
+    }

@@ -1,6 +1,7 @@
 package br.com.thalison.sistema_acompanhamento_Apontamento;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.thalison.sistema_acompanhamento.Conexao;
+import br.com.thalison.sistema_acompanhamento_Professor.Professor;
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 
 public class ApontamentoDAO {
 
@@ -17,11 +20,10 @@ public class ApontamentoDAO {
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, apontamento.getDataInicio());
-            stmt.setString(2, apontamento.getNomeprofessor());
+            stmt.setDate(1, apontamento.getData() != null ? Date.valueOf(apontamento.getData()) : null);
+            stmt.setString(2, apontamento.getProfessor().getNome());
             stmt.setString(3, apontamento.getMotivo());
-            stmt.setInt(4, apontamento.getIdPessoa());
-            //havia um set id professor como os acima
+            stmt.setInt(4, apontamento.getAluno().getId());
 
             stmt.execute();
             System.out.println("Apontamento registrado com sucesso!");
@@ -41,11 +43,20 @@ public class ApontamentoDAO {
 
             while (rs.next()) {
                 Apontamento apontamento = new Apontamento();
-                apontamento.setDataInicio(rs.getString("data_inicio"));
-                apontamento.setNomeprofessor(rs.getString("nome_professor"));
+                apontamento.setId(rs.getInt("id"));
+
+                Date dataSql = rs.getDate("data_inicio");
+                apontamento.setData(dataSql != null ? dataSql.toLocalDate() : null);
+
+                Professor professor = new Professor();
+                professor.setNome(rs.getString("nome_professor"));
+                apontamento.setProfessor(professor);
+
                 apontamento.setMotivo(rs.getString("motivo"));
-                apontamento.setIdAluno(rs.getInt("id_pessoa"));
-                //havia um set id professor como os acima
+
+                Aluno aluno = new Aluno();
+                aluno.setId(rs.getInt("id_pessoa"));
+                apontamento.setAluno(aluno);
 
                 lista.add(apontamento);
             }
@@ -63,12 +74,11 @@ public class ApontamentoDAO {
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, apontamento.getDataInicio());
-            stmt.setString(2, apontamento.getNomeprofessor());
+            stmt.setDate(1, apontamento.getData() != null ? Date.valueOf(apontamento.getData()) : null);
+            stmt.setString(2, apontamento.getProfessor().getNome());
             stmt.setString(3, apontamento.getMotivo());
-            stmt.setInt(4, apontamento.getIdPessoa());
-           //havia um get id professor como os acima
-            stmt.setInt(6, id);
+            stmt.setInt(4, apontamento.getAluno().getId());
+            stmt.setInt(5, id);
 
             stmt.executeUpdate();
             System.out.println("Apontamento atualizado com sucesso!");

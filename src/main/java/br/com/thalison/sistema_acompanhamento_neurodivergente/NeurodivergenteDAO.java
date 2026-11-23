@@ -1,31 +1,39 @@
-
 package br.com.thalison.sistema_acompanhamento_neurodivergente;
-import br.com.thalison.sistema_acompanhamento.*;
-import java.sql.*;
-import java.util.*;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.thalison.sistema_acompanhamento.Conexao;
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 
 public class NeurodivergenteDAO {
 
     private Neurodivergente mapear(ResultSet r) throws SQLException {
         Neurodivergente n = new Neurodivergente();
         n.setId(r.getInt("neurodivergenciaId"));
-        n.setAlunoId(r.getInt("alunoId"));
+
+        Aluno aluno = new Aluno();
+        aluno.setId(r.getInt("alunoId"));
+        n.setAlunoId(aluno);
+
         n.setTipo(r.getString("tipoNeurodivergencia"));
         n.setDescricao(r.getString("descricaoNeuro"));
         n.setObservacoes(r.getString("observacoesNeuro"));
-        n.setDataRegistro(r.getString("dataRegistroNeuro"));
         return n;
     }
 
     public boolean cadastrar(Neurodivergente n) {
-        String sql = "INSERT INTO neurodivergencia (alunoId, tipoNeurodivergencia, descricaoNeuro, observacoesNeuro, dataRegistroNeuro) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO neurodivergencia (alunoId, tipoNeurodivergencia, descricaoNeuro, observacoesNeuro) VALUES (?, ?, ?, ?)";
         try (Connection c = Conexao.conectar();
              PreparedStatement p = c.prepareStatement(sql)) {
-            p.setInt(1, n.getAlunoId());
+            p.setInt(1, n.getAluno().getId());
             p.setString(2, n.getTipo());
             p.setString(3, n.getDescricao());
             p.setString(4, n.getObservacoes());
-            p.setString(5, n.getDataRegistro());
             return p.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -61,15 +69,14 @@ public class NeurodivergenteDAO {
     }
 
     public boolean atualizar(Neurodivergente n) {
-        String sql = "UPDATE neurodivergencia SET alunoId=?, tipoNeurodivergencia=?, descricaoNeuro=?, observacoesNeuro=?, dataRegistroNeuro=? WHERE neurodivergenciaId=?";
+        String sql = "UPDATE neurodivergencia SET alunoId=?, tipoNeurodivergencia=?, descricaoNeuro=?, observacoesNeuro=? WHERE neurodivergenciaId=?";
         try (Connection c = Conexao.conectar();
              PreparedStatement p = c.prepareStatement(sql)) {
-            p.setInt(1, n.getAlunoId());
+            p.setInt(1, n.getAluno().getId());
             p.setString(2, n.getTipo());
             p.setString(3, n.getDescricao());
             p.setString(4, n.getObservacoes());
-            p.setString(5, n.getDataRegistro());
-            p.setInt(6, n.getId());
+            p.setInt(5, n.getId());
             return p.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
