@@ -1,21 +1,20 @@
-
 package br.com.thalison.sistema_acompanhamento_Acompanhamento;
 
-import java.sql.Date;
-
 public class Acompanhamento {
-    
+
     private int id;
-    private Date dataInicio;
-    private Date dataFim;
+    private int alunoId;
+    private String dataInicio;
+    private String dataFim;
     private String objetivo;
     private String status;
-    
+
     public Acompanhamento() {
     }
 
-    public Acompanhamento(int id, Date dataInicio, Date dataFim, String objetivo, String status) {
-        this.id = id;
+    public Acompanhamento(int alunoId, String dataInicio, String dataFim,
+                          String objetivo, String status) {
+        this.alunoId = alunoId;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
         this.objetivo = objetivo;
@@ -30,19 +29,35 @@ public class Acompanhamento {
         this.id = id;
     }
 
-    public Date getDataInicio() {
+    public int getAcompanhamentoId() {
+        return id;
+    }
+
+    public void setAcompanhamentoId(int id) {
+        this.id = id;
+    }
+
+    public int getAlunoId() {
+        return alunoId;
+    }
+
+    public void setAlunoId(int alunoId) {
+        this.alunoId = alunoId;
+    }
+
+    public String getDataInicio() {
         return dataInicio;
     }
 
-    public void setDataInicio(Date dataInicio) {
+    public void setDataInicio(String dataInicio) {
         this.dataInicio = dataInicio;
     }
 
-    public Date getDataFim() {
+    public String getDataFim() {
         return dataFim;
     }
 
-    public void setDataFim(Date dataFim) {
+    public void setDataFim(String dataFim) {
         this.dataFim = dataFim;
     }
 
