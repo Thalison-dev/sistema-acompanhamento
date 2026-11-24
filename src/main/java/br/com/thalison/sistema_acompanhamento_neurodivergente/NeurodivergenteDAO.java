@@ -18,7 +18,7 @@ public class NeurodivergenteDAO {
 
         Aluno aluno = new Aluno();
         aluno.setId(r.getInt("alunoId"));
-        n.setAlunoId(aluno);
+        n.setAluno(aluno);
 
         n.setTipo(r.getString("tipoNeurodivergencia"));
         n.setDescricao(r.getString("descricaoNeuro"));

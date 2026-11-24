@@ -1,124 +1,68 @@
 package br.com.thalison.sistema_Acompanhamento_entrevista;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import br.com.thalison.sistema_acompanhamento.Conexao;
-import br.com.thalison.sistema_acompanhamento_Psicologo.Psicologo;
-import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 
 public class EntrevistaDAO {
 
-    public boolean cadastrar(Entrevista entrevista) throws SQLException {
-        String sql = "INSERT INTO entrevista "
-                + "(aluno_id, psicologo_id, motivo, agendada, data, observacoes) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
-
-        try (Connection conexao = Conexao.conectar();
-             PreparedStatement stmt = conexao.prepareStatement(sql)) {
-
-            setChaveEstrangeira(stmt, 1, entrevista.getAluno() != null ? entrevista.getAluno().getId() : 0);
-            setChaveEstrangeira(stmt, 2, entrevista.getPsicologo() != null ? entrevista.getPsicologo().getId() : 0);
-            stmt.setString(3, entrevista.getMotivo());
-            stmt.setBoolean(4, entrevista.isAgendada());
-            
-            if (entrevista.getData() != null) {
-                stmt.setDate(5, new Date(entrevista.getData().getTime()));
-            } else {
-                stmt.setNull(5, Types.DATE);
-            }
-            
-            stmt.setString(6, entrevista.getObservacoes());
-
-            return stmt.executeUpdate() > 0;
+    public boolean cadastrar(Entrevista e) {
+        String sql = "INSERT INTO entrevista (alunoId, psicologoId, motivo, agendada, data, observacoes) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection c = Conexao.conectar();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, e.getAlunoId());
+            ps.setInt(2, e.getPsicologoId());
+            ps.setString(3, e.getMotivo());
+            ps.setBoolean(4, e.isAgendada());
+            ps.setDate(5, Date.valueOf(e.getData()));
+            ps.setString(6, e.getObservacoes());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
         }
     }
 
-    public List<Entrevista> listar() throws SQLException {
-        List<Entrevista> entrevistas = new ArrayList<>();
-        String sql = "SELECT * FROM entrevista";
-
-        try (Connection conexao = Conexao.conectar();
-             PreparedStatement stmt = conexao.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
+    public List<Entrevista> listarTodas() {
+        List<Entrevista> lista = new ArrayList<>();
+        String sql = "SELECT e.*, pa.nome AS nomeAluno, pp.nome AS nomePsicologo "
+                   + "FROM entrevista e "
+                   + "INNER JOIN pessoa pa ON pa.id = e.alunoId "
+                   + "INNER JOIN pessoa pp ON pp.id = e.psicologoId "
+                   + "ORDER BY e.data DESC";
+        try (Connection c = Conexao.conectar();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Entrevista entrevista = new Entrevista();
-                entrevista.setId(rs.getInt("id"));
-
-                int alunoId = rs.getInt("aluno_id");
-                if (!rs.wasNull() && alunoId > 0) {
-                    Aluno a = new Aluno();
-                    a.setId(alunoId);
-                    entrevista.setAluno(a);
-                }
-
-                int psicologoId = rs.getInt("psicologo_id");
-                if (!rs.wasNull() && psicologoId > 0) {
-                    Psicologo p = new Psicologo();
-                    p.setId(psicologoId);
-                    entrevista.setPsicologo(p);
-                }
-
-                entrevista.setMotivo(rs.getString("motivo"));
-                entrevista.setAgendada(rs.getBoolean("agendada"));
-                entrevista.setData(rs.getDate("data"));
-                entrevista.setObservacoes(rs.getString("observacoes"));
-
-                entrevistas.add(entrevista);
+                Entrevista e = new Entrevista();
+                e.setId(rs.getInt("id"));
+                e.setAlunoId(rs.getInt("alunoId"));
+                e.setNomeAluno(rs.getString("nomeAluno"));
+                e.setPsicologoId(rs.getInt("psicologoId"));
+                e.setNomePsicologo(rs.getString("nomePsicologo"));
+                e.setMotivo(rs.getString("motivo"));
+                e.setAgendada(rs.getBoolean("agendada"));
+                Date d = rs.getDate("data");
+                e.setData(d != null ? d.toLocalDate() : null);
+                e.setObservacoes(rs.getString("observacoes"));
+                lista.add(e);
             }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
-        return entrevistas;
+        return lista;
     }
 
-    public boolean atualizar(Entrevista entrevista) throws SQLException {
-        String sql = "UPDATE entrevista SET "
-                + "aluno_id = ?, psicologo_id = ?, motivo = ?, agendada = ?, data = ?, observacoes = ? "
-                + "WHERE id = ?";
-
-        try (Connection conexao = Conexao.conectar();
-             PreparedStatement stmt = conexao.prepareStatement(sql)) {
-
-            setChaveEstrangeira(stmt, 1, entrevista.getAluno() != null ? entrevista.getAluno().getId() : 0);
-            setChaveEstrangeira(stmt, 2, entrevista.getPsicologo() != null ? entrevista.getPsicologo().getId() : 0);
-            stmt.setString(3, entrevista.getMotivo());
-            stmt.setBoolean(4, entrevista.isAgendada());
-
-            if (entrevista.getData() != null) {
-                stmt.setDate(5, new Date(entrevista.getData().getTime()));
-            } else {
-                stmt.setNull(5, Types.DATE);
-            }
-
-            stmt.setString(6, entrevista.getObservacoes());
-            stmt.setInt(7, entrevista.getId());
-
-            return stmt.executeUpdate() > 0;
-        }
-    }
-
-    public boolean excluir(int id) throws SQLException {
+    public boolean excluir(int id) {
         String sql = "DELETE FROM entrevista WHERE id = ?";
-
-        try (Connection conexao = Conexao.conectar();
-             PreparedStatement stmt = conexao.prepareStatement(sql)) {
-
-            stmt.setInt(1, id);
-            return stmt.executeUpdate() > 0;
-        }
-    }
-
-    private void setChaveEstrangeira(PreparedStatement stmt, int index, int id) throws SQLException {
-        if (id > 0) {
-            stmt.setInt(index, id);
-        } else {
-            stmt.setNull(index, Types.INTEGER);
+        try (Connection c = Conexao.conectar();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
         }
     }
 }

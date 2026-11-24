@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import br.com.thalison.sistema_acompanhamento_Professor.ProfessorDAO;
-
 @WebServlet("/")
 public class ProfessorServlet extends HttpServlet {
 

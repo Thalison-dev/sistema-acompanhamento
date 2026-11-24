@@ -13,74 +13,31 @@ import javax.servlet.http.HttpServletResponse;
 public class ResponsavelLegalServelet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private ResponsavelLegalDAO dao;
+    private final ResponsavelLegalDAO dao = new ResponsavelLegalDAO();
 
     @Override
-    public void init() {
-        dao = new ResponsavelLegalDAO();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-
-        String acao = req.getParameter("acao");
-        if ("excluir".equals(acao)) {
-            excluir(req, resp);
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if ("excluir".equals(req.getParameter("acao"))) {
+            dao.excluir(Integer.parseInt(req.getParameter("id")));
+            resp.sendRedirect(req.getContextPath() + "/responsavel?sucesso=Responsavel+excluido");
             return;
         }
-
         req.setAttribute("responsaveis", dao.listarTodos());
-        req.getRequestDispatcher("/responsavel.jsp").forward(req, resp);
+        req.getRequestDispatcher("/responsaveis.jsp").forward(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("UTF-8");
-
-        String nome = req.getParameter("nome");
-        String email = req.getParameter("email");
-        String cpf = req.getParameter("cpf");
-        String telefone = req.getParameter("telefone");
-        String parentesco = req.getParameter("parentesco");
-
-        if (nome == null || nome.trim().isEmpty() || email == null || email.trim().isEmpty()) {
-            redirecionar(resp, req.getContextPath(), "erro", "Nome e e-mail do responsável são obrigatórios.");
-            return;
-        }
-
         ResponsavelLegal rl = new ResponsavelLegal();
-        rl.setNome(nome.trim());
-        rl.setEmail(email.trim());
-        rl.setCpf((cpf != null && !cpf.trim().isEmpty()) ? cpf.trim() : null);
-        rl.setTelefone((telefone != null && !telefone.trim().isEmpty()) ? telefone.trim() : null);
-        rl.setParentesco((parentesco != null && !parentesco.trim().isEmpty()) ? parentesco.trim() : "Responsável");
+        rl.setNome(req.getParameter("nome"));
+        rl.setCpf(req.getParameter("cpf"));
+        rl.setTelefone(req.getParameter("telefone"));
+        rl.setEmail(req.getParameter("email"));
+        rl.setParentesco(req.getParameter("parentesco"));
 
-        if (dao.cadastrar(rl)) {
-            redirecionar(resp, req.getContextPath(), "sucesso", "Responsável legal cadastrado com sucesso!");
-        } else {
-            redirecionar(resp, req.getContextPath(), "erro", "Não foi possível cadastrar o responsável legal.");
-        }
-    }
-
-    private void excluir(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        try {
-            int id = Integer.parseInt(req.getParameter("id"));
-            if (dao.excluir(id)) {
-                redirecionar(resp, req.getContextPath(), "sucesso", "Responsável legal excluído.");
-            } else {
-                redirecionar(resp, req.getContextPath(), "erro", "Não foi possível excluir.");
-            }
-        } catch (NumberFormatException e) {
-            redirecionar(resp, req.getContextPath(), "erro", "ID inválido.");
-        }
-    }
-
-    private void redirecionar(HttpServletResponse resp, String contextPath, String tipo, String msg)
-            throws IOException {
-        String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8.name());
-        resp.sendRedirect(contextPath + "/responsavel?" + tipo + "=" + encoded);
+        boolean ok = dao.cadastrar(rl);
+        String msg = URLEncoder.encode(ok ? "Responsável Legal cadastrado!" : "Erro ao cadastrar responsável.", StandardCharsets.UTF_8.name());
+        resp.sendRedirect(req.getContextPath() + "/responsavel?" + (ok ? "sucesso=" : "erro=") + msg);
     }
 }

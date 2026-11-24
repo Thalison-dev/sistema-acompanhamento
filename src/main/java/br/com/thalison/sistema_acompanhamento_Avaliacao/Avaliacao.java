@@ -2,7 +2,7 @@ package br.com.thalison.sistema_acompanhamento_Avaliacao;
 
 import java.time.LocalDate;
 
-public class avaliacao {
+public class Avaliacao {
 
     private int id;
     private String descricao;
@@ -10,10 +10,10 @@ public class avaliacao {
     private LocalDate data;
     private String observacao;
 
-    public avaliacao() {
+    public Avaliacao() {
     }
 
-    public avaliacao(int id, String descricao, double nota,
+    public Avaliacao(int id, String descricao, double nota,
                      LocalDate data, String observacao) {
         this.id = id;
         this.descricao = descricao;

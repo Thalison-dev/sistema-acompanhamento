@@ -1,19 +1,19 @@
 package br.com.thalison.sistema_acompanhamento_adaptacao;
 
-import javax.xml.crypto.Data;
+import java.time.LocalDate;
 
-public class adaptacao_metodologica {
+public class AdaptacaoMetodologica {
 	private int id;
 	private String descricao;
 	private String estrategia;
-	private Data dataRegistro;
+	private LocalDate dataRegistro;
 	private String resultado;
 	private String status;
 	
-	public adaptacao_metodologica() {
+	public AdaptacaoMetodologica() {
 }
 	
-	public adaptacao_metodologica( int id, String descricao, String estrategia, Data dataRegistro, String resultado, String status) {
+	public AdaptacaoMetodologica( int id, String descricao, String estrategia, LocalDate dataRegistro, String resultado, String status) {
 		this.id = id;
 		this.descricao = descricao;
 		this.estrategia = estrategia;
@@ -42,10 +42,10 @@ public class adaptacao_metodologica {
  	public void setestrategia(String estrategia) {
  		this.estrategia = estrategia;
  	}
- 	public Data getdataRegistro() {
+ 	public LocalDate getdataRegistro() {
  		return dataRegistro;
  	}
- 	public void  setdataRegistro(Data dataRegistro) { 
+ 	public void  setLocalDateRegistro(LocalDate dataRegistro) { 
  		this.dataRegistro = dataRegistro;
  	}
  	public String getresultado() {

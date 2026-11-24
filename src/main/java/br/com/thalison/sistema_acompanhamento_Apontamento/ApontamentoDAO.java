@@ -1,105 +1,64 @@
 package br.com.thalison.sistema_acompanhamento_Apontamento;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import br.com.thalison.sistema_acompanhamento.Conexao;
-import br.com.thalison.sistema_acompanhamento_Professor.Professor;
-import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 
 public class ApontamentoDAO {
 
-    public void salvar(Apontamento apontamento) {
-        String sql = "INSERT INTO apontamento (data_inicio, nome_professor, motivo, id_pessoa) VALUES (?, ?, ?, ?)";
-
-        try (Connection conn = Conexao.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setDate(1, apontamento.getData() != null ? Date.valueOf(apontamento.getData()) : null);
-            stmt.setString(2, apontamento.getProfessor().getNome());
-            stmt.setString(3, apontamento.getMotivo());
-            stmt.setInt(4, apontamento.getAluno().getId());
-
-            stmt.execute();
-            System.out.println("Apontamento registrado com sucesso!");
-
+    public boolean cadastrar(Apontamento ap) {
+        String sql = "INSERT INTO apontamento (alunoId, professorId, data, motivo) VALUES (?, ?, ?, ?)";
+        try (Connection c = Conexao.conectar();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, ap.getAlunoId());
+            ps.setInt(2, ap.getProfessorId());
+            ps.setDate(3, Date.valueOf(ap.getData()));
+            ps.setString(4, ap.getMotivo());
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Erro ao salvar apontamento: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
 
-    public List<Apontamento> listar() {
-        String sql = "SELECT * FROM apontamento";
+    public List<Apontamento> listarTodos() {
         List<Apontamento> lista = new ArrayList<>();
-
-        try (Connection conn = Conexao.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
+        String sql = "SELECT ap.*, pa.nome AS nomeAluno, pp.nome AS nomeProfessor "
+                   + "FROM apontamento ap "
+                   + "INNER JOIN pessoa pa ON pa.id = ap.alunoId "
+                   + "INNER JOIN pessoa pp ON pp.id = ap.professorId "
+                   + "ORDER BY ap.data DESC";
+        try (Connection c = Conexao.conectar();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Apontamento apontamento = new Apontamento();
-                apontamento.setId(rs.getInt("id"));
-
-                Date dataSql = rs.getDate("data_inicio");
-                apontamento.setData(dataSql != null ? dataSql.toLocalDate() : null);
-
-                Professor professor = new Professor();
-                professor.setNome(rs.getString("nome_professor"));
-                apontamento.setProfessor(professor);
-
-                apontamento.setMotivo(rs.getString("motivo"));
-
-                Aluno aluno = new Aluno();
-                aluno.setId(rs.getInt("id_pessoa"));
-                apontamento.setAluno(aluno);
-
-                lista.add(apontamento);
+                Apontamento ap = new Apontamento();
+                ap.setId(rs.getInt("id"));
+                ap.setAlunoId(rs.getInt("alunoId"));
+                ap.setNomeAluno(rs.getString("nomeAluno"));
+                ap.setProfessorId(rs.getInt("professorId"));
+                ap.setNomeProfessor(rs.getString("nomeProfessor"));
+                Date d = rs.getDate("data");
+                ap.setData(d != null ? d.toLocalDate() : null);
+                ap.setMotivo(rs.getString("motivo"));
+                lista.add(ap);
             }
-
         } catch (SQLException e) {
-            System.err.println("Erro ao listar apontamentos: " + e.getMessage());
+            e.printStackTrace();
         }
-
         return lista;
     }
 
-    public void atualizar(Apontamento apontamento, int id) {
-        String sql = "UPDATE apontamento SET data_inicio = ?, nome_professor = ?, motivo = ?, id_pessoa = ? WHERE id = ?";
-
-        try (Connection conn = Conexao.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setDate(1, apontamento.getData() != null ? Date.valueOf(apontamento.getData()) : null);
-            stmt.setString(2, apontamento.getProfessor().getNome());
-            stmt.setString(3, apontamento.getMotivo());
-            stmt.setInt(4, apontamento.getAluno().getId());
-            stmt.setInt(5, id);
-
-            stmt.executeUpdate();
-            System.out.println("Apontamento atualizado com sucesso!");
-
-        } catch (SQLException e) {
-            System.err.println("Erro ao atualizar apontamento: " + e.getMessage());
-        }
-    }
-
-    public void deletar(int id) {
+    public boolean excluir(int id) {
         String sql = "DELETE FROM apontamento WHERE id = ?";
-
-        try (Connection conn = Conexao.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-            System.out.println("Apontamento excluído com sucesso!");
-
+        try (Connection c = Conexao.conectar();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Erro ao deletar apontamento: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
 }

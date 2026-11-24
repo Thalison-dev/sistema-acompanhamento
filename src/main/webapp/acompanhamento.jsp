@@ -1,195 +1,182 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
+<%@ page import="br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa" %>
 <%@ page import="br.com.thalison.sistema_acompanhamento_aluno.Aluno" %>
-<%@ page import="br.com.thalison.sistema_acompanhamento_aluno.AlunoDAO" %>
 <%@ page import="br.com.thalison.sistema_acompanhamento_ResponsavelLegal.ResponsavelLegal" %>
-<%@ page import="br.com.thalison.sistema_acompanhamento_ResponsavelLegal.ResponsavelLegalDAO" %>
 <%@ page import="br.com.thalison.sistema_acompanhamento_Acompanhamento.Acompanhamento" %>
-<%@ page import="br.com.thalison.sistema_acompanhamento_Acompanhamento.AcompanhamentoDAO" %>
 <%
-    List<Aluno> listaAlunos = (request.getAttribute("alunos") instanceof List<?>)
-            ? (List<Aluno>) request.getAttribute("alunos") : new AlunoDAO().listarTodos();
+    Pessoa usuario = (Pessoa) session.getAttribute("usuarioLogado");
+    String perfil = usuario.getPerfil();
 
-    List<ResponsavelLegal> listaResponsaveis = (request.getAttribute("responsaveis") instanceof List<?>)
-            ? (List<ResponsavelLegal>) request.getAttribute("responsaveis") : new ResponsavelLegalDAO().listarTodos();
-
-    List<Acompanhamento> listaAcompanhamentos = (request.getAttribute("acompanhamentos") instanceof List<?>)
-            ? (List<Acompanhamento>) request.getAttribute("acompanhamentos") : new AcompanhamentoDAO().listar();
-
-    Map<Integer, String> mapaNomesAlunos = new HashMap<>();
-    for (Aluno al : listaAlunos) {
-        mapaNomesAlunos.put(al.getId(), al.getNome());
-    }
-
-    Map<Integer, String> mapaNomesResponsaveis = new HashMap<>();
-    for (ResponsavelLegal rl : listaResponsaveis) {
-        String label = rl.getNome() + (rl.getParentesco() != null ? " (" + rl.getParentesco() + ")" : "");
-        mapaNomesResponsaveis.put(rl.getId(), label);
-    }
-
-    Object attrEdit = request.getAttribute("acompanhamentoEdit");
-    Acompanhamento acompEdit = (attrEdit instanceof Acompanhamento) ? (Acompanhamento) attrEdit : null;
-    boolean isEdicao = (acompEdit != null);
-
-    String alunoIdSelecionado = request.getParameter("alunoId");
-    String respIdSelecionado = request.getParameter("responsavelLegalId");
-
-    if (isEdicao) {
-        alunoIdSelecionado = String.valueOf(acompEdit.getAlunoId());
-        respIdSelecionado = String.valueOf(acompEdit.getResponsavelLegalId());
-    }
-    if (alunoIdSelecionado == null) alunoIdSelecionado = "";
-    if (respIdSelecionado == null) respIdSelecionado = "";
-
-    String msgSucesso = request.getParameter("sucesso");
-    String msgErro = request.getParameter("erro");
+    List<Aluno> alunos = (List<Aluno>) request.getAttribute("alunos");
+    List<ResponsavelLegal> responsaveis = (List<ResponsavelLegal>) request.getAttribute("responsaveis");
+    List<Acompanhamento> acompanhamentos = (List<Acompanhamento>) request.getAttribute("acompanhamentos");
+    Acompanhamento ficha = (Acompanhamento) request.getAttribute("fichaSelecionada");
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Acompanhamento Pedagógico</title>
+    <title>Fichas de Acompanhamento</title>
 </head>
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/index.jsp">Início</a> |
-        <a href="${pageContext.request.contextPath}/cadastroAluno.jsp">Cadastrar Aluno</a> |
-        <a href="${pageContext.request.contextPath}/responsavel">Responsáveis Legais</a> |
-        <a href="${pageContext.request.contextPath}/acompanhamento">Acompanhamentos</a>
+        <a href="${pageContext.request.contextPath}/painel.jsp">Painel</a> |
+        <strong>Perfil Logado:</strong> <%= usuario.getNome() %> (<%= perfil %>) |
+        <a href="${pageContext.request.contextPath}/logout">Sair</a>
     </p>
     <hr>
 
-    <h2><%= isEdicao ? "Editar Acompanhamento #" + acompEdit.getAcompanhamentoId() : "Registrar Acompanhamento Pedagógico" %></h2>
+    <h1>Fichas de Acompanhamento dos Alunos Neurodivergentes</h1>
 
-    <% if (msgSucesso != null && !msgSucesso.isEmpty()) { %>
-        <p><strong>Sucesso:</strong> <%= msgSucesso %></p>
+    <% if (request.getParameter("sucesso") != null) { %><p><strong>Sucesso:</strong> <%= request.getParameter("sucesso") %></p><% } %>
+    <% if (request.getParameter("erro") != null) { %><p><strong>Erro:</strong> <%= request.getParameter("erro") %></p><% } %>
+
+    <%-- BLOCO 1: SOMENTE SECRETARIA (OU ADMIN) ABRE FICHA E VINCULA RESPONSÁVEL LEGAL --%>
+    <% if ("SECRETARIA".equals(perfil) || "ADMIN".equals(perfil)) { %>
+        <h2>Abrir Nova Ficha e Vincular Responsável Legal (Menor de Idade)</h2>
+        <form action="${pageContext.request.contextPath}/acompanhamento" method="post">
+            <input type="hidden" name="acao" value="abrirFichaSecretaria">
+            <p>
+                <label for="alunoId">Aluno Neurodivergente:</label><br>
+                <select id="alunoId" name="alunoId" required>
+                    <option value="">-- Selecione o Aluno --</option>
+                    <% if (alunos != null) { for (Aluno a : alunos) { %>
+                        <option value="<%= a.getId() %>"><%= a.getNome() %> (<%= a.getTipoNeurodivergencia() %>)</option>
+                    <% } } %>
+                </select>
+            </p>
+            <p>
+                <label for="responsavelLegalId">Responsável Legal (Obrigatório):</label><br>
+                <select id="responsavelLegalId" name="responsavelLegalId" required>
+                    <option value="">-- Selecione o Responsável Legal --</option>
+                    <% if (responsaveis != null) { for (ResponsavelLegal rl : responsaveis) { %>
+                        <option value="<%= rl.getId() %>"><%= rl.getNome() %> - <%= rl.getParentesco() %></option>
+                    <% } } %>
+                </select>
+                <a href="${pageContext.request.contextPath}/responsavel">+ Cadastrar Novo Responsável</a>
+            </p>
+            <p>
+                <label for="dataInicio">Data de Início:</label><br>
+                <input type="date" id="dataInicio" name="dataInicio" required>
+            </p>
+            <p>
+                <label for="dataFim">Previsão de Término (Opcional):</label><br>
+                <input type="date" id="dataFim" name="dataFim">
+            </p>
+            <p>
+                <label for="objetivo">Motivo / Objetivo Inicial:</label><br>
+                <textarea id="objetivo" name="objetivo" rows="3" cols="50" required></textarea>
+            </p>
+            <p>
+                <button type="submit">Abrir Ficha e Vincular Responsável</button>
+            </p>
+        </form>
+        <hr>
     <% } %>
 
-    <% if (msgErro != null && !msgErro.isEmpty()) { %>
-        <p><strong>Erro:</strong> <%= msgErro %></p>
-    <% } %>
+    <%-- BLOCO 2: DETALHES DA FICHA SELECIONADA PARA ATENDIMENTO --%>
+    <% if (ficha != null) { %>
+        <h2>Ficha do Aluno: <%= ficha.getNomeAluno() %> (ID #<%= ficha.getId() %>)</h2>
+        <p><strong>Neurodivergência:</strong> <%= ficha.getTipoNeurodivergencia() %></p>
+        <p><strong>Responsável Legal Vinculado pela Secretaria:</strong> <%= ficha.getNomeResponsavel() %> (<%= ficha.getParentescoResponsavel() %>)</p>
+        <p><strong>Status:</strong> <%= ficha.getStatus() %></p>
+        <p><strong>Objetivo Atual:</strong> <%= ficha.getObjetivo() %></p>
+        <p><strong>Parecer Psicológico (<%= ficha.getNomePsicologo() != null ? ficha.getNomePsicologo() : "Pendente" %>):</strong> <%= ficha.getParecerPsicologico() != null ? ficha.getParecerPsicologico() : "Ainda não registrado." %></p>
+        <p><strong>Parecer Pedagógico (<%= ficha.getNomePedagogo() != null ? ficha.getNomePedagogo() : "Pendente" %>):</strong> <%= ficha.getParecerPedagogico() != null ? ficha.getParecerPedagogico() : "Ainda não registrado." %></p>
 
-    <form action="${pageContext.request.contextPath}/acompanhamento" method="post">
-        <input type="hidden" name="acao" value="<%= isEdicao ? "atualizar" : "cadastrar" %>">
-        <% if (isEdicao) { %>
-            <input type="hidden" name="id" value="<%= acompEdit.getAcompanhamentoId() %>">
+        <% if ("SECRETARIA".equals(perfil) || "ADMIN".equals(perfil)) { %>
+            <h3>Alterar Responsável Legal Vinculado</h3>
+            <form action="${pageContext.request.contextPath}/acompanhamento" method="post">
+                <input type="hidden" name="acao" value="alterarResponsavel">
+                <input type="hidden" name="id" value="<%= ficha.getId() %>">
+                <select name="responsavelLegalId" required>
+                    <% if (responsaveis != null) { for (ResponsavelLegal rl : responsaveis) { %>
+                        <option value="<%= rl.getId() %>" <%= rl.getId() == ficha.getResponsavelLegalId() ? "selected" : "" %>>
+                            <%= rl.getNome() %> (<%= rl.getParentesco() %>)
+                        </option>
+                    <% } } %>
+                </select>
+                <button type="submit">Atualizar Responsável</button>
+            </form>
         <% } %>
 
-        <p>
-            <label for="alunoId">Aluno:</label><br>
-            <select id="alunoId" name="alunoId" required>
-                <option value="">-- Selecione um aluno --</option>
-                <% for (Aluno aluno : listaAlunos) {
-                    String idStr = String.valueOf(aluno.getId());
-                    String selected = idStr.equals(alunoIdSelecionado) ? "selected" : ""; %>
-                    <option value="<%= idStr %>" <%= selected %>>
-                        ID <%= idStr %> - <%= aluno.getNome() %> (Matrícula: <%= aluno.getMatricula() != null ? aluno.getMatricula() : "-" %>)
-                    </option>
-                <% } %>
-            </select>
-        </p>
+        <% if ("PSICOLOGO".equals(perfil) || "ADMIN".equals(perfil)) { %>
+            <h3>Registrar Parecer Psicológico</h3>
+            <form action="${pageContext.request.contextPath}/acompanhamento" method="post">
+                <input type="hidden" name="acao" value="salvarParecerPsicologo">
+                <input type="hidden" name="id" value="<%= ficha.getId() %>">
+                <p>
+                    <textarea name="parecerPsicologico" rows="4" cols="60" required><%= ficha.getParecerPsicologico() != null ? ficha.getParecerPsicologico() : "" %></textarea>
+                </p>
+                <button type="submit">Salvar Parecer Psicológico</button>
+            </form>
+        <% } %>
 
-        <p>
-            <label for="responsavelLegalId">Responsável Legal Vinculado:</label><br>
-            <select id="responsavelLegalId" name="responsavelLegalId">
-                <option value="0">-- Nenhum responsável selecionado --</option>
-                <% for (ResponsavelLegal rl : listaResponsaveis) {
-                    String idStr = String.valueOf(rl.getId());
-                    String selected = idStr.equals(respIdSelecionado) ? "selected" : ""; %>
-                    <option value="<%= idStr %>" <%= selected %>>
-                        ID <%= idStr %> - <%= rl.getNome() %> (<%= rl.getParentesco() != null ? rl.getParentesco() : "Responsável" %>)
-                    </option>
-                <% } %>
-            </select>
-            <a href="${pageContext.request.contextPath}/responsavel">+ Cadastrar Novo Responsável</a>
-        </p>
+        <% if ("PEDAGOGO".equals(perfil) || "ADMIN".equals(perfil)) { %>
+            <h3>Registrar Parecer e Plano Pedagógico</h3>
+            <form action="${pageContext.request.contextPath}/acompanhamento" method="post">
+                <input type="hidden" name="acao" value="salvarParecerPedagogo">
+                <input type="hidden" name="id" value="<%= ficha.getId() %>">
+                <p>
+                    <label>Objetivo Pedagógico:</label><br>
+                    <textarea name="objetivo" rows="2" cols="60" required><%= ficha.getObjetivo() %></textarea>
+                </p>
+                <p>
+                    <label>Parecer / Estratégias Pedagógicas:</label><br>
+                    <textarea name="parecerPedagogico" rows="4" cols="60" required><%= ficha.getParecerPedagogico() != null ? ficha.getParecerPedagogico() : "" %></textarea>
+                </p>
+                <p>
+                    <label>Status do Acompanhamento:</label><br>
+                    <select name="status">
+                        <option value="Em Andamento" <%= "Em Andamento".equals(ficha.getStatus()) ? "selected" : "" %>>Em Andamento</option>
+                        <option value="Concluído" <%= "Concluído".equals(ficha.getStatus()) ? "selected" : "" %>>Concluído</option>
+                    </select>
+                </p>
+                <button type="submit">Salvar Parecer Pedagógico</button>
+            </form>
+        <% } %>
+        <hr>
+    <% } %>
 
-        <p>
-            <label for="dataInicio">Data de Início:</label><br>
-            <input type="date" id="dataInicio" name="dataInicio" required
-                   value="<%= (isEdicao && acompEdit.getDataInicio() != null) ? acompEdit.getDataInicio() : "" %>">
-        </p>
-
-        <p>
-            <label for="dataFim">Data de Fim (opcional):</label><br>
-            <input type="date" id="dataFim" name="dataFim"
-                   value="<%= (isEdicao && acompEdit.getDataFim() != null) ? acompEdit.getDataFim() : "" %>">
-        </p>
-
-        <p>
-            <label for="objetivo">Objetivo:</label><br>
-            <textarea id="objetivo" name="objetivo" rows="4" cols="45" required><%= (isEdicao && acompEdit.getObjetivo() != null) ? acompEdit.getObjetivo() : "" %></textarea>
-        </p>
-
-        <p>
-            <label for="status">Status:</label><br>
-            <% String statusAtual = (isEdicao && acompEdit.getStatus() != null) ? acompEdit.getStatus() : "Pendente"; %>
-            <select id="status" name="status" required>
-                <option value="Pendente" <%= "Pendente".equals(statusAtual) ? "selected" : "" %>>Pendente</option>
-                <option value="Em Andamento" <%= "Em Andamento".equals(statusAtual) ? "selected" : "" %>>Em Andamento</option>
-                <option value="Concluído" <%= "Concluído".equals(statusAtual) ? "selected" : "" %>>Concluído</option>
-                <option value="Cancelado" <%= "Cancelado".equals(statusAtual) ? "selected" : "" %>>Cancelado</option>
-            </select>
-        </p>
-
-        <p>
-            <button type="submit"><%= isEdicao ? "Salvar Alterações" : "Registrar Acompanhamento" %></button>
-            <% if (isEdicao) { %>
-                <a href="${pageContext.request.contextPath}/acompanhamento">Cancelar Edição</a> |
-            <% } %>
-            <a href="${pageContext.request.contextPath}/index.jsp">Voltar ao Início</a>
-        </p>
-    </form>
-
-    <hr>
-
-    <h3>Acompanhamentos Cadastrados</h3>
+    <%-- BLOCO 3: LISTAGEM GERAL DAS FICHAS --%>
+    <h2>Todas as Fichas de Acompanhamento</h2>
     <table border="1" cellpadding="6" cellspacing="0">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Ficha</th>
                 <th>Aluno</th>
+                <th>Neurodivergência</th>
                 <th>Responsável Legal</th>
-                <th>Data de Início</th>
-                <th>Data de Fim</th>
-                <th>Objetivo</th>
+                <th>Psicólogo</th>
+                <th>Pedagogo</th>
                 <th>Status</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody>
-            <% if (!listaAcompanhamentos.isEmpty()) {
-                for (Acompanhamento ac : listaAcompanhamentos) {
-                    String nomeAluno = mapaNomesAlunos.containsKey(ac.getAlunoId())
-                            ? mapaNomesAlunos.get(ac.getAlunoId())
-                            : "Aluno ID " + ac.getAlunoId();
-
-                    String nomeResp = (ac.getResponsavelLegalId() > 0)
-                            ? (mapaNomesResponsaveis.containsKey(ac.getResponsavelLegalId())
-                                ? mapaNomesResponsaveis.get(ac.getResponsavelLegalId())
-                                : "ID " + ac.getResponsavelLegalId())
-                            : "Não vinculado"; %>
+            <% if (acompanhamentos != null && !acompanhamentos.isEmpty()) {
+                for (Acompanhamento ac : acompanhamentos) { %>
             <tr>
-                <td><%= ac.getAcompanhamentoId() %></td>
-                <td><%= nomeAluno %> (ID <%= ac.getAlunoId() %>)</td>
-                <td><%= nomeResp %></td>
-                <td><%= ac.getDataInicio() != null ? ac.getDataInicio() : "-" %></td>
-                <td><%= (ac.getDataFim() != null && !ac.getDataFim().trim().isEmpty()) ? ac.getDataFim() : "Em aberto" %></td>
-                <td><%= ac.getObjetivo() %></td>
+                <td>#<%= ac.getId() %></td>
+                <td><%= ac.getNomeAluno() %></td>
+                <td><%= ac.getTipoNeurodivergencia() != null ? ac.getTipoNeurodivergencia() : "-" %></td>
+                <td><%= ac.getNomeResponsavel() %> (<%= ac.getParentescoResponsavel() %>)</td>
+                <td><%= ac.getNomePsicologo() != null ? ac.getNomePsicologo() : "Pendente" %></td>
+                <td><%= ac.getNomePedagogo() != null ? ac.getNomePedagogo() : "Pendente" %></td>
                 <td><%= ac.getStatus() %></td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/acompanhamento?acao=editar&id=<%= ac.getAcompanhamentoId() %>">Editar</a> |
-                    <a href="${pageContext.request.contextPath}/acompanhamento?acao=excluir&id=<%= ac.getAcompanhamentoId() %>"
-                       onclick="return confirm('Deseja realmente excluir?');">Excluir</a>
+                    <a href="${pageContext.request.contextPath}/acompanhamento?acao=ficha&id=<%= ac.getId() %>">Abrir Ficha</a>
+                    <% if ("SECRETARIA".equals(perfil) || "ADMIN".equals(perfil)) { %>
+                        | <a href="${pageContext.request.contextPath}/acompanhamento?acao=excluir&id=<%= ac.getId() %>"
+                             onclick="return confirm('Excluir ficha?');">Excluir</a>
+                    <% } %>
                 </td>
             </tr>
-            <%  }
-               } else { %>
+            <% } } else { %>
             <tr>
-                <td colspan="8">Nenhum acompanhamento registrado até o momento.</td>
+                <td colspan="8">Nenhuma ficha registrada. A Secretaria deve abrir a ficha vinculando o aluno e o responsável legal.</td>
             </tr>
             <% } %>
         </tbody>

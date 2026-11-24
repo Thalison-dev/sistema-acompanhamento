@@ -2,7 +2,7 @@ package br.com.thalison.sistema_acompanhamento_mensagem;
 
 import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
 
-class mensagem extends Pessoa{
+public class Mensagem extends Pessoa{
 	
 	long id;
 	String conteudo;
@@ -10,9 +10,9 @@ class mensagem extends Pessoa{
 	Boolean lida;
 	
 	
-	public mensagem(){	
+	public Mensagem(){	
 	}
-	public mensagem(long id, String conteudo, String dataEnvio, boolean lida) {
+	public Mensagem(long id, String conteudo, String dataEnvio, boolean lida) {
 	
 	
 	this.id = id;

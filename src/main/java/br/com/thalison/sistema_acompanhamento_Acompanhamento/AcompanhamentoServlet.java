@@ -1,315 +1,128 @@
 package br.com.thalison.sistema_acompanhamento_Acompanhamento;
 
 import java.io.IOException;
-<<<<<<< HEAD
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.List;
-
-import javax.servlet.RequestDispatcher;
-=======
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
->>>>>>> aea11f6ce5fbd1f58dabfdfc3ecc8b2629d7611a
+import java.time.LocalDate;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-<<<<<<< HEAD
-import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
-
-@WebServlet(urlPatterns = {
-    "/novo-acompanhamento",
-    "/inserir",
-    "/deletar",
-    "/editar",
-    "/atualizar",
-    "/listar"
-})
-=======
+import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
 import br.com.thalison.sistema_acompanhamento_ResponsavelLegal.ResponsavelLegalDAO;
 import br.com.thalison.sistema_acompanhamento_aluno.AlunoDAO;
 
-@WebServlet(urlPatterns = {"/acompanhamento", "/novo-acompanhamento"})
->>>>>>> aea11f6ce5fbd1f58dabfdfc3ecc8b2629d7611a
+@WebServlet("/acompanhamento")
 public class AcompanhamentoServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private AcompanhamentoDAO dao;
-    private AlunoDAO alunoDao;
-    private ResponsavelLegalDAO responsavelDao;
+    private final AcompanhamentoDAO dao = new AcompanhamentoDAO();
+    private final AlunoDAO alunoDAO = new AlunoDAO();
+    private final ResponsavelLegalDAO respDAO = new ResponsavelLegalDAO();
 
     @Override
-    public void init() {
-        dao = new AcompanhamentoDAO();
-        alunoDao = new AlunoDAO();
-        responsavelDao = new ResponsavelLegalDAO();
-    }
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Pessoa usuario = (Pessoa) req.getSession().getAttribute("usuarioLogado");
+        String acao = req.getParameter("acao");
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-<<<<<<< HEAD
-        request.setCharacterEncoding("UTF-8");
-        String action = request.getServletPath();
-=======
-        String acao = request.getParameter("acao");
-        if (acao == null) {
-            acao = "listar";
+        if ("excluir".equals(acao) && ("ADMIN".equals(usuario.getPerfil()) || "SECRETARIA".equals(usuario.getPerfil()))) {
+            dao.excluir(Integer.parseInt(req.getParameter("id")));
+            redirecionar(resp, req.getContextPath(), "sucesso", "Ficha removida.");
+            return;
         }
->>>>>>> aea11f6ce5fbd1f58dabfdfc3ecc8b2629d7611a
 
-        switch (acao) {
-            case "editar":
-                mostrarFormularioEditar(request, response);
-                break;
-
-            case "excluir":
-                deletarAcompanhamento(request, response);
-                break;
-
-            default:
-                listarAcompanhamentos(request, response);
-                break;
+        if ("ficha".equals(acao)) {
+            int id = Integer.parseInt(req.getParameter("id"));
+            req.setAttribute("fichaSelecionada", dao.buscarPorId(id));
         }
+
+        req.setAttribute("alunos", alunoDAO.listarTodos());
+        req.setAttribute("responsaveis", respDAO.listarTodos());
+        req.setAttribute("acompanhamentos", dao.listarTodos());
+        req.getRequestDispatcher("/acompanhamento.jsp").forward(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        req.setCharacterEncoding("UTF-8");
+        Pessoa usuario = (Pessoa) req.getSession().getAttribute("usuarioLogado");
+        String perfil = usuario.getPerfil();
+        String acao = req.getParameter("acao");
 
-        request.setCharacterEncoding("UTF-8");
-        String acao = request.getParameter("acao");
-
-        if ("atualizar".equals(acao)) {
-            atualizarAcompanhamento(request, response);
-        } else {
-            inserirAcompanhamento(request, response);
-        }
-    }
-
-    private void listarAcompanhamentos(HttpServletRequest request, HttpServletResponse response)
-<<<<<<< HEAD
-            throws SQLException, IOException, ServletException {
-
-        List<Acompanhamento> lista = dao.listar();
-        request.setAttribute("acompanhamentos", lista);
-
-        RequestDispatcher dispatcher =
-                request.getRequestDispatcher("listar-acompanhamento.jsp");
-        dispatcher.forward(request, response);
-    }
-
-    private void mostrarFormularioNovo(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        RequestDispatcher dispatcher =
-                request.getRequestDispatcher("acompanhamento.jsp");
-        dispatcher.forward(request, response);
-=======
-            throws ServletException, IOException {
-
-        request.setAttribute("alunos", alunoDao.listarTodos());
-        request.setAttribute("responsaveis", responsavelDao.listarTodos());
-        request.setAttribute("acompanhamentos", dao.listar());
-        request.getRequestDispatcher("/acompanhamento.jsp").forward(request, response);
->>>>>>> aea11f6ce5fbd1f58dabfdfc3ecc8b2629d7611a
-    }
-
-    private void mostrarFormularioEditar(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-<<<<<<< HEAD
-        int id = Integer.parseInt(request.getParameter("id"));
-        Acompanhamento acompanhamento = dao.buscarPorId(id);
-
-        request.setAttribute("acompanhamento", acompanhamento);
-
-        RequestDispatcher dispatcher =
-                request.getRequestDispatcher("form-acompanhamento.jsp");
-        dispatcher.forward(request, response);
-=======
-        int id = parseInt(request.getParameter("id"));
-        if (id > 0) {
-            Acompanhamento acompanhamento = dao.buscarPorId(id);
-            request.setAttribute("acompanhamentoEdit", acompanhamento);
-        }
-        listarAcompanhamentos(request, response);
->>>>>>> aea11f6ce5fbd1f58dabfdfc3ecc8b2629d7611a
-    }
-
-    private void inserirAcompanhamento(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        try {
-            Acompanhamento a = montarAcompanhamento(request, 0);
-
-<<<<<<< HEAD
-        int alunoId = Integer.parseInt(request.getParameter("alunoId"));
-        String dataInicioParam = request.getParameter("dataInicio");
-        String dataFimParam = request.getParameter("dataFim");
-
-        LocalDate dataInicio = LocalDate.parse(dataInicioParam);
-        LocalDate dataFim = (dataFimParam != null && !dataFimParam.trim().isEmpty())
-                ? LocalDate.parse(dataFimParam)
-                : null;
-
-        String objetivo = request.getParameter("objetivo");
-        String status = request.getParameter("status");
-
-        Aluno aluno = new Aluno();
-        aluno.setId(alunoId); 
-
-        Acompanhamento a = new Acompanhamento();
-        a.setAluno(aluno);
-        a.setDataInicio(dataInicio);
-        a.setDataFim(dataFim);
-        a.setObjetivo(objetivo);
-        a.setStatus(status);
-
-        dao.cadastrar(a);
-
-        response.sendRedirect("listar");
-=======
-            if (dao.cadastrar(a)) {
-                redirecionar(response, request.getContextPath(), "sucesso",
-                        "Acompanhamento registrado com sucesso!");
-            } else {
-                redirecionar(response, request.getContextPath(), "erro",
-                        "Não foi possível cadastrar o acompanhamento.");
+        // 1. SECRETARIA (ou ADMIN) abre a ficha e vincula obrigatoriamente o Responsável Legal do menor
+        if ("abrirFichaSecretaria".equals(acao)) {
+            if (!"SECRETARIA".equals(perfil) && !"ADMIN".equals(perfil)) {
+                redirecionar(resp, req.getContextPath(), "erro", "Somente a Secretaria pode registrar o responsável na ficha.");
+                return;
             }
-        } catch (IllegalArgumentException e) {
-            redirecionar(response, request.getContextPath(), "erro", e.getMessage());
-        }
->>>>>>> aea11f6ce5fbd1f58dabfdfc3ecc8b2629d7611a
-    }
-
-    private void atualizarAcompanhamento(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        try {
-            int id = parseInt(request.getParameter("id"));
-            if (id <= 0) {
-                throw new IllegalArgumentException("ID do acompanhamento inválido.");
+            int alunoId = Integer.parseInt(req.getParameter("alunoId"));
+            int responsavelId = Integer.parseInt(req.getParameter("responsavelLegalId"));
+            if (alunoId <= 0 || responsavelId <= 0) {
+                redirecionar(resp, req.getContextPath(), "erro", "Aluno e Responsável Legal são obrigatórios.");
+                return;
             }
+            Acompanhamento ac = new Acompanhamento();
+            ac.setAlunoId(alunoId);
+            ac.setResponsavelLegalId(responsavelId);
+            ac.setDataInicio(LocalDate.parse(req.getParameter("dataInicio")));
+            String df = req.getParameter("dataFim");
+            ac.setDataFim((df != null && !df.isEmpty()) ? LocalDate.parse(df) : null);
+            ac.setObjetivo(req.getParameter("objetivo"));
+            ac.setStatus("Em Andamento");
 
-<<<<<<< HEAD
-        int id = Integer.parseInt(request.getParameter("id"));
-        int alunoId = Integer.parseInt(request.getParameter("alunoId"));
-        String dataInicioParam = request.getParameter("dataInicio");
-        String dataFimParam = request.getParameter("dataFim");
+            boolean ok = dao.abrirFichaSecretaria(ac);
+            redirecionar(resp, req.getContextPath(), ok ? "sucesso" : "erro",
+                    ok ? "Ficha aberta e Responsável Legal vinculado com sucesso!" : "Erro ao abrir ficha.");
+            return;
+        }
 
-        LocalDate dataInicio = LocalDate.parse(dataInicioParam);
-        LocalDate dataFim = (dataFimParam != null && !dataFimParam.trim().isEmpty())
-                ? LocalDate.parse(dataFimParam)
-                : null;
-
-        String objetivo = request.getParameter("objetivo");
-        String status = request.getParameter("status");
-
-        Aluno aluno = new Aluno();
-        aluno.setId(alunoId); 
-
-        Acompanhamento a = new Acompanhamento();
-        a.setAcompanhamentoId(id);
-        a.setAluno(aluno);
-        a.setDataInicio(dataInicio);
-        a.setDataFim(dataFim);
-        a.setObjetivo(objetivo);
-        a.setStatus(status);
-
-        dao.atualizar(a);
-
-        response.sendRedirect("listar");
-=======
-            Acompanhamento a = montarAcompanhamento(request, id);
-
-            if (dao.atualizar(a)) {
-                redirecionar(response, request.getContextPath(), "sucesso",
-                        "Acompanhamento atualizado com sucesso!");
-            } else {
-                redirecionar(response, request.getContextPath(), "erro",
-                        "Não foi possível atualizar o acompanhamento.");
+        // 2. SECRETARIA (ou ADMIN) altera o Responsável Legal na ficha
+        if ("alterarResponsavel".equals(acao)) {
+            if (!"SECRETARIA".equals(perfil) && !"ADMIN".equals(perfil)) {
+                redirecionar(resp, req.getContextPath(), "erro", "Somente a Secretaria pode alterar o responsável.");
+                return;
             }
-        } catch (IllegalArgumentException e) {
-            redirecionar(response, request.getContextPath(), "erro", e.getMessage());
-        }
->>>>>>> aea11f6ce5fbd1f58dabfdfc3ecc8b2629d7611a
-    }
-
-    private void deletarAcompanhamento(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-
-<<<<<<< HEAD
-        int id = Integer.parseInt(request.getParameter("id"));
-        dao.excluir(id);
-
-        response.sendRedirect("listar");
-    }
-=======
-        int id = parseInt(request.getParameter("id"));
-        if (id > 0 && dao.excluir(id)) {
-            redirecionar(response, request.getContextPath(), "sucesso",
-                    "Acompanhamento excluído com sucesso!");
-        } else {
-            redirecionar(response, request.getContextPath(), "erro",
-                    "Não foi possível excluir o acompanhamento.");
-        }
-    }
-
-    private Acompanhamento montarAcompanhamento(HttpServletRequest request, int id) {
-        int alunoId = parseInt(request.getParameter("alunoId"));
-        int responsavelLegalId = parseInt(request.getParameter("responsavelLegalId"));
-        String dataInicio = request.getParameter("dataInicio");
-        String dataFim = request.getParameter("dataFim");
-        String objetivo = request.getParameter("objetivo");
-        String status = request.getParameter("status");
-
-        if (alunoId <= 0) {
-            throw new IllegalArgumentException("Selecione um aluno válido.");
-        }
-        if (dataInicio == null || dataInicio.trim().isEmpty()) {
-            throw new IllegalArgumentException("A data de início é obrigatória.");
-        }
-        if (objetivo == null || objetivo.trim().isEmpty()) {
-            throw new IllegalArgumentException("O objetivo é obrigatório.");
-        }
-        if (status == null || status.trim().isEmpty()) {
-            throw new IllegalArgumentException("O status é obrigatório.");
+            int id = Integer.parseInt(req.getParameter("id"));
+            int respId = Integer.parseInt(req.getParameter("responsavelLegalId"));
+            boolean ok = dao.atualizarResponsavelSecretaria(id, respId);
+            redirecionar(resp, req.getContextPath(), ok ? "sucesso" : "erro",
+                    ok ? "Responsável Legal atualizado na ficha!" : "Erro ao atualizar responsável.");
+            return;
         }
 
-        String dataFimLimpa = (dataFim != null && !dataFim.trim().isEmpty()) ? dataFim.trim() : null;
-        if (dataFimLimpa != null && dataFimLimpa.compareTo(dataInicio.trim()) < 0) {
-            throw new IllegalArgumentException("A data de fim não pode ser anterior à data de início.");
+        // 3. PSICÓLOGO (ou ADMIN) registra o parecer psicológico na ficha
+        if ("salvarParecerPsicologo".equals(acao)) {
+            if (!"PSICOLOGO".equals(perfil) && !"ADMIN".equals(perfil)) {
+                redirecionar(resp, req.getContextPath(), "erro", "Apenas o Psicólogo pode registrar o parecer psicológico.");
+                return;
+            }
+            int id = Integer.parseInt(req.getParameter("id"));
+            String parecerPsi = req.getParameter("parecerPsicologico");
+            boolean ok = dao.registrarParecerPsicologo(id, usuario.getId(), parecerPsi);
+            redirecionar(resp, req.getContextPath(), ok ? "sucesso" : "erro",
+                    ok ? "Parecer psicológico registrado na ficha!" : "Erro ao registrar parecer psicológico.");
+            return;
         }
 
-        Acompanhamento a = new Acompanhamento();
-        a.setAcompanhamentoId(id);
-        a.setAlunoId(alunoId);
-        a.setResponsavelLegalId(responsavelLegalId);
-        a.setDataInicio(dataInicio.trim());
-        a.setDataFim(dataFimLimpa);
-        a.setObjetivo(objetivo.trim());
-        a.setStatus(status.trim());
-        return a;
-    }
-
-    private void redirecionar(HttpServletResponse response, String contextPath, String tipo, String msg)
-            throws IOException {
-        String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8.name());
-        response.sendRedirect(contextPath + "/acompanhamento?" + tipo + "=" + encoded);
-    }
-
-    private int parseInt(String valor) {
-        if (valor == null || valor.trim().isEmpty()) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(valor.trim());
-        } catch (NumberFormatException e) {
-            return 0;
+        // 4. PEDAGOGO (ou ADMIN) registra o parecer pedagógico na ficha
+        if ("salvarParecerPedagogo".equals(acao)) {
+            if (!"PEDAGOGO".equals(perfil) && !"ADMIN".equals(perfil)) {
+                redirecionar(resp, req.getContextPath(), "erro", "Apenas o Pedagogo pode registrar o parecer pedagógico.");
+                return;
+            }
+            int id = Integer.parseInt(req.getParameter("id"));
+            String objetivo = req.getParameter("objetivo");
+            String parecerPed = req.getParameter("parecerPedagogico");
+            String status = req.getParameter("status");
+            boolean ok = dao.registrarParecerPedagogo(id, usuario.getId(), objetivo, parecerPed, status);
+            redirecionar(resp, req.getContextPath(), ok ? "sucesso" : "erro",
+                    ok ? "Parecer pedagógico registrado na ficha!" : "Erro ao registrar parecer pedagógico.");
         }
     }
->>>>>>> aea11f6ce5fbd1f58dabfdfc3ecc8b2629d7611a
+
+    private void redirecionar(HttpServletResponse resp, String ctx, String tipo, String msg) throws IOException {
+        resp.sendRedirect(ctx + "/acompanhamento?" + tipo + "=" + URLEncoder.encode(msg, StandardCharsets.UTF_8.name()));
+    }
 }

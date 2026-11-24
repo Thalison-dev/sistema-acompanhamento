@@ -17,7 +17,8 @@
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/index.jsp">Voltar ao Início</a>
+        <a href="${pageContext.request.contextPath}/painel.jsp">Voltar ao Painel</a> |
+        <a href="${pageContext.request.contextPath}/acompanhamento">Fichas de Acompanhamento</a>
     </p>
     <hr>
 
@@ -25,16 +26,12 @@
         <h2>Registros Pedagógicos do Aluno</h2>
         <p><strong>ID:</strong> <%= aluno.getId() %></p>
         <p><strong>Nome:</strong> <%= aluno.getNome() %></p>
-        <p><strong>E-mail:</strong> <%= aluno.getEmail() %></p>
+        <p><strong>E-mail:</strong> <%= aluno.getEmail() != null ? aluno.getEmail() : "-" %></p>
         <p><strong>Telefone:</strong> <%= aluno.getTelefone() != null ? aluno.getTelefone() : "-" %></p>
         <p><strong>Matrícula:</strong> <%= aluno.getMatricula() != null ? aluno.getMatricula() : "-" %></p>
         <p><strong>Ano Escolar:</strong> <%= aluno.getAnoEscolar() != null ? aluno.getAnoEscolar() : "-" %></p>
+        <p><strong>Neurodivergência:</strong> <%= aluno.getTipoNeurodivergencia() != null ? aluno.getTipoNeurodivergencia() : "-" %></p>
         <p><strong>Status:</strong> <%= aluno.getStatus() != null ? aluno.getStatus() : "-" %></p>
-
-        <p>
-            <a href="${pageContext.request.contextPath}/acompanhamento?alunoId=<%= aluno.getId() %>">+ Novo Acompanhamento para este Aluno</a> |
-            <a href="${pageContext.request.contextPath}/pedagogo?acao=reuniao&alunoId=<%= aluno.getId() %>">+ Marcar Reunião sobre este Aluno</a>
-        </p>
 
         <h3>Histórico de Acompanhamentos</h3>
         <table border="1" cellpadding="6" cellspacing="0">
@@ -44,6 +41,7 @@
                     <th>Data Início</th>
                     <th>Data Fim</th>
                     <th>Objetivo</th>
+                    <th>Parecer Pedagógico</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -51,16 +49,17 @@
                 <% if (!acompanhamentos.isEmpty()) {
                     for (Acompanhamento ac : acompanhamentos) { %>
                 <tr>
-                    <td><%= ac.getAcompanhamentoId() %></td>
-                    <td><%= ac.getDataInicio() %></td>
+                    <td><%= ac.getId() %></td>
+                    <td><%= ac.getDataInicio() != null ? ac.getDataInicio() : "-" %></td>
                     <td><%= ac.getDataFim() != null ? ac.getDataFim() : "Em aberto" %></td>
-                    <td><%= ac.getObjetivo() %></td>
-                    <td><%= ac.getStatus() %></td>
+                    <td><%= ac.getObjetivo() != null ? ac.getObjetivo() : "-" %></td>
+                    <td><%= ac.getParecerPedagogico() != null ? ac.getParecerPedagogico() : "Pendente" %></td>
+                    <td><%= ac.getStatus() != null ? ac.getStatus() : "-" %></td>
                 </tr>
                 <%  }
                    } else { %>
                 <tr>
-                    <td colspan="5">Nenhum acompanhamento registrado para este aluno.</td>
+                    <td colspan="6">Nenhum acompanhamento registrado para este aluno.</td>
                 </tr>
                 <% } %>
             </tbody>

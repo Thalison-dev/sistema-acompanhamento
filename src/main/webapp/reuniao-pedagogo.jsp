@@ -11,7 +11,7 @@
     List<Pedagogo> pedagogos = (request.getAttribute("pedagogos") instanceof List<?>)
             ? (List<Pedagogo>) request.getAttribute("pedagogos") : new PedagogoDAO().listar();
 
-    int pedagogoId = !pedagogos.isEmpty() ? pedagogos.get(0).getIdPedagogo() : 1;
+    int pedagogoId = !pedagogos.isEmpty() ? pedagogos.get(0).getId() : 1;
     String alunoIdParam = request.getParameter("alunoId");
     if (alunoIdParam == null) alunoIdParam = "";
 %>
@@ -24,7 +24,10 @@
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/index.jsp">Início</a>
+        <a href="${pageContext.request.contextPath}/painel.jsp">Painel</a> |
+        <a href="${pageContext.request.contextPath}/pedagogo">Pedagogos</a> |
+        <a href="${pageContext.request.contextPath}/acompanhamento">Fichas de Acompanhamento</a> |
+        <a href="${pageContext.request.contextPath}/logout">Sair</a>
     </p>
     <hr>
 
@@ -68,7 +71,7 @@
 
         <p>
             <button type="submit">Confirmar Agendamento</button>
-            <a href="${pageContext.request.contextPath}/index.jsp">Cancelar</a>
+            <a href="${pageContext.request.contextPath}/painel.jsp">Cancelar</a>
         </p>
     </form>
 
