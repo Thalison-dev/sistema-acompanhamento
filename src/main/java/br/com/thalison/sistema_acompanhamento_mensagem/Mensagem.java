@@ -1,50 +1,22 @@
 package br.com.thalison.sistema_acompanhamento_mensagem;
 
-import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
+import java.sql.Timestamp;
 
-public class Mensagem extends Pessoa{
-	
-	long id;
-	String conteudo;
-	String dataEnvio;
-	Boolean lida;
-	
-	
-	public Mensagem(){	
-	}
-	public Mensagem(long id, String conteudo, String dataEnvio, boolean lida) {
-	
-	
-	this.id = id;
-	this.conteudo = conteudo;
-	this.dataEnvio = dataEnvio;
-	this.lida = lida;
-		
-	}
-	
-	public long getgid() {
-		return id;
-	}
-	public void setid(long id) {
-		this.id = id;
-	}
-	public String getconteudo() {
-		return conteudo;
-	}
-	public void setconteudo(String conteudo) {
-		this.conteudo = conteudo;
-	}
-	public String getdataEnvio() {
-		return dataEnvio;
-	}
-	public void setdataEnvio(String dataEnvio) {
-		this.dataEnvio = dataEnvio;
-	}
-	public Boolean getlida() {
-		return lida;
-	}
-	public void setlida(Boolean lida) {
-		this.lida = lida;
-	}
-		
+public class Mensagem {
+    private int id;
+    private int remetenteId;
+    private int destinatarioId;
+    private String conteudoMensagem;
+    private Timestamp dataEnvioMensagem;
+
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public int getRemetenteId() { return remetenteId; }
+    public void setRemetenteId(int remetenteId) { this.remetenteId = remetenteId; }
+    public int getDestinatarioId() { return destinatarioId; }
+    public void setDestinatarioId(int destinatarioId) { this.destinatarioId = destinatarioId; }
+    public String getConteudoMensagem() { return conteudoMensagem; }
+    public void setConteudoMensagem(String conteudoMensagem) { this.conteudoMensagem = conteudoMensagem; }
+    public Timestamp getDataEnvioMensagem() { return dataEnvioMensagem; }
+    public void setDataEnvioMensagem(Timestamp dataEnvioMensagem) { this.dataEnvioMensagem = dataEnvioMensagem; }
 }

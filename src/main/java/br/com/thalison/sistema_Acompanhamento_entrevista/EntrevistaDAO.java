@@ -7,15 +7,15 @@ import br.com.thalison.sistema_acompanhamento.Conexao;
 
 public class EntrevistaDAO {
 
-    public boolean cadastrar(Entrevista e) {
-        String sql = "INSERT INTO entrevista (alunoId, psicologoId, motivo, agendada, data, observacoes) VALUES (?, ?, ?, ?, ?, ?)";
+    public boolean inserir(Entrevista e) {
+        String sql = "INSERT INTO entrevista (alunoId, psicologoId, data, motivo, agendada, observacoes) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, e.getAlunoId());
             ps.setInt(2, e.getPsicologoId());
-            ps.setString(3, e.getMotivo());
-            ps.setBoolean(4, e.isAgendada());
-            ps.setDate(5, Date.valueOf(e.getData()));
+            ps.setDate(3, e.getData());
+            ps.setString(4, e.getMotivo());
+            ps.setBoolean(5, e.isAgendada());
             ps.setString(6, e.getObservacoes());
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
@@ -24,13 +24,13 @@ public class EntrevistaDAO {
         }
     }
 
-    public List<Entrevista> listarTodas() {
+    public List<Entrevista> listarTodos() {
         List<Entrevista> lista = new ArrayList<>();
-        String sql = "SELECT e.*, pa.nome AS nomeAluno, pp.nome AS nomePsicologo "
-                   + "FROM entrevista e "
-                   + "INNER JOIN pessoa pa ON pa.id = e.alunoId "
-                   + "INNER JOIN pessoa pp ON pp.id = e.psicologoId "
-                   + "ORDER BY e.data DESC";
+        String sql = "SELECT e.*, a.nome AS nomeAluno, p.nome AS nomePsicologo " +
+                     "FROM entrevista e " +
+                     "INNER JOIN aluno a ON e.alunoId = a.id " +
+                     "INNER JOIN pessoa p ON e.psicologoId = p.id " +
+                     "ORDER BY e.data DESC, e.id DESC";
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -38,14 +38,13 @@ public class EntrevistaDAO {
                 Entrevista e = new Entrevista();
                 e.setId(rs.getInt("id"));
                 e.setAlunoId(rs.getInt("alunoId"));
-                e.setNomeAluno(rs.getString("nomeAluno"));
                 e.setPsicologoId(rs.getInt("psicologoId"));
-                e.setNomePsicologo(rs.getString("nomePsicologo"));
+                e.setData(rs.getDate("data"));
                 e.setMotivo(rs.getString("motivo"));
                 e.setAgendada(rs.getBoolean("agendada"));
-                Date d = rs.getDate("data");
-                e.setData(d != null ? d.toLocalDate() : null);
                 e.setObservacoes(rs.getString("observacoes"));
+                e.setNomeAluno(rs.getString("nomeAluno"));
+                e.setNomePsicologo(rs.getString("nomePsicologo"));
                 lista.add(e);
             }
         } catch (SQLException ex) {

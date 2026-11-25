@@ -9,10 +9,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Administração da Escola</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
-    <p><a href="${pageContext.request.contextPath}/painel.jsp">Voltar ao Painel</a> | <a href="${pageContext.request.contextPath}/logout">Sair</a></p>
+    <p><a href="<%= request.getContextPath() %>/painel.jsp">Voltar ao Painel</a> | <a href="<%= request.getContextPath() %>/logout">Sair</a></p>
     <hr>
 
     <h1>Administração da Escola - Cadastro Geral de Equipe</h1>
@@ -20,7 +21,7 @@
     <% if (request.getParameter("sucesso") != null) { %><p><strong>Sucesso:</strong> <%= request.getParameter("sucesso") %></p><% } %>
     <% if (request.getParameter("erro") != null) { %><p><strong>Erro:</strong> <%= request.getParameter("erro") %></p><% } %>
 
-    <form action="${pageContext.request.contextPath}/admin" method="post">
+    <form action="<%= request.getContextPath() %>/admin" method="post">
         <p>
             <label for="perfil">Perfil de Acesso:</label><br>
             <select id="perfil" name="perfil" required>
@@ -87,7 +88,7 @@
                 <td><%= u.getEmail() %></td>
                 <td><%= u.getTelefone() != null ? u.getTelefone() : "-" %></td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/admin?acao=excluir&id=<%= u.getId() %>"
+                    <a href="<%= request.getContextPath() %>/admin?acao=excluir&id=<%= u.getId() %>"
                        onclick="return confirm('Excluir este usuário?');">Excluir</a>
                 </td>
             </tr>

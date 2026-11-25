@@ -11,15 +11,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Apontamentos de Sala de Aula</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
-    <p><a href="${pageContext.request.contextPath}/painel.jsp">Painel</a> | <a href="${pageContext.request.contextPath}/acompanhamento">Fichas de Acompanhamento</a></p>
+    <p><a href="<%= request.getContextPath() %>/painel.jsp">Painel</a> | <a href="<%= request.getContextPath() %>/acompanhamento">Fichas de Acompanhamento</a></p>
     <hr>
 
     <h1>Apontamentos Pedagógicos em Sala de Aula</h1>
 
-    <form action="${pageContext.request.contextPath}/apontamentos" method="post">
+    <form action="<%= request.getContextPath() %>/apontamentos" method="post">
         <p>
             <label>Aluno:</label><br>
             <select name="alunoId" required>
@@ -61,7 +62,7 @@
                 <td><%= ap.getNomeProfessor() %></td>
                 <td><%= ap.getData() %></td>
                 <td><%= ap.getMotivo() %></td>
-                <td><a href="${pageContext.request.contextPath}/apontamentos?acao=excluir&id=<%= ap.getId() %>">Excluir</a></td>
+                <td><a href="<%= request.getContextPath() %>/apontamentos?acao=excluir&id=<%= ap.getId() %>" onclick="return confirm('Excluir apontamento?');">Excluir</a></td>
             </tr>
             <% } } %>
         </tbody>

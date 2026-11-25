@@ -45,6 +45,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Painel do Pedagogo</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
@@ -54,17 +55,17 @@
         <% if (pedagogoAtivo != null) { %>
             <%= pedagogoAtivo.getNome() %> (<%= pedagogoAtivo.getEspecialidade() != null ? pedagogoAtivo.getEspecialidade() : "Pedagogia" %>)
         <% } else { %>
-            Não identificado (<a href="${pageContext.request.contextPath}/pedagogo?acao=perfil">Definir meu perfil</a>)
+            Não identificado (<a href="<%= request.getContextPath() %>/pedagogo?acao=perfil">Definir meu perfil</a>)
         <% } %>
     </p>
 
     <p>
-        <a href="${pageContext.request.contextPath}/painel.jsp">Painel Geral</a> |
-        <a href="${pageContext.request.contextPath}/aluno">Alunos</a> |
-        <a href="${pageContext.request.contextPath}/acompanhamento">Fichas de Acompanhamento</a> |
-        <a href="${pageContext.request.contextPath}/desempenho">Desempenho Mensal</a> |
-        <a href="${pageContext.request.contextPath}/pedagogo?acao=perfil">Meu Perfil</a> |
-        <a href="${pageContext.request.contextPath}/logout">Sair</a>
+        <a href="<%= request.getContextPath() %>/painel.jsp">Painel Geral</a> |
+        <a href="<%= request.getContextPath() %>/aluno">Alunos</a> |
+        <a href="<%= request.getContextPath() %>/acompanhamento">Fichas de Acompanhamento</a> |
+        <a href="<%= request.getContextPath() %>/desempenho">Desempenho Mensal</a> |
+        <a href="<%= request.getContextPath() %>/pedagogo?acao=perfil">Meu Perfil</a> |
+        <a href="<%= request.getContextPath() %>/logout">Sair</a>
     </p>
     <hr>
 
@@ -76,7 +77,7 @@
     <% } %>
 
     <h2>1. Alunos Cadastrados</h2>
-    <p><a href="${pageContext.request.contextPath}/aluno">+ Gerenciar Alunos</a></p>
+    <p><a href="<%= request.getContextPath() %>/aluno">+ Gerenciar Alunos</a></p>
 
     <table border="1" cellpadding="6" cellspacing="0">
         <thead>
@@ -101,14 +102,14 @@
                 <td><%= a.getTipoNeurodivergencia() != null ? a.getTipoNeurodivergencia() : "-" %></td>
                 <td><%= a.getStatus() != null ? a.getStatus() : "-" %></td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/acompanhamento?alunoId=<%= a.getId() %>">Acompanhar Aluno</a> |
-                    <a href="${pageContext.request.contextPath}/desempenho">Desempenho Mensal</a>
+                    <a href="<%= request.getContextPath() %>/acompanhamento?alunoId=<%= a.getId() %>">Acompanhar Aluno</a> |
+                    <a href="<%= request.getContextPath() %>/desempenho">Desempenho Mensal</a>
                 </td>
             </tr>
             <%  }
                } else { %>
             <tr>
-                <td colspan="7">Nenhum aluno cadastrado. <a href="${pageContext.request.contextPath}/aluno">Cadastre um aluno</a>.</td>
+                <td colspan="7">Nenhum aluno cadastrado. <a href="<%= request.getContextPath() %>/aluno">Cadastre um aluno</a>.</td>
             </tr>
             <% } %>
         </tbody>
@@ -117,7 +118,7 @@
     <hr>
 
     <h2>2. Acompanhamentos Pedagógicos Registrados</h2>
-    <p><a href="${pageContext.request.contextPath}/acompanhamento">+ Abrir / Atualizar Ficha de Acompanhamento</a></p>
+    <p><a href="<%= request.getContextPath() %>/acompanhamento">+ Abrir / Atualizar Ficha de Acompanhamento</a></p>
 
     <table border="1" cellpadding="6" cellspacing="0">
         <thead>

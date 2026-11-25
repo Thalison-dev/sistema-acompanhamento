@@ -3,6 +3,7 @@ package br.com.thalison.sistema_acompanhamento_aluno;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +18,7 @@ public class AlunoServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if ("excluir".equals(req.getParameter("acao"))) {
+        if ("excluir".equals(req.getParameter("acao")) && req.getParameter("id") != null) {
             dao.excluir(Integer.parseInt(req.getParameter("id")));
             resp.sendRedirect(req.getContextPath() + "/aluno?sucesso=Aluno+excluido");
             return;
@@ -29,20 +30,28 @@ public class AlunoServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("UTF-8");
-        Aluno a = new Aluno();
-        a.setNome(req.getParameter("nome"));
-        a.setCpf(req.getParameter("cpf"));
-        a.setTelefone(req.getParameter("telefone"));
-        a.setEmail(req.getParameter("email"));
-        a.setDataNascimento(req.getParameter("dataNascimento"));
-        a.setMatricula(req.getParameter("matricula"));
-        a.setAnoEscolar(req.getParameter("anoEscolar"));
-        a.setStatus(req.getParameter("status"));
-        a.setTipoNeurodivergencia(req.getParameter("tipoNeurodivergencia"));
-        a.setDescricaoNeuro(req.getParameter("descricaoNeuro"));
 
-        boolean ok = dao.cadastrar(a);
-        String msg = URLEncoder.encode(ok ? "Aluno neurodivergente cadastrado!" : "Erro ao cadastrar aluno.", StandardCharsets.UTF_8.name());
+        Aluno aluno = new Aluno();
+        aluno.setNome(req.getParameter("nome"));
+        aluno.setEmail(req.getParameter("email"));
+        aluno.setCpf(req.getParameter("cpf"));
+        aluno.setTelefone(req.getParameter("telefone"));
+
+        String nasc = req.getParameter("dataNascimento");
+        if (nasc != null && !nasc.trim().isEmpty()) {
+            aluno.setDataNascimento(Date.valueOf(nasc.trim()));
+        }
+
+        aluno.setMatricula(req.getParameter("matricula"));
+        aluno.setAnoEscolar(req.getParameter("anoEscolar"));
+        aluno.setTipoNeurodivergencia(req.getParameter("tipoNeurodivergencia"));
+        aluno.setDescricaoNeuro(req.getParameter("descricaoNeuro"));
+        aluno.setStatus(req.getParameter("status") != null ? req.getParameter("status") : "Ativo");
+
+        boolean ok = dao.cadastrar(aluno);
+        String msg = URLEncoder.encode(
+                ok ? "Aluno neurodivergente cadastrado com sucesso!" : "Erro ao cadastrar aluno (verifique se a matrícula já existe).",
+                StandardCharsets.UTF_8.name());
         resp.sendRedirect(req.getContextPath() + "/aluno?" + (ok ? "sucesso=" : "erro=") + msg);
     }
 }

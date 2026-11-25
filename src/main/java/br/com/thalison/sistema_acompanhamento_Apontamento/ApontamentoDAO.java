@@ -7,13 +7,13 @@ import br.com.thalison.sistema_acompanhamento.Conexao;
 
 public class ApontamentoDAO {
 
-    public boolean cadastrar(Apontamento ap) {
+    public boolean inserir(Apontamento ap) {
         String sql = "INSERT INTO apontamento (alunoId, professorId, data, motivo) VALUES (?, ?, ?, ?)";
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, ap.getAlunoId());
             ps.setInt(2, ap.getProfessorId());
-            ps.setDate(3, Date.valueOf(ap.getData()));
+            ps.setDate(3, ap.getData());
             ps.setString(4, ap.getMotivo());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -24,11 +24,11 @@ public class ApontamentoDAO {
 
     public List<Apontamento> listarTodos() {
         List<Apontamento> lista = new ArrayList<>();
-        String sql = "SELECT ap.*, pa.nome AS nomeAluno, pp.nome AS nomeProfessor "
-                   + "FROM apontamento ap "
-                   + "INNER JOIN pessoa pa ON pa.id = ap.alunoId "
-                   + "INNER JOIN pessoa pp ON pp.id = ap.professorId "
-                   + "ORDER BY ap.data DESC";
+        String sql = "SELECT ap.*, a.nome AS nomeAluno, p.nome AS nomeProfessor " +
+                     "FROM apontamento ap " +
+                     "INNER JOIN aluno a ON ap.alunoId = a.id " +
+                     "INNER JOIN pessoa p ON ap.professorId = p.id " +
+                     "ORDER BY ap.data DESC, ap.id DESC";
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -36,13 +36,44 @@ public class ApontamentoDAO {
                 Apontamento ap = new Apontamento();
                 ap.setId(rs.getInt("id"));
                 ap.setAlunoId(rs.getInt("alunoId"));
-                ap.setNomeAluno(rs.getString("nomeAluno"));
                 ap.setProfessorId(rs.getInt("professorId"));
-                ap.setNomeProfessor(rs.getString("nomeProfessor"));
-                Date d = rs.getDate("data");
-                ap.setData(d != null ? d.toLocalDate() : null);
+                ap.setData(rs.getDate("data"));
                 ap.setMotivo(rs.getString("motivo"));
+                ap.setNomeAluno(rs.getString("nomeAluno"));
+                ap.setNomeProfessor(rs.getString("nomeProfessor"));
                 lista.add(ap);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public List<Apontamento> listarPorAlunoEMesAno(int alunoId, int mes, int ano) {
+        List<Apontamento> lista = new ArrayList<>();
+        String sql = "SELECT ap.*, a.nome AS nomeAluno, p.nome AS nomeProfessor " +
+                     "FROM apontamento ap " +
+                     "INNER JOIN aluno a ON ap.alunoId = a.id " +
+                     "INNER JOIN pessoa p ON ap.professorId = p.id " +
+                     "WHERE ap.alunoId = ? AND MONTH(ap.data) = ? AND YEAR(ap.data) = ? " +
+                     "ORDER BY ap.data ASC, ap.id ASC";
+        try (Connection c = Conexao.conectar();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, alunoId);
+            ps.setInt(2, mes);
+            ps.setInt(3, ano);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Apontamento ap = new Apontamento();
+                    ap.setId(rs.getInt("id"));
+                    ap.setAlunoId(rs.getInt("alunoId"));
+                    ap.setProfessorId(rs.getInt("professorId"));
+                    ap.setData(rs.getDate("data"));
+                    ap.setMotivo(rs.getString("motivo"));
+                    ap.setNomeAluno(rs.getString("nomeAluno"));
+                    ap.setNomeProfessor(rs.getString("nomeProfessor"));
+                    lista.add(ap);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

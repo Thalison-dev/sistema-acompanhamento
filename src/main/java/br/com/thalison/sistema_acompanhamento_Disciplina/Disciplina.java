@@ -1,18 +1,26 @@
 package br.com.thalison.sistema_acompanhamento_Disciplina;
 
-public class disciplina {
+public class Disciplina {
 
     private int id;
     private String nome;
     private String descricao;
 
-    public disciplina() {
+    public Disciplina() {
     }
 
-    public disciplina(int id, String nome, String descricao) {
+    public Disciplina(int id, String nome, String descricao) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
+    }
+
+    public void consultarDisciplina() {
+        System.out.println("Consultando disciplina.");
+    }
+
+    public void atualizarDisciplina() {
+        System.out.println("Disciplina atualizada.");
     }
 
     public int getId() {

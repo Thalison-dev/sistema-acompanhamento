@@ -1,15 +1,26 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.List" %>
+<%@ page import="br.com.thalison.sistema_acompanhamento_Acompanhamento.Acompanhamento" %>
+<%
+    List<Acompanhamento> acompanhamentos = (request.getAttribute("acompanhamentos") instanceof List<?>)
+            ? (List<Acompanhamento>) request.getAttribute("acompanhamentos")
+            : new ArrayList<>();
+%>
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Lista de Acompanhamentos</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
     <h1>Acompanhamentos Cadastrados</h1>
 
-    <p><a href="${pageContext.request.contextPath}/novo-acompanhamento">Novo Acompanhamento</a></p>
+    <p>
+        <a href="<%= request.getContextPath() %>/painel.jsp">Painel</a> |
+        <a href="<%= request.getContextPath() %>/acompanhamento">Novo Acompanhamento</a>
+    </p>
 
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
@@ -23,24 +34,25 @@
             </tr>
         </thead>
         <tbody>
-            <c:forEach var="a" items="${acompanhamentos}">
+            <% if (!acompanhamentos.isEmpty()) {
+                for (Acompanhamento a : acompanhamentos) { %>
                 <tr>
-                    <td>${a.id}</td>
-                    <td>${a.dataInicio}</td>
-                    <td>${a.dataFim}</td>
-                    <td>${a.objetivo}</td>
-                    <td>${a.status}</td>
+                    <td><%= a.getId() %></td>
+                    <td><%= a.getDataInicio() != null ? a.getDataInicio() : "-" %></td>
+                    <td><%= a.getDataFim() != null ? a.getDataFim() : "Em aberto" %></td>
+                    <td><%= a.getObjetivo() != null ? a.getObjetivo() : "-" %></td>
+                    <td><%= a.getStatus() != null ? a.getStatus() : "-" %></td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/editar?id=${a.id}">Editar</a> | 
-                        <a href="${pageContext.request.contextPath}/deletar?id=${a.id}" onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</a>
+                        <a href="<%= request.getContextPath() %>/acompanhamento?acao=ficha&id=<%= a.getId() %>">Abrir Ficha</a> |
+                        <a href="<%= request.getContextPath() %>/acompanhamento?acao=excluir&id=<%= a.getId() %>" onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</a>
                     </td>
                 </tr>
-            </c:forEach>
-            <c:if test="${empty acompanhamentos}">
+            <%  }
+               } else { %>
                 <tr>
                     <td colspan="6" style="text-align: center;">Nenhum acompanhamento encontrado.</td>
                 </tr>
-            </c:if>
+            <% } %>
         </tbody>
     </table>
 </body>

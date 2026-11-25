@@ -21,14 +21,14 @@ public class DesempenhoServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if ("excluir".equals(req.getParameter("acao"))) {
+        if ("excluir".equals(req.getParameter("acao")) && req.getParameter("id") != null) {
             dao.excluir(Integer.parseInt(req.getParameter("id")));
             redirecionar(resp, req.getContextPath(), "sucesso", "Registro de desempenho removido.");
             return;
         }
 
         req.setAttribute("alunos", alunoDAO.listarTodos());
-        req.setAttribute("desempenhos", dao.listarComApontamentos());
+        req.setAttribute("desempenhos", dao.listarTodosComApontamentos());
         req.getRequestDispatcher("/desempenho.jsp").forward(req, resp);
     }
 

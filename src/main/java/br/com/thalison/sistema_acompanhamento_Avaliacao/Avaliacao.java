@@ -4,45 +4,50 @@ import java.time.LocalDate;
 
 public class Avaliacao {
 
-    private int id;
-    private String descricao;
-    private double nota;
+    private Long id;
+    private Double nota;
     private LocalDate data;
+    private String tipo;
+    private String descricao;
     private String observacao;
 
     public Avaliacao() {
     }
 
-    public Avaliacao(int id, String descricao, double nota,
-                     LocalDate data, String observacao) {
+    public Avaliacao(Long id, Double nota, LocalDate data, String tipo, String descricao, String observacao) {
         this.id = id;
-        this.descricao = descricao;
         this.nota = nota;
         this.data = data;
+        this.tipo = tipo;
+        this.descricao = descricao;
         this.observacao = observacao;
     }
 
-    public int getId() {
+    public void registrarAvaliacao() {
+        System.out.println("Avaliação registrada.");
+    }
+
+    public void atualizarAvaliacao() {
+        System.out.println("Avaliação atualizada.");
+    }
+
+    public void consultarAvaliacao() {
+        System.out.println("Consultando avaliação.");
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public double getNota() {
+    public Double getNota() {
         return nota;
     }
 
-    public void setNota(double nota) {
+    public void setNota(Double nota) {
         this.nota = nota;
     }
 
@@ -52,6 +57,22 @@ public class Avaliacao {
 
     public void setData(LocalDate data) {
         this.data = data;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     public String getObservacao() {

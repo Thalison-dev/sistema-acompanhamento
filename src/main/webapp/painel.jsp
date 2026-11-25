@@ -1,7 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa" %>
 <%
-    Pessoa usuario = (Pessoa) session.getAttribute("usuarioLogado");
+    Pessoa usuario = (session != null) ? (Pessoa) session.getAttribute("usuarioLogado") : null;
+    if (usuario == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp?erro=Faca+login+para+continuar");
+        return;
+    }
     String perfil = usuario.getPerfil();
 %>
 <!DOCTYPE html>
@@ -9,6 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Painel Principal</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
@@ -16,7 +21,7 @@
     <p>
         <strong>Usuário:</strong> <%= usuario.getNome() %> |
         <strong>Perfil:</strong> <%= perfil %> |
-        <a href="${pageContext.request.contextPath}/logout">Sair</a>
+        <a href="<%= request.getContextPath() %>/logout">Sair</a>
     </p>
     <hr>
 
@@ -27,24 +32,24 @@
     <h2>Módulos Disponíveis para o seu Perfil</h2>
     <ul>
         <% if ("ADMIN".equals(perfil)) { %>
-            <li><a href="${pageContext.request.contextPath}/admin">Administração da Escola (Cadastrar Equipe e Usuários)</a></li>
+            <li><a href="<%= request.getContextPath() %>/admin">Administração da Escola (Cadastrar Equipe e Usuários)</a></li>
         <% } %>
 
         <% if ("ADMIN".equals(perfil) || "SECRETARIA".equals(perfil)) { %>
-            <li><a href="${pageContext.request.contextPath}/aluno">Secretaria: Cadastrar Alunos Neurodivergentes</a></li>
-            <li><a href="${pageContext.request.contextPath}/responsavel">Secretaria: Cadastrar Responsáveis Legais</a></li>
+            <li><a href="<%= request.getContextPath() %>/aluno">Secretaria: Cadastrar Alunos Neurodivergentes</a></li>
+            <li><a href="<%= request.getContextPath() %>/responsavel">Secretaria: Cadastrar Responsáveis Legais</a></li>
         <% } %>
 
-        <li><a href="${pageContext.request.contextPath}/acompanhamento">Fichas de Acompanhamento dos Alunos</a></li>
+        <li><a href="<%= request.getContextPath() %>/acompanhamento">Fichas de Acompanhamento dos Alunos</a></li>
 
         <% if ("ADMIN".equals(perfil) || "PSICOLOGO".equals(perfil)) { %>
-            <li><a href="${pageContext.request.contextPath}/entrevistas">Psicologia: Entrevistas e Atendimentos</a></li>
+            <li><a href="<%= request.getContextPath() %>/entrevistas">Psicologia: Entrevistas e Atendimentos</a></li>
         <% } %>
 
         <% if ("ADMIN".equals(perfil) || "PROFESSOR".equals(perfil) || "PEDAGOGO".equals(perfil)) { %>
-            <li><a href="${pageContext.request.contextPath}/apontamentos">Sala de Aula: Apontamentos do Professor</a></li>
+            <li><a href="<%= request.getContextPath() %>/apontamentos">Sala de Aula: Apontamentos do Professor</a></li>
         <% } %>
-        <li><a href="${pageContext.request.contextPath}/desempenho">Desempenho Mensal (Media vs. Apontamentos)</a></li>
+        <li><a href="<%= request.getContextPath() %>/desempenho">Desempenho Mensal (Media vs. Apontamentos)</a></li>
     </ul>
 
 </body>

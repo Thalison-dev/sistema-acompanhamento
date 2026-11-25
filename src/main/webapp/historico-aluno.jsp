@@ -13,12 +13,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Registros do Aluno</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/painel.jsp">Voltar ao Painel</a> |
-        <a href="${pageContext.request.contextPath}/acompanhamento">Fichas de Acompanhamento</a>
+        <a href="<%= request.getContextPath() %>/painel.jsp">Voltar ao Painel</a> |
+        <a href="<%= request.getContextPath() %>/acompanhamento">Fichas de Acompanhamento</a>
     </p>
     <hr>
 

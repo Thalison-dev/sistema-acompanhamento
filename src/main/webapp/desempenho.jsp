@@ -12,14 +12,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Desempenho Mensal do Aluno</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/painel.jsp">Painel</a> |
-        <a href="${pageContext.request.contextPath}/apontamentos">Apontamentos do Professor</a> |
-        <a href="${pageContext.request.contextPath}/acompanhamento">Fichas de Acompanhamento</a> |
-        <a href="${pageContext.request.contextPath}/logout">Sair</a>
+        <a href="<%= request.getContextPath() %>/painel.jsp">Painel</a> |
+        <a href="<%= request.getContextPath() %>/apontamentos">Apontamentos do Professor</a> |
+        <a href="<%= request.getContextPath() %>/acompanhamento">Fichas de Acompanhamento</a> |
+        <a href="<%= request.getContextPath() %>/logout">Sair</a>
     </p>
     <hr>
 
@@ -29,7 +30,7 @@
     <% if (request.getParameter("erro") != null) { %><p><strong>Erro:</strong> <%= request.getParameter("erro") %></p><% } %>
 
     <h2>Registrar / Atualizar Desempenho do Mes</h2>
-    <form action="${pageContext.request.contextPath}/desempenho" method="post">
+    <form action="<%= request.getContextPath() %>/desempenho" method="post">
         <p>
             <label for="alunoId">Aluno Neurodivergente:</label><br>
             <select id="alunoId" name="alunoId" required>
@@ -114,7 +115,7 @@
                     <% } %>
                 </td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/desempenho?acao=excluir&id=<%= d.getId() %>"
+                    <a href="<%= request.getContextPath() %>/desempenho?acao=excluir&id=<%= d.getId() %>"
                        onclick="return confirm('Excluir este registro de desempenho?');">Excluir</a>
                 </td>
             </tr>

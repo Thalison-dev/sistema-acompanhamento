@@ -33,18 +33,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Meu Perfil de Pedagogo</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/painel.jsp">Voltar ao Painel</a> |
-        <a href="${pageContext.request.contextPath}/logout">Sair</a>
+        <a href="<%= request.getContextPath() %>/painel.jsp">Voltar ao Painel</a> |
+        <a href="<%= request.getContextPath() %>/logout">Sair</a>
     </p>
     <hr>
 
     <h2>Meu Perfil de Pedagogo</h2>
 
-    <form action="${pageContext.request.contextPath}/pedagogo" method="post">
+    <form action="<%= request.getContextPath() %>/pedagogo" method="post">
         <p>
             <label for="idPedagogo">ID do Pedagogo:</label><br>
             <input type="number" id="idPedagogo" name="idPedagogo" min="1" required value="<%= idExibido %>">
@@ -62,7 +63,7 @@
 
         <p>
             <button type="submit">Salvar Perfil</button>
-            <a href="${pageContext.request.contextPath}/painel.jsp">Cancelar</a>
+            <a href="<%= request.getContextPath() %>/painel.jsp">Cancelar</a>
         </p>
     </form>
 

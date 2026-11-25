@@ -8,35 +8,31 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Responsáveis Legais</title>
+    <title>Cadastro de Responsáveis Legais</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/painel.jsp">Painel</a> |
-        <a href="${pageContext.request.contextPath}/aluno">Alunos</a> |
-        <a href="${pageContext.request.contextPath}/acompanhamento">Fichas de Acompanhamento</a>
+        <a href="<%= request.getContextPath() %>/painel.jsp">Painel</a> |
+        <a href="<%= request.getContextPath() %>/aluno">Cadastrar Aluno</a> |
+        <a href="<%= request.getContextPath() %>/acompanhamento">Fichas de Acompanhamento</a>
     </p>
     <hr>
 
-    <h1>Secretaria - Cadastro de Responsável Legal</h1>
+    <h1>Secretaria - Responsáveis Legais</h1>
 
     <% if (request.getParameter("sucesso") != null) { %><p><strong>Sucesso:</strong> <%= request.getParameter("sucesso") %></p><% } %>
     <% if (request.getParameter("erro") != null) { %><p><strong>Erro:</strong> <%= request.getParameter("erro") %></p><% } %>
 
-    <form action="${pageContext.request.contextPath}/responsavel" method="post">
+    <form action="<%= request.getContextPath() %>/responsavel" method="post">
         <p>
-            <label for="nome">Nome Completo do Responsável:</label><br>
+            <label for="nome">Nome do Responsável Legal:</label><br>
             <input type="text" id="nome" name="nome" required>
         </p>
         <p>
-            <label for="parentesco">Parentesco:</label><br>
-            <select id="parentesco" name="parentesco" required>
-                <option value="Mãe">Mãe</option>
-                <option value="Pai">Pai</option>
-                <option value="Avô/Avó">Avô/Avó</option>
-                <option value="Tutor Legal">Tutor Legal</option>
-            </select>
+            <label for="parentesco">Parentesco / Vínculo Legal:</label><br>
+            <input type="text" id="parentesco" name="parentesco" placeholder="Ex: Mãe, Pai, Avó, Guardião Legal" required>
         </p>
         <p>
             <label for="cpf">CPF:</label><br>
@@ -80,7 +76,7 @@
                 <td><%= rl.getTelefone() %></td>
                 <td><%= rl.getEmail() %></td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/responsavel?acao=excluir&id=<%= rl.getId() %>"
+                    <a href="<%= request.getContextPath() %>/responsavel?acao=excluir&id=<%= rl.getId() %>"
                        onclick="return confirm('Excluir responsável?');">Excluir</a>
                 </td>
             </tr>

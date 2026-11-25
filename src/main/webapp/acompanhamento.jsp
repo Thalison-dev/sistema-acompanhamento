@@ -5,7 +5,11 @@
 <%@ page import="br.com.thalison.sistema_acompanhamento_ResponsavelLegal.ResponsavelLegal" %>
 <%@ page import="br.com.thalison.sistema_acompanhamento_Acompanhamento.Acompanhamento" %>
 <%
-    Pessoa usuario = (Pessoa) session.getAttribute("usuarioLogado");
+    Pessoa usuario = (session != null) ? (Pessoa) session.getAttribute("usuarioLogado") : null;
+    if (usuario == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp?erro=Faca+login+para+continuar");
+        return;
+    }
     String perfil = usuario.getPerfil();
 
     List<Aluno> alunos = (List<Aluno>) request.getAttribute("alunos");
@@ -18,13 +22,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Fichas de Acompanhamento</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/painel.jsp">Painel</a> |
+        <a href="<%= request.getContextPath() %>/painel.jsp">Painel</a> |
         <strong>Perfil Logado:</strong> <%= usuario.getNome() %> (<%= perfil %>) |
-        <a href="${pageContext.request.contextPath}/logout">Sair</a>
+        <a href="<%= request.getContextPath() %>/logout">Sair</a>
     </p>
     <hr>
 
@@ -36,14 +41,14 @@
     <%-- BLOCO 1: SOMENTE SECRETARIA (OU ADMIN) ABRE FICHA E VINCULA RESPONSÁVEL LEGAL --%>
     <% if ("SECRETARIA".equals(perfil) || "ADMIN".equals(perfil)) { %>
         <h2>Abrir Nova Ficha e Vincular Responsável Legal (Menor de Idade)</h2>
-        <form action="${pageContext.request.contextPath}/acompanhamento" method="post">
+        <form action="<%= request.getContextPath() %>/acompanhamento" method="post">
             <input type="hidden" name="acao" value="abrirFichaSecretaria">
             <p>
                 <label for="alunoId">Aluno Neurodivergente:</label><br>
                 <select id="alunoId" name="alunoId" required>
                     <option value="">-- Selecione o Aluno --</option>
                     <% if (alunos != null) { for (Aluno a : alunos) { %>
-                        <option value="<%= a.getId() %>"><%= a.getNome() %> (<%= a.getTipoNeurodivergencia() %>)</option>
+                        <option value="<%= a.getId() %>"><%= a.getNome() %> (<%= a.getTipoNeurodivergencia() != null ? a.getTipoNeurodivergencia() : "-" %>)</option>
                     <% } } %>
                 </select>
             </p>
@@ -55,7 +60,7 @@
                         <option value="<%= rl.getId() %>"><%= rl.getNome() %> - <%= rl.getParentesco() %></option>
                     <% } } %>
                 </select>
-                <a href="${pageContext.request.contextPath}/responsavel">+ Cadastrar Novo Responsável</a>
+                <a href="<%= request.getContextPath() %>/responsavel">+ Cadastrar Novo Responsável</a>
             </p>
             <p>
                 <label for="dataInicio">Data de Início:</label><br>
@@ -79,7 +84,7 @@
     <%-- BLOCO 2: DETALHES DA FICHA SELECIONADA PARA ATENDIMENTO --%>
     <% if (ficha != null) { %>
         <h2>Ficha do Aluno: <%= ficha.getNomeAluno() %> (ID #<%= ficha.getId() %>)</h2>
-        <p><strong>Neurodivergência:</strong> <%= ficha.getTipoNeurodivergencia() %></p>
+        <p><strong>Neurodivergência:</strong> <%= ficha.getTipoNeurodivergencia() != null ? ficha.getTipoNeurodivergencia() : "-" %></p>
         <p><strong>Responsável Legal Vinculado pela Secretaria:</strong> <%= ficha.getNomeResponsavel() %> (<%= ficha.getParentescoResponsavel() %>)</p>
         <p><strong>Status:</strong> <%= ficha.getStatus() %></p>
         <p><strong>Objetivo Atual:</strong> <%= ficha.getObjetivo() %></p>
@@ -88,7 +93,7 @@
 
         <% if ("SECRETARIA".equals(perfil) || "ADMIN".equals(perfil)) { %>
             <h3>Alterar Responsável Legal Vinculado</h3>
-            <form action="${pageContext.request.contextPath}/acompanhamento" method="post">
+            <form action="<%= request.getContextPath() %>/acompanhamento" method="post">
                 <input type="hidden" name="acao" value="alterarResponsavel">
                 <input type="hidden" name="id" value="<%= ficha.getId() %>">
                 <select name="responsavelLegalId" required>
@@ -104,7 +109,7 @@
 
         <% if ("PSICOLOGO".equals(perfil) || "ADMIN".equals(perfil)) { %>
             <h3>Registrar Parecer Psicológico</h3>
-            <form action="${pageContext.request.contextPath}/acompanhamento" method="post">
+            <form action="<%= request.getContextPath() %>/acompanhamento" method="post">
                 <input type="hidden" name="acao" value="salvarParecerPsicologo">
                 <input type="hidden" name="id" value="<%= ficha.getId() %>">
                 <p>
@@ -116,7 +121,7 @@
 
         <% if ("PEDAGOGO".equals(perfil) || "ADMIN".equals(perfil)) { %>
             <h3>Registrar Parecer e Plano Pedagógico</h3>
-            <form action="${pageContext.request.contextPath}/acompanhamento" method="post">
+            <form action="<%= request.getContextPath() %>/acompanhamento" method="post">
                 <input type="hidden" name="acao" value="salvarParecerPedagogo">
                 <input type="hidden" name="id" value="<%= ficha.getId() %>">
                 <p>
@@ -167,9 +172,9 @@
                 <td><%= ac.getNomePedagogo() != null ? ac.getNomePedagogo() : "Pendente" %></td>
                 <td><%= ac.getStatus() %></td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/acompanhamento?acao=ficha&id=<%= ac.getId() %>">Abrir Ficha</a>
+                    <a href="<%= request.getContextPath() %>/acompanhamento?acao=ficha&id=<%= ac.getId() %>">Abrir Ficha</a>
                     <% if ("SECRETARIA".equals(perfil) || "ADMIN".equals(perfil)) { %>
-                        | <a href="${pageContext.request.contextPath}/acompanhamento?acao=excluir&id=<%= ac.getId() %>"
+                        | <a href="<%= request.getContextPath() %>/acompanhamento?acao=excluir&id=<%= ac.getId() %>"
                              onclick="return confirm('Excluir ficha?');">Excluir</a>
                     <% } %>
                 </td>

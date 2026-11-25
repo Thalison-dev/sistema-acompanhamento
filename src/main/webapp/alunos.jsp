@@ -9,13 +9,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Cadastro de Alunos Neurodivergentes</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/painel.jsp">Painel</a> |
-        <a href="${pageContext.request.contextPath}/responsavel">Responsáveis Legais</a> |
-        <a href="${pageContext.request.contextPath}/acompanhamento">Fichas de Acompanhamento</a>
+        <a href="<%= request.getContextPath() %>/painel.jsp">Painel</a> |
+        <a href="<%= request.getContextPath() %>/responsavel">Responsáveis Legais</a> |
+        <a href="<%= request.getContextPath() %>/acompanhamento">Fichas de Acompanhamento</a>
     </p>
     <hr>
 
@@ -24,7 +25,7 @@
     <% if (request.getParameter("sucesso") != null) { %><p><strong>Sucesso:</strong> <%= request.getParameter("sucesso") %></p><% } %>
     <% if (request.getParameter("erro") != null) { %><p><strong>Erro:</strong> <%= request.getParameter("erro") %></p><% } %>
 
-    <form action="${pageContext.request.contextPath}/aluno" method="post">
+    <form action="<%= request.getContextPath() %>/aluno" method="post">
         <p>
             <label for="nome">Nome do Aluno:</label><br>
             <input type="text" id="nome" name="nome" required>
@@ -90,8 +91,8 @@
                 <td><%= a.getAnoEscolar() %></td>
                 <td><%= a.getTipoNeurodivergencia() != null ? a.getTipoNeurodivergencia() : "-" %></td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/acompanhamento">Abrir Ficha</a> |
-                    <a href="${pageContext.request.contextPath}/aluno?acao=excluir&id=<%= a.getId() %>"
+                    <a href="<%= request.getContextPath() %>/acompanhamento">Abrir Ficha</a> |
+                    <a href="<%= request.getContextPath() %>/aluno?acao=excluir&id=<%= a.getId() %>"
                        onclick="return confirm('Excluir aluno?');">Excluir</a>
                 </td>
             </tr>

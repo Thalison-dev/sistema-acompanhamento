@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Login - Apoio ao Aluno Neurodivergente</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
@@ -14,7 +15,7 @@
         <p><strong>Erro:</strong> <%= request.getParameter("erro") %></p>
     <% } %>
 
-    <form action="${pageContext.request.contextPath}/login" method="post">
+    <form action="<%= request.getContextPath() %>/login" method="post">
         <p>
             <label for="email">E-mail:</label><br>
             <input type="email" id="email" name="email" required>

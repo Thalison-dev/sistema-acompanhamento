@@ -11,7 +11,7 @@
     List<Pedagogo> pedagogos = (request.getAttribute("pedagogos") instanceof List<?>)
             ? (List<Pedagogo>) request.getAttribute("pedagogos") : new PedagogoDAO().listar();
 
-    int pedagogoId = !pedagogos.isEmpty() ? pedagogos.get(0).getId() : 1;
+    int pedagogoId = (pedagogos != null && !pedagogos.isEmpty()) ? pedagogos.get(0).getId() : 1;
     String alunoIdParam = request.getParameter("alunoId");
     if (alunoIdParam == null) alunoIdParam = "";
 %>
@@ -19,21 +19,22 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Marcar Reunião</title>
+    <title>Marcar Reunião - Pedagogo</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/painel.jsp">Painel</a> |
-        <a href="${pageContext.request.contextPath}/pedagogo">Pedagogos</a> |
-        <a href="${pageContext.request.contextPath}/acompanhamento">Fichas de Acompanhamento</a> |
-        <a href="${pageContext.request.contextPath}/logout">Sair</a>
+        <a href="<%= request.getContextPath() %>/painel.jsp">Painel Geral</a> |
+        <a href="<%= request.getContextPath() %>/pedagogo">Painel do Pedagogo</a> |
+        <a href="<%= request.getContextPath() %>/acompanhamento">Fichas de Acompanhamento</a> |
+        <a href="<%= request.getContextPath() %>/logout">Sair</a>
     </p>
     <hr>
 
     <h2>Marcar Reunião</h2>
 
-    <form action="${pageContext.request.contextPath}/pedagogo" method="post">
+    <form action="<%= request.getContextPath() %>/pedagogo" method="post">
         <input type="hidden" name="acao" value="agendarReuniao">
         <input type="hidden" name="pedagogoId" value="<%= pedagogoId %>">
 
@@ -51,11 +52,13 @@
             <label for="alunoId">Aluno Relacionado:</label><br>
             <select id="alunoId" name="alunoId">
                 <option value="0">-- Selecione um aluno (opcional para reunião com Diretor) --</option>
-                <% for (Aluno a : alunos) {
-                    String idStr = String.valueOf(a.getId());
-                    String selected = idStr.equals(alunoIdParam) ? "selected" : ""; %>
-                    <option value="<%= idStr %>" <%= selected %>>ID <%= idStr %> - <%= a.getNome() %></option>
-                <% } %>
+                <% if (alunos != null) {
+                    for (Aluno a : alunos) {
+                        String idStr = String.valueOf(a.getId());
+                        String selected = idStr.equals(alunoIdParam) ? "selected" : ""; %>
+                        <option value="<%= idStr %>" <%= selected %>>ID <%= idStr %> - <%= a.getNome() %></option>
+                <%  }
+                   } %>
             </select>
         </p>
 
@@ -71,7 +74,7 @@
 
         <p>
             <button type="submit">Confirmar Agendamento</button>
-            <a href="${pageContext.request.contextPath}/painel.jsp">Cancelar</a>
+            <a href="<%= request.getContextPath() %>/pedagogo">Cancelar</a>
         </p>
     </form>
 

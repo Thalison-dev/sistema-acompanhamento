@@ -12,14 +12,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista de Pedagogos</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
     <p>
-        <a href="${pageContext.request.contextPath}/painel.jsp">Painel</a> |
-        <a href="${pageContext.request.contextPath}/pedagogo?acao=perfil">Meu Perfil</a> |
-        <a href="${pageContext.request.contextPath}/acompanhamento">Fichas de Acompanhamento</a> |
-        <a href="${pageContext.request.contextPath}/logout">Sair</a>
+        <a href="<%= request.getContextPath() %>/painel.jsp">Painel</a> |
+        <a href="<%= request.getContextPath() %>/pedagogo?acao=perfil">Meu Perfil</a> |
+        <a href="<%= request.getContextPath() %>/acompanhamento">Fichas de Acompanhamento</a> |
+        <a href="<%= request.getContextPath() %>/logout">Sair</a>
     </p>
     <hr>
 
@@ -42,7 +43,7 @@
             </tr>
         </thead>
         <tbody>
-            <% if (!pedagogos.isEmpty()) {
+            <% if (pedagogos != null && !pedagogos.isEmpty()) {
                 for (Pedagogo p : pedagogos) { %>
             <tr>
                 <td><%= p.getId() %></td>

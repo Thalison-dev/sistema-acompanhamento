@@ -11,15 +11,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Entrevistas Psicológicas</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
-    <p><a href="${pageContext.request.contextPath}/painel.jsp">Painel</a> | <a href="${pageContext.request.contextPath}/acompanhamento">Fichas de Acompanhamento</a></p>
+    <p><a href="<%= request.getContextPath() %>/painel.jsp">Painel</a> | <a href="<%= request.getContextPath() %>/acompanhamento">Fichas de Acompanhamento</a></p>
     <hr>
 
     <h1>Psicologia - Registro de Entrevistas</h1>
 
-    <form action="${pageContext.request.contextPath}/entrevistas" method="post">
+    <form action="<%= request.getContextPath() %>/entrevistas" method="post">
         <p>
             <label>Aluno:</label><br>
             <select name="alunoId" required>
@@ -69,8 +70,11 @@
                 <td><%= e.getNomePsicologo() %></td>
                 <td><%= e.getData() %></td>
                 <td><%= e.getMotivo() %></td>
-                <td><%= e.getObservacoes() %></td>
-                <td><a href="${pageContext.request.contextPath}/entrevistas?acao=excluir&id=<%= e.getId() %>">Excluir</a></td>
+                <td><%= e.getObservacoes() != null ? e.getObservacoes() : "-" %></td>
+                <td>
+                    <a href="<%= request.getContextPath() %>/entrevistas?acao=excluir&id=<%= e.getId() %>"
+                       onclick="return confirm('Excluir entrevista?');">Excluir</a>
+                </td>
             </tr>
             <% } } %>
         </tbody>
