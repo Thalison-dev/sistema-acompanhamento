@@ -41,6 +41,9 @@ public class AuthFilter implements Filter {
 
         REGRAS_POR_ROTA.put("/desempenho", Arrays.asList("ADMIN", "SECRETARIA", "PSICOLOGO", "PEDAGOGO", "PROFESSOR"));
         REGRAS_POR_ROTA.put("/desempenho.jsp", Arrays.asList("ADMIN", "SECRETARIA", "PSICOLOGO", "PEDAGOGO", "PROFESSOR"));
+        
+        REGRAS_POR_ROTA.put("/diretor", Arrays.asList("ADMIN", "DIRETOR"));
+        REGRAS_POR_ROTA.put("/diretor.jsp", Arrays.asList("ADMIN", "DIRETOR"));
     }
 
     @Override

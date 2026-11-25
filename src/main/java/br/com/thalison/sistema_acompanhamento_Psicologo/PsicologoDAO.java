@@ -1,114 +1,106 @@
 package br.com.thalison.sistema_acompanhamento_Psicologo;
 
-import br.com.thalison.sistema_acompanhamento.*;
+import br.com.thalison.sistema_acompanhamento.Conexao;
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
+import br.com.thalison.sistema_acompanhamento_Pedagogo.Pedagogo;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PsicologoDAO {
 
-    public Psicologo consultarPsicologo(int id) {
-        String sql = "SELECT p.id, p.nome, ps.especialidade " +
-                     "FROM pessoa p " +
-                     "INNER JOIN psicologo ps ON p.id = ps.pessoaId " +
-                     "WHERE ps.pessoaId = ?";
+	// Busca psicólogo por ID — retorna objeto Psicologo completo
+	public Psicologo buscarPorId(int pessoaId) {
+		String sql = "SELECT p.id, p.nome, p.email, p.cpf, p.telefone, p.perfil, " + "ps.crp, ps.especialidade "
+				+ "FROM pessoa p " + "INNER JOIN psicologo ps ON p.id = ps.pessoaId " + "WHERE p.id = ?";
 
-        try (Connection c = Conexao.conectar();
-             PreparedStatement p = c.prepareStatement(sql)) {
+		try (Connection c = Conexao.conectar(); PreparedStatement ps = c.prepareStatement(sql)) {
 
-            p.setInt(1, id);
+			ps.setInt(1, pessoaId);
 
-            try (ResultSet r = p.executeQuery()) {
-                if (r.next()) {
-                    Psicologo psicologo = new Psicologo();
-                    psicologo.setId(r.getInt("id"));
-                    psicologo.setNome(r.getString("nome"));
-                    psicologo.setEspecialidade(r.getString("especialidade"));
-                    return psicologo;
-                }
-            }
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return mapear(rs);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
-        } catch (SQLException e) {
-            System.out.println("Erro ao consultar psicólogo: " + e.getMessage());
-        }
+	// Lista todos os psicólogos cadastrados
+	public List<Psicologo> listarTodos() {
+		List<Psicologo> lista = new ArrayList<>();
+		String sql = "SELECT p.id, p.nome, p.email, p.cpf, p.telefone, p.perfil, " + "ps.crp, ps.especialidade "
+				+ "FROM pessoa p " + "INNER JOIN psicologo ps ON p.id = ps.pessoaId " + "ORDER BY p.nome";
 
-        return null;
-    }
+		try (Connection c = Conexao.conectar();
+				PreparedStatement ps = c.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
 
-    public boolean marcarReuniaoComAluno(int psicologoId, int alunoId,
-                                         String reuniao) {
-        String sql = "UPDATE psicologo SET alunoId = ?, reuniao = ? " +
-                     "WHERE pessoaId = ?";
+			while (rs.next()) {
+				lista.add(mapear(rs));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return lista;
+	}
 
-        try (Connection c = Conexao.conectar();
-             PreparedStatement p = c.prepareStatement(sql)) {
+	// Agenda entrevista — recebe objetos Psicologo e Aluno (não ints soltos)
+	public boolean agendarEntrevista(Psicologo psicologo, Aluno aluno, String motivo, String data) {
+		String sql = "INSERT INTO entrevista "
+				+ "(aluno_id, psicologo_id, nome_aluno, nome_psicologo, data, motivo, agendada) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, TRUE)";
 
-            p.setInt(1, alunoId);
-            p.setString(2, reuniao);
-            p.setInt(3, psicologoId);
+		try (Connection c = Conexao.conectar(); PreparedStatement ps = c.prepareStatement(sql)) {
 
-            return p.executeUpdate() > 0;
+			ps.setInt(1, aluno.getId());
+			ps.setInt(2, psicologo.getId());
+			ps.setString(3, aluno.getNome());
+			ps.setString(4, psicologo.getNome());
+			ps.setString(5, data);
+			ps.setString(6, motivo);
 
-        } catch (SQLException e) {
-            System.out.println("Erro ao marcar reunião: " + e.getMessage());
-            return false;
-        }
-    }
+			return ps.executeUpdate() > 0;
 
-    public boolean marcarReuniaoComPedagogo(int psicologoId,
-                                            int pedagogoId,
-                                            String reuniao) {
-        String sql = "INSERT INTO mensagem " +
-                     "(remetenteId, destinatarioId, conteudoMensagem, dataEnvioMensagem) " +
-                     "VALUES (?, ?, ?, NOW())";
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
-        try (Connection c = Conexao.conectar();
-             PreparedStatement p = c.prepareStatement(sql)) {
+	// Envia mensagem para Pedagogo — recebe objetos (não ints soltos)
+	public boolean enviarMensagemParaPedagogo(Psicologo psicologo, Pedagogo pedagogo, String conteudo) {
+		String sql = "INSERT INTO mensagem " + "(remetenteId, destinatarioId, conteudoMensagem, dataEnvioMensagem) "
+				+ "VALUES (?, ?, ?, NOW())";
 
-            p.setInt(1, psicologoId);
-            p.setInt(2, pedagogoId);
-            p.setString(3, "Solicitação de reunião: " + reuniao);
+		try (Connection c = Conexao.conectar(); PreparedStatement ps = c.prepareStatement(sql)) {
 
-            return p.executeUpdate() > 0;
+			ps.setInt(1, psicologo.getId());
+			ps.setInt(2, pedagogo.getId());
+			ps.setString(3, conteudo);
 
-        } catch (SQLException e) {
-            System.out.println("Erro ao solicitar reunião: " + e.getMessage());
-            return false;
-        }
-    }
+			return ps.executeUpdate() > 0;
 
-    public boolean atualizarRegistroDoAluno(int alunoId, String registro) {
-        String sql = "UPDATE psicologo SET reuniao = ? WHERE alunoId = ?";
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
-        try (Connection c = Conexao.conectar();
-             PreparedStatement p = c.prepareStatement(sql)) {
-
-            p.setString(1, registro);
-            p.setInt(2, alunoId);
-
-            return p.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            System.out.println("Erro ao atualizar registro: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public void verRegistroDoAluno(int alunoId) {
-        String sql = "SELECT alunoId, reuniao FROM psicologo WHERE alunoId = ?";
-
-        try (Connection c = Conexao.conectar();
-             PreparedStatement p = c.prepareStatement(sql)) {
-
-            p.setInt(1, alunoId);
-
-            try (ResultSet r = p.executeQuery()) {
-                while (r.next()) {
-                    System.out.println("Aluno: " + r.getInt("alunoId"));
-                    System.out.println("Registro: " + r.getString("reuniao"));
-                }
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Erro ao consultar registro: " + e.getMessage());
-        }
-    }
+	private Psicologo mapear(ResultSet rs) throws SQLException {
+		Psicologo p = new Psicologo();
+		p.setId(rs.getInt("id"));
+		p.setNome(rs.getString("nome"));
+		p.setEmail(rs.getString("email"));
+		p.setCpf(rs.getString("cpf"));
+		p.setTelefone(rs.getString("telefone"));
+		p.setPerfil(rs.getString("perfil"));
+		p.setCrp(rs.getString("crp"));
+		p.setEspecialidade(rs.getString("especialidade"));
+		return p;
+	}
 }

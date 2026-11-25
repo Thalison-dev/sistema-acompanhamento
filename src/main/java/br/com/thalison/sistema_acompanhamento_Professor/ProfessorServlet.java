@@ -1,7 +1,6 @@
 package br.com.thalison.sistema_acompanhamento_Professor;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -10,126 +9,94 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/")
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
+import br.com.thalison.sistema_acompanhamento_aluno.AlunoDAO;
+import br.com.thalison.sistema_acompanhamento_Apontamento.Apontamento;
+
+import java.util.List;
+
+@WebServlet(urlPatterns = {
+        "/listarAlunosProfessor",
+        "/registrarApontamento",
+        "/consultarApontamentos"
+})
 public class ProfessorServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
-	private ProfessorDAO dao;
+    private static final long serialVersionUID = 1L;
+    private ProfessorDAO dao;
+    private AlunoDAO alunoDAO;
 
-	public void init() {
-		dao = new ProfessorDAO();
-	}
+    public void init() {
+        dao = new ProfessorDAO();
+        alunoDAO = new AlunoDAO();
+    }
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doGet(request, response);
-	}
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response);
+    }
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		String action = request.getServletPath();
+        String action = request.getServletPath();
 
-		try {
-			switch (action) {
+        switch (action) {
 
-			case "/consultarAluno":
-				consultarAluno(request, response);
-				break;
+        case "/listarAlunosProfessor":
+            listarAlunos(request, response);
+            break;
 
-			case "/registrarObservacao":
-				registrarObservacao(request, response);
-				break;
+        case "/registrarApontamento":
+            registrarApontamento(request, response);
+            break;
 
-			case "/registrarOcorrencia":
-				registrarOcorrencia(request, response);
-				break;
+        case "/consultarApontamentos":
+            consultarApontamentos(request, response);
+            break;
 
-			case "/registrarAvaliacao":
-				registrarAvaliacao(request, response);
-				break;
+        default:
+            listarAlunos(request, response);
+            break;
+        }
+    }
 
-			case "/registrarRendimento":
-				registrarRendimento(request, response);
-				break;
+    private void listarAlunos(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-			case "/registrarAdaptacao":
-				registrarAdaptacao(request, response);
-				break;
+        List<Aluno> alunos = dao.listarAlunos();
+        request.setAttribute("alunos", alunos);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("listar-alunos.jsp");
+        dispatcher.forward(request, response);
+    }
 
-			case "/consultarHistorico":
-				consultarHistorico(request, response);
-				break;
+    private void registrarApontamento(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
 
-			default:
-				consultarAluno(request, response);
-				break;
-			}
+        int professorId = Integer.parseInt(request.getParameter("professorId"));
+        int alunoId = Integer.parseInt(request.getParameter("alunoId"));
+        String descricao = request.getParameter("descricao");
+        String disciplina = request.getParameter("disciplina");
 
-		} catch (SQLException ex) {
-			throw new ServletException(ex);
-		}
-	}
+        // Busca os objetos completos — nunca passa int solto pro DAO
+        Professor professor = dao.buscarPorId(professorId);
+        Aluno aluno = alunoDAO.buscarPorId(alunoId);
 
-	private void consultarAluno(HttpServletRequest request, HttpServletResponse response)
-			throws SQLException, ServletException, IOException {
+        dao.registrarApontamento(professor, aluno, descricao, disciplina);
+        response.sendRedirect("consultarApontamentos?alunoId=" + alunoId);
+    }
 
-		dao.consultarAluno();
-		RequestDispatcher dispatcher = request.getRequestDispatcher("listar-alunos.jsp");
-		dispatcher.forward(request, response);
-	}
+    private void consultarApontamentos(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-	private void registrarObservacao(HttpServletRequest request, HttpServletResponse response)
-			throws SQLException, IOException {
+        int alunoId = Integer.parseInt(request.getParameter("alunoId"));
+        Aluno aluno = alunoDAO.buscarPorId(alunoId);
 
-		int id = Integer.parseInt(request.getParameter("id"));
-		String descricao = request.getParameter("descricao");
-		dao.registrarObservacao(id, descricao);
-		response.sendRedirect("consultarHistorico?id=" + id);
-	}
+        List<Apontamento> apontamentos = dao.consultarApontamentos(aluno);
 
-	private void registrarOcorrencia(HttpServletRequest request, HttpServletResponse response)
-			throws SQLException, IOException {
-
-		int id = Integer.parseInt(request.getParameter("id"));
-		String descricao = request.getParameter("descricao");
-		dao.registrarOcorrencia(id, descricao);
-		response.sendRedirect("consultarHistorico?id=" + id);
-	}
-
-	private void registrarAvaliacao(HttpServletRequest request, HttpServletResponse response)
-			throws SQLException, IOException {
-
-		int id = Integer.parseInt(request.getParameter("id"));
-		String descricao = request.getParameter("descricao");
-		dao.registrarAvaliacao(id, descricao);
-		response.sendRedirect("consultarHistorico?id=" + id);
-	}
-
-	private void registrarRendimento(HttpServletRequest request, HttpServletResponse response)
-			throws SQLException, IOException {
-
-		int id = Integer.parseInt(request.getParameter("id"));
-		String descricao = request.getParameter("descricao");
-		dao.registrarRendimento(id, descricao);
-		response.sendRedirect("consultarHistorico?id=" + id);
-	}
-
-	private void registrarAdaptacao(HttpServletRequest request, HttpServletResponse response)
-			throws SQLException, IOException {
-
-		int id = Integer.parseInt(request.getParameter("id"));
-		String descricao = request.getParameter("descricao");
-		dao.registrarAdaptacao(id, descricao);
-		response.sendRedirect("consultarHistorico?id=" + id);
-	}
-
-	private void consultarHistorico(HttpServletRequest request, HttpServletResponse response)
-			throws SQLException, ServletException, IOException {
-
-		int alunoId = Integer.parseInt(request.getParameter("id"));
-		dao.consultarHistorico(alunoId);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("historico-aluno.jsp");
-		dispatcher.forward(request, response);
-	}
+        request.setAttribute("aluno", aluno);
+        request.setAttribute("apontamentos", apontamentos);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("historico-aluno.jsp");
+        dispatcher.forward(request, response);
+    }
 }
