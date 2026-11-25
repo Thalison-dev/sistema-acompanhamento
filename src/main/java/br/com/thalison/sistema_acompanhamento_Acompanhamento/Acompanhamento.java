@@ -1,8 +1,10 @@
 package br.com.thalison.sistema_acompanhamento_Acompanhamento;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 public class Acompanhamento {
+	
     private int id;
     private int alunoId;
     private int responsavelLegalId;
@@ -10,14 +12,15 @@ public class Acompanhamento {
     private Integer psicologoId;
     private Integer pedagogoId;
 
-    private Date dataInicio;
-    private Date dataFim;
+    private LocalDate dataInicio;
+    private LocalDate dataFim;
     private String objetivo;
     private String parecerPsicologico;
     private String parecerPedagogico;
     private String status;
 
     private String nomeAluno;
+    
     private String tipoNeurodivergencia;
     private String nomeResponsavel;
     private String parentescoResponsavel;

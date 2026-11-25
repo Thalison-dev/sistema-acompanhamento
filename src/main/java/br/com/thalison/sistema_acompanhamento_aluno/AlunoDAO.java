@@ -3,31 +3,34 @@ package br.com.thalison.sistema_acompanhamento_aluno;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import br.com.thalison.sistema_acompanhamento.Conexao;
+import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
 
 public class AlunoDAO {
 
     public boolean cadastrar(Aluno aluno) {
-        String sql = "INSERT INTO aluno (nome, email, cpf, telefone, dataNascimento, matricula, anoEscolar, tipoNeurodivergencia, descricaoNeuro, status) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO aluno (pessoaId, nome, email, cpf, telefone, dataNascimento, matricula, anoEscolar, tipoNeurodivergencia, descricaoNeuro, status) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, aluno.getNome());
-            ps.setString(2, aluno.getEmail());
-            ps.setString(3, aluno.getCpf());
-            ps.setString(4, aluno.getTelefone());
+            ps.setInt(1, aluno.getPessoa() != null ? aluno.getPessoa().getId() : 0);
+            ps.setString(2, aluno.getNome());
+            ps.setString(3, aluno.getEmail());
+            ps.setString(4, aluno.getCpf());
+            ps.setString(5, aluno.getTelefone());
             if (aluno.getDataNascimento() != null) {
-                ps.setDate(5, aluno.getDataNascimento());
+                ps.setDate(6, Date.valueOf(aluno.getDataNascimento()));
             } else {
-                ps.setNull(5, Types.DATE);
+                ps.setNull(6, Types.DATE);
             }
-            ps.setString(6, aluno.getMatricula());
-            ps.setString(7, aluno.getAnoEscolar());
-            ps.setString(8, aluno.getTipoNeurodivergencia());
-            ps.setString(9, aluno.getDescricaoNeuro());
-            ps.setString(10, aluno.getStatus() != null ? aluno.getStatus() : "Ativo");
+            ps.setString(7, aluno.getMatricula());
+            ps.setString(8, aluno.getAnoEscolar());
+            ps.setString(9, aluno.getTipoNeurodivergencia());
+            ps.setString(10, aluno.getDescricaoNeuro());
+            ps.setString(11, aluno.getStatus() != null ? aluno.getStatus() : "Ativo");
 
             int linhas = ps.executeUpdate();
             if (linhas > 0) {
@@ -93,12 +96,22 @@ public class AlunoDAO {
     private Aluno mapear(ResultSet rs) throws SQLException {
         Aluno a = new Aluno();
         a.setId(rs.getInt("id"));
-        a.setPessoaId(rs.getInt("pessoaId"));
+
+        Pessoa pessoa = new Pessoa();
+        pessoa.setId(rs.getInt("pessoaId"));
+        pessoa.setNome(rs.getString("nome"));
+        a.setPessoa(pessoa);
+
         a.setNome(rs.getString("nome"));
         a.setEmail(rs.getString("email"));
         a.setCpf(rs.getString("cpf"));
         a.setTelefone(rs.getString("telefone"));
-        a.setDataNascimento(rs.getDate("dataNascimento"));
+
+        Date dataSql = rs.getDate("dataNascimento");
+        if (dataSql != null) {
+            a.setDataNascimento(dataSql.toLocalDate());
+        }
+
         a.setMatricula(rs.getString("matricula"));
         a.setAnoEscolar(rs.getString("anoEscolar"));
         a.setTipoNeurodivergencia(rs.getString("tipoNeurodivergencia"));
