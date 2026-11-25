@@ -1,14 +1,17 @@
 package br.com.thalison.sistema_Acompanhamento_entrevista;
 
 import java.io.IOException;
-import java.sql.Date;
+import java.time.LocalDate;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
+import br.com.thalison.sistema_acompanhamento_Psicologo.Psicologo;
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 import br.com.thalison.sistema_acompanhamento_aluno.AlunoDAO;
 
 @WebServlet("/entrevistas")
@@ -37,9 +40,20 @@ public class EntrevistaServlet extends HttpServlet {
         Pessoa usuario = (session != null) ? (Pessoa) session.getAttribute("usuarioLogado") : null;
 
         Entrevista e = new Entrevista();
-        e.setAlunoId(Integer.parseInt(req.getParameter("alunoId")));
-        e.setPsicologoId(usuario != null ? usuario.getId() : 3);
-        e.setData(Date.valueOf(req.getParameter("data")));
+
+        Aluno aluno = new Aluno();
+        aluno.setId(Integer.parseInt(req.getParameter("alunoId")));
+        e.setAluno(aluno);
+
+        Psicologo psicologo = new Psicologo();
+        psicologo.setId(usuario != null ? usuario.getId() : 3);
+        e.setPsicologo(psicologo);
+
+        String dataParam = req.getParameter("data");
+        if (dataParam != null && !dataParam.trim().isEmpty()) {
+            e.setData(LocalDate.parse(dataParam.trim()));
+        }
+
         e.setMotivo(req.getParameter("motivo"));
         e.setAgendada("on".equals(req.getParameter("agendada")) || "true".equals(req.getParameter("agendada")));
         e.setObservacoes(req.getParameter("observacoes"));

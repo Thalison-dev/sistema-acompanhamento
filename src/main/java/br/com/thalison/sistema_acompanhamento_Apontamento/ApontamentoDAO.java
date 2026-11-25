@@ -3,7 +3,10 @@ package br.com.thalison.sistema_acompanhamento_Apontamento;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import br.com.thalison.sistema_acompanhamento.Conexao;
+import br.com.thalison.sistema_acompanhamento_Professor.Professor;
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 
 public class ApontamentoDAO {
 
@@ -11,10 +14,12 @@ public class ApontamentoDAO {
         String sql = "INSERT INTO apontamento (alunoId, professorId, data, motivo) VALUES (?, ?, ?, ?)";
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setInt(1, ap.getAlunoId());
-            ps.setInt(2, ap.getProfessorId());
-            ps.setDate(3, ap.getData());
+
+            ps.setInt(1, ap.getAluno().getId());
+            ps.setInt(2, ap.getProfessor().getId());
+            ps.setDate(3, ap.getData() != null ? Date.valueOf(ap.getData()) : null);
             ps.setString(4, ap.getMotivo());
+
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -32,16 +37,9 @@ public class ApontamentoDAO {
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
-                Apontamento ap = new Apontamento();
-                ap.setId(rs.getInt("id"));
-                ap.setAlunoId(rs.getInt("alunoId"));
-                ap.setProfessorId(rs.getInt("professorId"));
-                ap.setData(rs.getDate("data"));
-                ap.setMotivo(rs.getString("motivo"));
-                ap.setNomeAluno(rs.getString("nomeAluno"));
-                ap.setNomeProfessor(rs.getString("nomeProfessor"));
-                lista.add(ap);
+                lista.add(mapear(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -59,20 +57,14 @@ public class ApontamentoDAO {
                      "ORDER BY ap.data ASC, ap.id ASC";
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql)) {
+
             ps.setInt(1, alunoId);
             ps.setInt(2, mes);
             ps.setInt(3, ano);
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Apontamento ap = new Apontamento();
-                    ap.setId(rs.getInt("id"));
-                    ap.setAlunoId(rs.getInt("alunoId"));
-                    ap.setProfessorId(rs.getInt("professorId"));
-                    ap.setData(rs.getDate("data"));
-                    ap.setMotivo(rs.getString("motivo"));
-                    ap.setNomeAluno(rs.getString("nomeAluno"));
-                    ap.setNomeProfessor(rs.getString("nomeProfessor"));
-                    lista.add(ap);
+                    lista.add(mapear(rs));
                 }
             }
         } catch (SQLException e) {
@@ -85,11 +77,37 @@ public class ApontamentoDAO {
         String sql = "DELETE FROM apontamento WHERE id = ?";
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql)) {
+
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private Apontamento mapear(ResultSet rs) throws SQLException {
+        Apontamento ap = new Apontamento();
+        ap.setId(rs.getInt("id"));
+
+        Aluno aluno = new Aluno();
+        aluno.setId(rs.getInt("alunoId"));
+        aluno.setNome(rs.getString("nomeAluno"));
+        ap.setAluno(aluno);
+
+        Professor professor = new Professor();
+        professor.setId(rs.getInt("professorId"));
+        professor.setNome(rs.getString("nomeProfessor"));
+        ap.setProfessor(professor);
+
+        Date dataSql = rs.getDate("data");
+        if (dataSql != null) {
+            ap.setData(dataSql.toLocalDate());
+        }
+
+        ap.setMotivo(rs.getString("motivo"));
+        ap.setNomeAluno(rs.getString("nomeAluno"));
+        ap.setNomeProfessor(rs.getString("nomeProfessor"));
+        return ap;
     }
 }

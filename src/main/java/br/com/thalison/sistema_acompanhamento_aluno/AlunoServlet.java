@@ -3,12 +3,14 @@ package br.com.thalison.sistema_acompanhamento_aluno;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.sql.Date;
+import java.time.LocalDate;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
 
 @WebServlet("/aluno")
 public class AlunoServlet extends HttpServlet {
@@ -32,6 +34,14 @@ public class AlunoServlet extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
 
         Aluno aluno = new Aluno();
+
+        String pessoaIdParam = req.getParameter("pessoaId");
+        if (pessoaIdParam != null && !pessoaIdParam.trim().isEmpty()) {
+            Pessoa pessoa = new Pessoa();
+            pessoa.setId(Integer.parseInt(pessoaIdParam.trim()));
+            aluno.setPessoa(pessoa);
+        }
+
         aluno.setNome(req.getParameter("nome"));
         aluno.setEmail(req.getParameter("email"));
         aluno.setCpf(req.getParameter("cpf"));
@@ -39,7 +49,7 @@ public class AlunoServlet extends HttpServlet {
 
         String nasc = req.getParameter("dataNascimento");
         if (nasc != null && !nasc.trim().isEmpty()) {
-            aluno.setDataNascimento(Date.valueOf(nasc.trim()));
+            aluno.setDataNascimento(LocalDate.parse(nasc.trim()));
         }
 
         aluno.setMatricula(req.getParameter("matricula"));

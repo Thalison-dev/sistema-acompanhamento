@@ -3,7 +3,9 @@ package br.com.thalison.sistema_acompanhamento_ResponsavelLegal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import br.com.thalison.sistema_acompanhamento.Conexao;
+import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
 
 public class ResponsavelLegalDAO {
 
@@ -22,7 +24,9 @@ public class ResponsavelLegalDAO {
                     ps.setString(4, rl.getEmail());
                     ps.executeUpdate();
                     try (ResultSet rs = ps.getGeneratedKeys()) {
-                        if (!rs.next()) throw new SQLException("ID não gerado.");
+                        if (!rs.next()) {
+                            throw new SQLException("ID não gerado.");
+                        }
                         id = rs.getInt(1);
                     }
                 }
@@ -35,6 +39,15 @@ public class ResponsavelLegalDAO {
 
                 c.commit();
                 rl.setId(id);
+
+                Pessoa pessoa = rl.getPessoa() != null ? rl.getPessoa() : new Pessoa();
+                pessoa.setId(id);
+                pessoa.setNome(rl.getNome());
+                pessoa.setCpf(rl.getCpf());
+                pessoa.setTelefone(rl.getTelefone());
+                pessoa.setEmail(rl.getEmail());
+                rl.setPessoa(pessoa);
+
                 return true;
             } catch (SQLException e) {
                 c.rollback();
@@ -58,15 +71,9 @@ public class ResponsavelLegalDAO {
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
-                ResponsavelLegal rl = new ResponsavelLegal();
-                rl.setId(rs.getInt("id"));
-                rl.setNome(rs.getString("nome"));
-                rl.setCpf(rs.getString("cpf"));
-                rl.setTelefone(rs.getString("telefone"));
-                rl.setEmail(rs.getString("email"));
-                rl.setParentesco(rs.getString("parentesco"));
-                lista.add(rl);
+                lista.add(mapear(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -78,11 +85,32 @@ public class ResponsavelLegalDAO {
         String sql = "DELETE FROM pessoa WHERE id = ?";
         try (Connection c = Conexao.conectar();
              PreparedStatement ps = c.prepareStatement(sql)) {
+
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private ResponsavelLegal mapear(ResultSet rs) throws SQLException {
+        ResponsavelLegal rl = new ResponsavelLegal();
+        rl.setId(rs.getInt("id"));
+
+        Pessoa pessoa = new Pessoa();
+        pessoa.setId(rs.getInt("id"));
+        pessoa.setNome(rs.getString("nome"));
+        pessoa.setCpf(rs.getString("cpf"));
+        pessoa.setTelefone(rs.getString("telefone"));
+        pessoa.setEmail(rs.getString("email"));
+        rl.setPessoa(pessoa);
+
+        rl.setNome(rs.getString("nome"));
+        rl.setCpf(rs.getString("cpf"));
+        rl.setTelefone(rs.getString("telefone"));
+        rl.setEmail(rs.getString("email"));
+        rl.setParentesco(rs.getString("parentesco"));
+        return rl;
     }
 }

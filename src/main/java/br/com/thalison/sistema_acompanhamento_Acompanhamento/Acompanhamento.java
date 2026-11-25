@@ -1,5 +1,6 @@
 package br.com.thalison.sistema_acompanhamento_Acompanhamento;
 
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -21,11 +22,13 @@ public class Acompanhamento implements Serializable {
     private final Aluno aluno;
     private ResponsavelLegal responsavelLegal;
     private PeriodoAcompanhamento periodo;
+
     private String objetivo;
     private String observacaoGeral;
     private ParecerTecnico<Psicologo> parecerPsicologico;
     private ParecerTecnico<Pedagogo> parecerPedagogico;
     private StatusAcompanhamento status;
+
 
     private Acompanhamento(Builder builder) {
         this.id = builder.id;
@@ -41,6 +44,7 @@ public class Acompanhamento implements Serializable {
         this.parecerPedagogico = builder.parecerPedagogico;
         this.status = (builder.status != null) ? builder.status : StatusAcompanhamento.EM_ANDAMENTO;
     }
+
 
     public static Builder builder(Aluno aluno, PeriodoAcompanhamento periodo, String objetivo) {
         return new Builder(aluno, periodo, objetivo);

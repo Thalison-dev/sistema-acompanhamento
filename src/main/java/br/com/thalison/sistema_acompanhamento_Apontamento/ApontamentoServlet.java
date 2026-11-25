@@ -1,14 +1,17 @@
 package br.com.thalison.sistema_acompanhamento_Apontamento;
 
 import java.io.IOException;
-import java.sql.Date;
+import java.time.LocalDate;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
+import br.com.thalison.sistema_acompanhamento_Professor.Professor;
+import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 import br.com.thalison.sistema_acompanhamento_aluno.AlunoDAO;
 
 @WebServlet("/apontamentos")
@@ -37,9 +40,20 @@ public class ApontamentoServlet extends HttpServlet {
         Pessoa usuario = (session != null) ? (Pessoa) session.getAttribute("usuarioLogado") : null;
 
         Apontamento ap = new Apontamento();
-        ap.setAlunoId(Integer.parseInt(req.getParameter("alunoId")));
-        ap.setProfessorId(usuario != null ? usuario.getId() : 5);
-        ap.setData(Date.valueOf(req.getParameter("data")));
+
+        Aluno aluno = new Aluno();
+        aluno.setId(Integer.parseInt(req.getParameter("alunoId")));
+        ap.setAluno(aluno);
+
+        Professor professor = new Professor();
+        professor.setId(usuario != null ? usuario.getId() : 5);
+        ap.setProfessor(professor);
+
+        String dataParam = req.getParameter("data");
+        if (dataParam != null && !dataParam.trim().isEmpty()) {
+            ap.setData(LocalDate.parse(dataParam.trim()));
+        }
+
         ap.setMotivo(req.getParameter("motivo"));
 
         dao.inserir(ap);
