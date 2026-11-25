@@ -6,9 +6,7 @@ import java.util.Objects;
 
 import br.com.thalison.sistema_acompanhamento_Pessoa.Pessoa;
 
-/**
- * Value Object imutável que vincula um parecer técnico ao profissional responsável e à data de emissão.
- */
+
 public record ParecerTecnico<T extends Pessoa>(
         T profissional,
         String conteudo,

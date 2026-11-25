@@ -11,9 +11,6 @@ import br.com.thalison.sistema_acompanhamento_Psicologo.Psicologo;
 import br.com.thalison.sistema_acompanhamento_ResponsavelLegal.ResponsavelLegal;
 import br.com.thalison.sistema_acompanhamento_aluno.Aluno;
 
-/**
- * Agregado raiz que representa a ficha de acompanhamento multiprofissional de um aluno neurodivergente.
- */
 public class Acompanhamento implements Serializable {
 
     private static final long serialVersionUID = 1L;
