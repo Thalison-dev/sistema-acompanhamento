@@ -12,15 +12,12 @@ import br.com.thalison.sistema_acompanhamento.Conexao;
 
 public class ApontamentoDAO {
 
+    // SALVAR
     public void salvar(Apontamento apontamento) {
-<<<<<<< HEAD
 
         String sql = "INSERT INTO apontamento "
-                + "(data_inicio, nome_professor, motivo, id_pessoa) "
-                + "VALUES (?, ?, ?, ?)";
-=======
-        String sql = "INSERT INTO apontamento (data_inicio, nome_professor, motivo, id_pessoa, id_professor) VALUES (?, ?, ?, ?, ?)";
->>>>>>> 469c46827651996e1bde5e5a6948eec01f28e222
+                + "(data_inicio, nome_professor, motivo, id_pessoa, id_professor) "
+                + "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -28,12 +25,8 @@ public class ApontamentoDAO {
             stmt.setString(1, apontamento.getDataInicio());
             stmt.setString(2, apontamento.getNomeProfessor());
             stmt.setString(3, apontamento.getMotivo());
-<<<<<<< HEAD
             stmt.setInt(4, apontamento.getIdPessoa());
-=======
-            stmt.setInt(4, apontamento.getAlunoId());
-            stmt.setInt(5, apontamento.getProfessorId());
->>>>>>> 469c46827651996e1bde5e5a6948eec01f28e222
+            stmt.setInt(5, apontamento.getIdProfessor());
 
             stmt.executeUpdate();
 
@@ -44,6 +37,7 @@ public class ApontamentoDAO {
         }
     }
 
+    // LISTAR
     public List<Apontamento> listar() {
 
         String sql = "SELECT * FROM apontamento";
@@ -58,16 +52,13 @@ public class ApontamentoDAO {
 
                 Apontamento apontamento = new Apontamento();
 
+                apontamento.setId(rs.getInt("id"));
+                apontamento.setIdPessoa(rs.getInt("id_pessoa"));
+                apontamento.setIdProfessor(rs.getInt("id_professor"));
+
                 apontamento.setDataInicio(rs.getString("data_inicio"));
                 apontamento.setNomeProfessor(rs.getString("nome_professor"));
                 apontamento.setMotivo(rs.getString("motivo"));
-<<<<<<< HEAD
-                apontamento.setIdPessoa(rs.getInt("id_pessoa"));
-=======
-                apontamento.setId(rs.getInt("id"));
-                apontamento.setAlunoId(rs.getInt("id_pessoa"));
-                apontamento.setProfessorId(rs.getInt("id_professor"));
->>>>>>> 469c46827651996e1bde5e5a6948eec01f28e222
 
                 lista.add(apontamento);
             }
@@ -79,15 +70,16 @@ public class ApontamentoDAO {
         return lista;
     }
 
+    // ATUALIZAR
     public void atualizar(Apontamento apontamento, int id) {
-<<<<<<< HEAD
 
         String sql = "UPDATE apontamento SET "
-                + "data_inicio = ?, nome_professor = ?, "
-                + "motivo = ?, id_pessoa = ? WHERE id = ?";
-=======
-        String sql = "UPDATE apontamento SET data_inicio = ?, nome_professor = ?, motivo = ?, id_pessoa = ?, id_professor = ? WHERE id = ?";
->>>>>>> 469c46827651996e1bde5e5a6948eec01f28e222
+                + "data_inicio = ?, "
+                + "nome_professor = ?, "
+                + "motivo = ?, "
+                + "id_pessoa = ?, "
+                + "id_professor = ? "
+                + "WHERE id = ?";
 
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -95,14 +87,9 @@ public class ApontamentoDAO {
             stmt.setString(1, apontamento.getDataInicio());
             stmt.setString(2, apontamento.getNomeProfessor());
             stmt.setString(3, apontamento.getMotivo());
-<<<<<<< HEAD
             stmt.setInt(4, apontamento.getIdPessoa());
-            stmt.setInt(5, id);
-=======
-            stmt.setInt(4, apontamento.getAlunoId());
-            stmt.setInt(5, apontamento.getProfessorId());
+            stmt.setInt(5, apontamento.getIdProfessor());
             stmt.setInt(6, id);
->>>>>>> 469c46827651996e1bde5e5a6948eec01f28e222
 
             stmt.executeUpdate();
 
@@ -113,6 +100,7 @@ public class ApontamentoDAO {
         }
     }
 
+    // DELETAR
     public void deletar(int id) {
 
         String sql = "DELETE FROM apontamento WHERE id = ?";
